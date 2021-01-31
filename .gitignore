@@ -1,2 +1,16 @@
 *.class
 *.log
+
+.idea/
+
+build/
+dist/
+target/
+project/target
+out/
+
+# Hide compiled latex files.
+source/doc/*.aux
+source/doc/*.log
+source/doc/*.pdf
+source/doc/*.toc
