@@ -2,6 +2,7 @@
 *.log
 
 .idea/
+.bsp/
 
 build/
 dist/
