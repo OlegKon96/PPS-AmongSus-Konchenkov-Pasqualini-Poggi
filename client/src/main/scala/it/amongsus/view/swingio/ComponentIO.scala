@@ -20,7 +20,7 @@ class ComponentIO[T<:Component](val component: T){
     IO {component.addMouseListener(l) }
   def removeMouseListener(l:MouseListener): Unit =
     IO { component.removeMouseListener(l) }
-  def getFont(): IO[Font] = IO {component.getFont}
+  def font(): IO[Font] = IO {component.getFont}
   def setPreferredSize(d: Dimension): IO[Unit] =
     IO {component.setPreferredSize(d) }
 
