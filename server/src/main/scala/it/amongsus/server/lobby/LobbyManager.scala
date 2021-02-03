@@ -1,7 +1,7 @@
 package it.amongsus.server.lobby
 
-import it.amongsus.server.common.{CustomLogger, GamePlayer, Player}
-import it.amongsus.server.common.CustomLogger
+import it.amongsus.server.common.{GamePlayer, Player}
+import it.amongsus.utils.CustomLogger
 
 object LobbyManager {
   def apply(): LobbyManager[GamePlayer] = new LobbyManagerImpl[GamePlayer]()
