@@ -1,6 +1,7 @@
 package it.amongsus.server.lobby
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import it.amongsus.messages.LobbyMessages.LobbyError.PrivateLobbyIdNotValid
 import it.amongsus.messages.LobbyMessages._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
 
@@ -43,6 +44,18 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
         ref ! PrivateLobbyCreated(lobbyType.lobbyId)
       }
     }
+    case JoinPrivateLobby(clientId, username, lobbyCode) =>
+      this.executeOnClientRefPresent(clientId) { ref =>
+        privateLobbyService.retrieveExistingLobby(lobbyCode) match {
+          case Some(lobbyType) => {
+            val player = GamePlayer(clientId, username, ref)
+            this.lobbyManger.addPlayer(player, lobbyType)
+            ref ! UserAddedToLobby()
+            this.checkAndCreateGame(lobbyType)
+          }
+          case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
+        }
+      }
 
   }
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
