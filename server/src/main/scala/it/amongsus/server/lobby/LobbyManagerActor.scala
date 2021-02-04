@@ -1,6 +1,6 @@
 package it.amongsus.server.lobby
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import it.amongsus.messages.LobbyMessages.LobbyError.PrivateLobbyIdNotValid
 import it.amongsus.messages.LobbyMessages._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
@@ -56,8 +56,17 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
       }
+    case LeaveLobby(userId) => {
+      log.info(s"client $userId")
+      this.lobbyManger.removePlayer(userId)
+    }
 
+    case Terminated(actorRef) => {
+      log.info(s"terminated $actorRef, connected players: $connectedPlayers")
+      removeClient(actorRef)
+    }
   }
+
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
     this.lobbyManger.attemptExtractPlayerForMatch(lobbyType) match {
       case Some(players) => this.generateAndStartGameActor(lobbyType)(players)
@@ -85,6 +94,19 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
     this.getClientRef(clientId) match {
       case Some(ref) => action(ref)
       case _ =>
+    }
+  }
+
+  private def removeClient(actorRef: ActorRef): Unit = {
+    this.connectedPlayers.find(_._2 == actorRef) match {
+      case Some((userId, _)) => {
+        log.info(s"removing client $actorRef from lobby and connected players list")
+        context.unwatch(actorRef)
+        this.lobbyManger.removePlayer(userId)
+        this.connectedPlayers = this.connectedPlayers - userId
+        log.info(s"removed client $actorRef from lobby and connected players list")
+      }
+      case None => log.info(s"client $actorRef not found")
     }
   }
 }
