@@ -17,6 +17,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
 
   private var connectedPlayers: Map[UserId, ActorRef] = Map()
   private val lobbyManger: LobbyManager[GamePlayer] = LobbyManager()
+  private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
 
   override def receive: Receive = {
     case Connect(clientRef) => {
@@ -33,6 +34,13 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
         this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
         ref ! UserAddedToLobby()
         this.checkAndCreateGame(lobbyType)
+      }
+    }
+    case CreatePrivateLobby(clientId, username, numberOfPlayers) => {
+      this.executeOnClientRefPresent(clientId) { ref =>
+        val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
+        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        ref ! PrivateLobbyCreated(lobbyType.lobbyId)
       }
     }
 
