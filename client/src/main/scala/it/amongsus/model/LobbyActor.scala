@@ -3,7 +3,7 @@ package it.amongsus.client.model.lobby
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.model.{ErrorEvent, LobbyActorInfo, LobbyActorInfoData}
+import it.amongsus.model.{ErrorEvent, LobbyActorInfo, LobbyActorInfoData, LobbyJoinErrorEvent}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
