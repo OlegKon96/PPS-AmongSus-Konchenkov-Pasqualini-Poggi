@@ -1,34 +1,32 @@
 package it.amongsus.server.lobby
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer.LobbyError.PrivateLobbyIdNotValid
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
 
 object LobbyManagerActor {
-
   def props() = Props(new LobbyManagerActor())
-
 }
 
 class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
 
   type UserName = String
   type UserId = String
-
-  private var connectedPlayers: Map[UserId, ActorRef] = Map()
   private val lobbyManger: LobbyManager[GamePlayer] = LobbyManager()
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
+  private var connectedPlayers: Map[UserId, ActorRef] = Map()
 
   override def receive: Receive = {
-    case Connect(clientRef) => {
+    case ConnectServer(clientRef) => {
       log.info(s"client $clientRef is asking for a connection")
       val clientId = generateId
       connectedPlayers = connectedPlayers + (clientId -> clientRef)
       context.watch(clientRef)
       clientRef ! Connected(clientId)
     }
-    case JoinPublicLobby(clientId, username, numberOfPlayers) => {
+    case JoinPublicLobbyServer(clientId, username, numberOfPlayers) => {
       log.info(s"client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
@@ -37,14 +35,14 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
         this.checkAndCreateGame(lobbyType)
       }
     }
-    case CreatePrivateLobby(clientId, username, numberOfPlayers) => {
+    case CreatePrivateLobbyServer(clientId, username, numberOfPlayers) => {
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
         this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
         ref ! PrivateLobbyCreated(lobbyType.lobbyId)
       }
     }
-    case JoinPrivateLobby(clientId, username, lobbyCode) =>
+    case JoinPrivateLobbyServer(clientId, username, lobbyCode) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
           case Some(lobbyType) => {
@@ -56,7 +54,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
       }
-    case LeaveLobby(userId) => {
+    case LeaveLobbyServer(userId) => {
       log.info(s"client $userId")
       this.lobbyManger.removePlayer(userId)
     }
@@ -86,15 +84,15 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
     //gameActor ! GamePlayers(players)
   }
 
-  private def getClientRef(clientId: String): Option[ActorRef] = {
-    this.connectedPlayers.get(clientId)
-  }
-
   private def executeOnClientRefPresent(clientId: String)(action: ActorRef => Unit): Unit = {
     this.getClientRef(clientId) match {
       case Some(ref) => action(ref)
       case _ =>
     }
+  }
+
+  private def getClientRef(clientId: String): Option[ActorRef] = {
+    this.connectedPlayers.get(clientId)
   }
 
   private def removeClient(actorRef: ActorRef): Unit = {
