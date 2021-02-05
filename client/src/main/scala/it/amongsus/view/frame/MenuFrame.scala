@@ -2,8 +2,9 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.view.swingio.JFrameIO
+import it.amongsus.view.swingio.{BorderFactoryIO, JFrameIO, JPanelIO}
 
+import java.awt.{BorderLayout, GridLayout}
 import javax.swing.JFrame
 
 trait MenuFrame {
@@ -28,6 +29,10 @@ object MenuFrame {
       for {
         _ <- frame.setSize(WIDTH, HEIGHT)
         _ <- frame.setVisible(true)
+        menuPanel <- JPanelIO()
+        menuBorder <- BorderFactoryIO.emptyBorderCreated(10, 10, 10, 10)
+        _ <- menuPanel.setBorder(menuBorder)
+        _ <- menuPanel.setLayout(new BorderLayout())
       } yield ()
   }
 
