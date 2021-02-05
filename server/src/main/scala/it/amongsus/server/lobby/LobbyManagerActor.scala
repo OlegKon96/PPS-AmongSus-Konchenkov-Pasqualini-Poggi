@@ -1,8 +1,8 @@
 package it.amongsus.server.lobby
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
-import it.amongsus.messages.LobbyMessages.LobbyError.PrivateLobbyIdNotValid
-import it.amongsus.messages.LobbyMessages._
+import it.amongsus.messages.LobbyMessagesServer.LobbyError.PrivateLobbyIdNotValid
+import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
 
 object LobbyManagerActor {

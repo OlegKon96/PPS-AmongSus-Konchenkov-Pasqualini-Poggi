@@ -2,7 +2,7 @@ package it.amongsus.messages
 
 import akka.actor.ActorRef
 
-object LobbyMessages {
+object LobbyMessagesServer {
 
   /**
    * Request of client to connect
