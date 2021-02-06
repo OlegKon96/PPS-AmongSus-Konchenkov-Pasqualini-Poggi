@@ -3,6 +3,7 @@ package it.amongsus.view.swingio
 import cats.effect.IO
 
 import javax.swing.JPanel
+import javax.swing.border.Border
 import javax.swing.plaf.PanelUI
 
 /**
@@ -10,9 +11,10 @@ import javax.swing.plaf.PanelUI
  * of IO monad in a purely functional style.
  * @param component the jPanel that this class wraps.
  */
-class JPanelIO (override val component: JPanel) extends ComponentIO(component) {
+class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
   def setUI(ui:PanelUI): IO[Unit] = IO {	component.setUI(ui)}
   def UI(): IO[PanelUI] = IO {component.getUI}
+  def setBorder(border : Border) : IO[Unit] = IO {component.setBorder(border)}
 
   def setUIInvokingAndWaiting(ui:PanelUI): IO[Unit] = invokeAndWaitIO(component.setUI(ui))
 }
