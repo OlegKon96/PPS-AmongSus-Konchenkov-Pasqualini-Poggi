@@ -26,7 +26,7 @@ trait LobbyActorInfo {
 }
 
 object LobbyActorInfo {
-  def apply(): LobbyActorInfoData = LobbyActorInfoData(None, None, "")
+  def apply(guiRef: Option[ActorRef]): LobbyActorInfoData = LobbyActorInfoData(None, guiRef, "")
 
   def apply(serverRef: Option[ActorRef], guiRef: Option[ActorRef], clientId: String): LobbyActorInfoData =
     LobbyActorInfoData(serverRef, guiRef, clientId)

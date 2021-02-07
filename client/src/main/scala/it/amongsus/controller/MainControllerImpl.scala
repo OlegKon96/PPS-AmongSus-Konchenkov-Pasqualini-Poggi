@@ -1,25 +1,26 @@
 package it.amongsus.controller
 
+import it.amongsus.model.{LobbyActor, LobbyActorInfo}
 import it.amongsus.{ActorSystemManager, Constants}
-import it.amongsus.client.model.lobby.LobbyActor
-import it.amongsus.messages.LobbyMessagesClient.{ConnectClient, JoinPublicLobbyClient}
-import it.amongsus.model.LobbyActorInfo
+import it.amongsus.messages.LobbyMessagesClient.ConnectClient
+import it.amongsus.view.actor.{UiActor, UiActorInfo}
 import it.amongsus.view.frame.MenuFrame
 
 class MainControllerImpl() extends MainController {
 
+  private lazy val guiRef =
+    ActorSystemManager.actorSystem.actorOf(UiActor.props(UiActorInfo()), "gui")
   private lazy val lobbyActorRef =
-    ActorSystemManager.actorSystem.actorOf(LobbyActor.props(LobbyActorInfo()), "client-lobby")
-  val menuView: MenuFrame  =  MenuFrame(Option(lobbyActorRef))
+    ActorSystemManager.actorSystem.actorOf(LobbyActor.props(LobbyActorInfo(Option(guiRef))), "client-lobby")
+  val menuView: MenuFrame  =  MenuFrame(Option(guiRef))
 
   override def start(): Unit = {
     connect()
     menuView.start() unsafeRunSync()
   }
 
-  private def connect(): Unit = {
+  private def connect(): Unit =
     this.lobbyActorRef.tell(ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT), lobbyActorRef)
-    Thread sleep 10000
-    this.lobbyActorRef.tell(JoinPublicLobbyClient("test", 2), lobbyActorRef)
-  }
+
+
 }

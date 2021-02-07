@@ -1,27 +1,26 @@
-package it.amongsus.client.model.lobby
+package it.amongsus.model
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.model.{ErrorEvent, LobbyActorInfo, LobbyActorInfoData, LobbyJoinErrorEvent}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object LobbyActor {
-  def props(serverResponsesListener: LobbyActorInfo): Props =
-    Props(new LobbyActor(serverResponsesListener))
+  def props(state: LobbyActorInfo): Props =
+    Props(new LobbyActor(state))
 }
 
 /**
  * Actor responsible for receiving server lobby messages
  *
- * @param serverResponsesListener function user to notify back about the received event
+ * @param state function user to notify back about the received event
  */
-class LobbyActor(private val serverResponsesListener: LobbyActorInfo) extends Actor
+class LobbyActor(private val state: LobbyActorInfo) extends Actor
   with ActorLogging {
 
-  override def receive: Receive = defaultBehaviour(serverResponsesListener)
+  override def receive: Receive = defaultBehaviour(state)
 
   private def defaultBehaviour(state: LobbyActorInfo): Receive = {
     case ConnectClient(address, port) => {
