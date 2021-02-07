@@ -22,6 +22,7 @@ object MenuFrame {
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
     val frame = new JFrameIO(new JFrame("Among Sus"))
+    val lobbyView : LobbyFrame = LobbyFrame(this)
     val WIDTH: Int = 500
     val HEIGHT: Int = 250
 
@@ -44,6 +45,10 @@ object MenuFrame {
         nameField <- JTextFieldIO()
         _ <- inputPanel.add(nameField)
         joinPublic <- JButtonIO("Partecipa ad una partita pubblica")
+        _ <- joinPublic.addActionListener(for {
+          _ <- frame.dispose()
+          _ <- lobbyView.start()
+        } yield())
         _ <- inputPanel.add(joinPublic)
         startPrivate <- JButtonIO("Crea una partita privata")
         _ <- inputPanel.add(startPrivate)
