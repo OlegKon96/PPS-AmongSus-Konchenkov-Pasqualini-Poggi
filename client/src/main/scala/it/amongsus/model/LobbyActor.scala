@@ -40,8 +40,8 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
     case LeaveLobbyClient() =>
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
-    case UserAddedToLobby() => println("user added to lobby")
-    case PrivateLobbyCreated(lobbyCode) => ???
+    case UserAddedToLobby() => state.guiRef.get ! UserAddedToLobby()
+    case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
     case MatchFound(gameRoom) => ???
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
