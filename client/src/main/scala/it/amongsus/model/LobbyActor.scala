@@ -42,7 +42,7 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
     case LeaveLobbyClient =>
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
-    case UserAddedToLobby => state.guiRef.get ! UserAddedToLobby
+    case UserAddedToLobby() => state.guiRef.get ! UserAddedToLobby()
     case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
     case MatchFound(gameRoom) =>
       context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
@@ -54,19 +54,19 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
   }
 
   private def gameBehaviour(state: GameActorInfo): Receive = {
-    case PlayerReady => state.gameServerRef.get ! Ready(state.clientId, self)
+    case PlayerReady() => state.gameServerRef.get ! Ready(state.clientId, self)
 
-    case LeaveGame => state.gameServerRef.get ! LeaveGame
+    case LeaveGame() => state.gameServerRef.get ! LeaveGame()
 
-    case GameWon => state.guiRef.get ! GameWon
+    case GameWon() => state.guiRef.get ! GameWon()
 
-    case GameLost => state.guiRef.get ! GameLost
+    case GameLost() => state.guiRef.get ! GameLost()
 
-    case GameEndedBecousePlayerLeft => state.guiRef.get ! GameEndedBecousePlayerLeft
+    case GameEndedBecousePlayerLeft() => state.guiRef.get ! GameEndedBecousePlayerLeft()
 
-    case InvalidPlayerAction => state.guiRef.get ! InvalidPlayerAction
+    case InvalidPlayerAction() => state.guiRef.get ! InvalidPlayerAction()
 
-    case GameStateUpdated => GameStateUpdated
+    case GameStateUpdated() => GameStateUpdated()
 
     case _ => println("error")
   }
