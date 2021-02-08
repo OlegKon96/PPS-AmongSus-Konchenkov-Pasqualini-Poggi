@@ -1,6 +1,8 @@
 package it.amongsus.model
 
 import akka.actor.{Actor, ActorLogging, Props}
+import it.amongsus.messages.GameMessageClient.{LeaveGame, _}
+import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 
@@ -38,15 +40,33 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       state.serverRef.get ! CreatePrivateLobbyServer(state.clientId, username, numberOfPlayers)
     case JoinPrivateLobbyClient(username: String, privateLobbyCode: String) =>
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
-    case LeaveLobbyClient() =>
+    case LeaveLobbyClient =>
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
-    case UserAddedToLobby() => state.guiRef.get ! UserAddedToLobby()
+    case UserAddedToLobby => state.guiRef.get ! UserAddedToLobby
     case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
-    case MatchFound(gameRoom) => ???
+    case MatchFound(gameRoom) => context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
       case _ =>
     }
     case m: String => log.debug(m)
+  }
+
+  private def gameBehaviour(state: GameActorInfo): Receive = {
+    case PlayerReady => state.gameServerRef.get ! Ready(state.clientId, self)
+
+    case LeaveGame => state.gameServerRef.get ! LeaveGame
+
+    case GameWon => state.guiRef.get ! GameWon
+
+    case GameLost => state.guiRef.get ! GameLost
+
+    case GameEndedBecousePlayerLeft => state.guiRef.get ! GameEndedBecousePlayerLeft
+
+    case InvalidPlayerAction => state.guiRef.get ! InvalidPlayerAction
+
+    case GameStateUpdated => GameStateUpdated
+
+    case _ => println("error")
   }
 }
