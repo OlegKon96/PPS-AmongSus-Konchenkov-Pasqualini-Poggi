@@ -33,7 +33,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
         this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! UserAddedToLobby
+        ref ! UserAddedToLobby()
         this.checkAndCreateGame(lobbyType)
       }
     }
@@ -50,7 +50,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
           case Some(lobbyType) => {
             val player = GamePlayer(clientId, username, ref)
             this.lobbyManger.addPlayer(player, lobbyType)
-            ref ! UserAddedToLobby
+            ref ! UserAddedToLobby()
             this.checkAndCreateGame(lobbyType)
           }
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
