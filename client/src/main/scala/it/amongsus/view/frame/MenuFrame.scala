@@ -3,8 +3,9 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JTextFieldIO}
-
 import java.awt.{BorderLayout, GridLayout}
+
+import it.amongsus.view.actor.UiActorMessages.{InitFrame, PublicGameSubmitViewEvent}
 import javax.swing.JFrame
 
 trait MenuFrame {
@@ -46,8 +47,7 @@ object MenuFrame {
         _ <- inputPanel.add(nameField)
         joinPublic <- JButtonIO("Partecipa ad una partita pubblica")
         _ <- joinPublic.addActionListener(for {
-          _ <- frame.dispose()
-          _ <- lobbyView.start()
+          _ <- IO.pure(guiRef.get ! PublicGameSubmitViewEvent("asd",2))
         } yield())
         _ <- inputPanel.add(joinPublic)
         startPrivate <- JButtonIO("Crea una partita privata")
@@ -62,6 +62,7 @@ object MenuFrame {
         _ <- frame.setResizable(false)
         _ <- frame.setSize(WIDTH, HEIGHT)
         _ <- frame.setVisible(true)
+        _ <- IO(guiRef.get ! InitFrame(this))
       } yield ()
   }
 

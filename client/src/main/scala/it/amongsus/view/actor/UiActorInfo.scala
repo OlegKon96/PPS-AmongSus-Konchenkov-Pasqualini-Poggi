@@ -21,6 +21,7 @@ case class UiActorData(override val clientRef: Option[ActorRef],
                        override val frame: Option[MenuFrame]) extends UiActorInfo{
 
   override def prova(): Unit = {
+    println("AAAAA")
     //frame.get.toLobby() unsafeRunSync
   }
 }

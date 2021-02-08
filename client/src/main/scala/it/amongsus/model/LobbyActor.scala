@@ -5,6 +5,7 @@ import it.amongsus.messages.GameMessageClient.{LeaveGame, _}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
+import it.amongsus.view.actor.UiActorMessages.{GameFound, Init}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,6 +27,7 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
 
   private def defaultBehaviour(state: LobbyActorInfo): Receive = {
     case ConnectClient(address, port) => {
+      state.guiRef.get ! Init()
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
           ref ! ConnectServer(context.self)
@@ -33,7 +35,7 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
           println(LobbyJoinErrorEvent(ErrorEvent.ServerNotFound))
       }
     }
-    case Connected(id) => context become defaultBehaviour(LobbyActorInfoData(Option(sender), None, id))
+    case Connected(id) => context become defaultBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
     case CreatePrivateLobbyClient(username: String, numberOfPlayers: Int) =>
@@ -44,8 +46,10 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
     case UserAddedToLobby() => state.guiRef.get ! UserAddedToLobby()
     case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
-    case MatchFound(gameRoom) =>
+    case MatchFound(gameRoom) =>{
+      state.guiRef.get ! GameFound()
       context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
+    }
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
       case _ =>

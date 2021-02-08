@@ -13,10 +13,11 @@ object UiActorMessages {
    * Initialize Actor
    */
   case class InitFrame(frame: MenuFrame)
+
   /**
    * Create a Public Lobby view event
    *
-   * @param username the username of the player
+   * @param username      the username of the player
    * @param playersNumber the number of players in the public lobby
    */
   case class PublicGameSubmitViewEvent(username: String, playersNumber: Int)
@@ -24,7 +25,7 @@ object UiActorMessages {
   /**
    * Join on a Private Lobby view event
    *
-   * @param username the username of the player
+   * @param username    the username of the player
    * @param privateCode the private code of the lobby
    */
   case class PrivateGameSubmitViewEvent(username: String, privateCode: String)
@@ -32,7 +33,7 @@ object UiActorMessages {
   /**
    * Create a Private Lobby view event
    *
-   * @param username the username of the player
+   * @param username      the username of the player
    * @param playersNumber the number of players in the private lobby
    */
   case class CreatePrivateGameSubmitViewEvent(username: String, playersNumber: Int)
@@ -50,11 +51,6 @@ object UiActorMessages {
   /**
    * Notify User that was added to a Lobby
    */
-  case class UserAddedToLobby()
-
-  /**
-   * Notify User that was added to a Lobby
-   */
   case class PrivateLobbyCreated(lobbyCode: String)
 
   /**
@@ -65,4 +61,6 @@ object UiActorMessages {
   /**
    * Notify User that there's an Error
    */
-  case object LobbyErrorOccurred
+  case class LobbyErrorOccurred()
+
+}
