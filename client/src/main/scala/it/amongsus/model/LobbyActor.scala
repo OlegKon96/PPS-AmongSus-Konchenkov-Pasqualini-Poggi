@@ -44,7 +44,8 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
     case UserAddedToLobby => state.guiRef.get ! UserAddedToLobby
     case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
-    case MatchFound(gameRoom) => context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
+    case MatchFound(gameRoom) =>
+      context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
       case _ =>
