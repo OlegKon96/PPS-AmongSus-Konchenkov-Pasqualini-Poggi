@@ -1,11 +1,18 @@
 package it.amongsus.view.actor
 
+import it.amongsus.view.frame.MenuFrame
+
 object UiActorMessages {
 
   /**
    * Initialize Actor
    */
   case class Init()
+
+  /**
+   * Initialize Actor
+   */
+  case class InitFrame(frame: MenuFrame)
   /**
    * Create a Public Lobby view event
    *
@@ -53,10 +60,9 @@ object UiActorMessages {
   /**
    * Notify User that there is a match to a Lobby
    */
-  case class MatchFound(gameRoom: String)
+  case class GameFound()
 
   /**
    * Notify User that there's an Error
    */
   case object LobbyErrorOccurred
-}
