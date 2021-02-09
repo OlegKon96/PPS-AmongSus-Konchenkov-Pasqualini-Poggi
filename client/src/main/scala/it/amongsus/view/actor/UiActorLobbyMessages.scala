@@ -56,7 +56,7 @@ object UiActorLobbyMessages {
   /**
    * Message sent by the server after a successful lobby connection
    */
-  case class UserAddedToLobbyUi()
+  case class UserAddedToLobbyUi(numPlayers: Int)
 
   /**
    * Notify User that there is a match to a Lobby

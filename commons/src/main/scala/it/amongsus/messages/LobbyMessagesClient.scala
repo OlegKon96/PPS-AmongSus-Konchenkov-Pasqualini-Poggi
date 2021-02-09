@@ -54,5 +54,5 @@ object LobbyMessagesClient {
   /**
    * Message sent by the server after a successful lobby connection
    */
-  case class UserAddedToLobbyClient()
+  case class UserAddedToLobbyClient(numPlayers: Int)
 }

@@ -34,7 +34,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case RetryServerConnectionUi() => ???
 
-    case UserAddedToLobbyUi() => state.prova()
+    case UserAddedToLobbyUi(numPlayers) => state.prova(numPlayers)
 
     case PrivateLobbyCreatedUi(lobbyCode) => ???
 

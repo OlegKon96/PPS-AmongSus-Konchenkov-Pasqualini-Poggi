@@ -9,7 +9,7 @@ trait UiActorInfo {
   /** Reference to server actor */
   def frame: Option[MenuFrame]
 
-  def prova(): Unit
+  def prova(numPlayers: Int): Unit
 }
 
 object UiActorInfo {
@@ -20,8 +20,8 @@ object UiActorInfo {
 case class UiActorData(override val clientRef: Option[ActorRef],
                        override val frame: Option[MenuFrame]) extends UiActorInfo{
 
-  override def prova(): Unit = {
-    println("AAAAA")
+  override def prova(numPlayers: Int): Unit = {
+    println("numPlayers:" + numPlayers)
     //frame.get.toLobby() unsafeRunSync
   }
 }
