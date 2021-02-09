@@ -54,6 +54,11 @@ object UiActorMessages {
   case class PrivateLobbyCreatedUi(lobbyCode: String)
 
   /**
+   * Message sent by the server after a successful lobby connection
+   */
+  case class UserAddedToLobbyUi()
+
+  /**
    * Notify User that there is a match to a Lobby
    */
   case class GameFoundUi()
