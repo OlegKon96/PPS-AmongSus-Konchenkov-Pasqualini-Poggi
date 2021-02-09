@@ -42,7 +42,7 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       state.serverRef.get ! CreatePrivateLobbyServer(state.clientId, username, numberOfPlayers)
     case JoinPrivateLobbyClient(username: String, privateLobbyCode: String) =>
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
-    case LeaveLobbyClient =>
+    case LeaveLobbyClient() =>
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
     case UserAddedToLobby() => state.guiRef.get ! UserAddedToLobby()
     case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
