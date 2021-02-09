@@ -1,12 +1,12 @@
 package it.amongsus.model
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.messages.GameMessageClient.{LeaveGameClient, _}
+import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.view.actor.UiActorGameMessages.{GameLostUi, GameStateUpdatedUi, GameWonUi, InvalidPlayerActionUi, PlayerLeftUi}
-import it.amongsus.view.actor.UiActorLobbyMessages.{GameFoundUi, Init, PrivateLobbyCreatedUi, UserAddedToLobbyUi}
+import it.amongsus.view.actor.UiActorGameMessages._
+import it.amongsus.view.actor.UiActorLobbyMessages._
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,24 +37,33 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
       }
     }
     case Connected(id) => context become defaultBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
+
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
+
     case CreatePrivateLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! CreatePrivateLobbyServer(state.clientId, username, numberOfPlayers)
+
     case JoinPrivateLobbyClient(username: String, privateLobbyCode: String) =>
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
+
     case LeaveLobbyClient() =>
       state.serverRef.get ! LeaveLobbyServer(state.clientId)
+
     case UserAddedToLobbyClient() => state.guiRef.get ! UserAddedToLobbyUi()
+
     case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
+
     case MatchFound(gameRoom) =>{
       state.guiRef.get ! GameFoundUi()
       context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
     }
+
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
       case _ =>
     }
+
     case m: String => log.debug(m)
   }
 
