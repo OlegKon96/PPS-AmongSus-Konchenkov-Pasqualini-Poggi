@@ -43,7 +43,7 @@ object LobbyMessagesClient {
    *
    * @param lobbyCode code of the created lobby
    */
-  case class PrivateLobbyCreated(lobbyCode: String)
+  case class PrivateLobbyCreatedClient(lobbyCode: String)
 
   /**
    * Message sent by the client to leave the current lobby

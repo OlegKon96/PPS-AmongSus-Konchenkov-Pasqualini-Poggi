@@ -3,7 +3,7 @@ package lobby
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.messages.LobbyMessagesClient.{Connected, PrivateLobbyCreated, UserAddedToLobbyClient}
+import it.amongsus.messages.LobbyMessagesClient.{Connected, PrivateLobbyCreatedClient, UserAddedToLobbyClient}
 import it.amongsus.messages.LobbyMessagesServer.{ConnectServer, CreatePrivateLobbyServer, JoinPrivateLobbyServer}
 import it.amongsus.messages.LobbyMessagesServer.{JoinPublicLobbyServer, LobbyError, LobbyErrorOccurred}
 import it.amongsus.server.lobby.LobbyManagerActor
@@ -44,7 +44,7 @@ class ActorLobbyManagerTest extends TestKit(ActorSystem("test", ConfigFactory.lo
       lobbyActor ! ConnectServer(client.ref)
       val id = client.expectMsgPF() { case Connected(id) => id }
       lobbyActor ! CreatePrivateLobbyServer(id, "user", NUM_PLAYERS)
-      client.expectMsgType[PrivateLobbyCreated]
+      client.expectMsgType[PrivateLobbyCreatedClient]
     }
 
     "accept request connection to a private lobby if the private lobby exists and work properly" in {
@@ -54,7 +54,7 @@ class ActorLobbyManagerTest extends TestKit(ActorSystem("test", ConfigFactory.lo
       val firstClientId = client.expectMsgPF() { case Connected(id) => id }
       lobbyActor ! CreatePrivateLobbyServer(firstClientId, "user", NUM_PLAYERS)
       val secondPlayer = TestProbe()
-      val lobbyCode = client.expectMsgPF() { case PrivateLobbyCreated(lobbyCode) => lobbyCode }
+      val lobbyCode = client.expectMsgPF() { case PrivateLobbyCreatedClient(lobbyCode) => lobbyCode }
       lobbyActor ! ConnectServer(secondPlayer.ref)
       val secondClientId = secondPlayer.expectMsgPF() { case Connected(secondId) => secondId }
       secondPlayer.send(lobbyActor, JoinPrivateLobbyServer(secondClientId, "secondPlayer", lobbyCode))
