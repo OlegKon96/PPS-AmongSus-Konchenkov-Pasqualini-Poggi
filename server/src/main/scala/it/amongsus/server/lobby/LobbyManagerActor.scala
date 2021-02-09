@@ -59,7 +59,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
       }
-      
+
     case LeaveLobbyServer(userId) => {
       log.info(s"client $userId")
       this.lobbyManger.removePlayer(userId)
