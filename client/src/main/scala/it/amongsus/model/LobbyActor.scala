@@ -5,6 +5,7 @@ import it.amongsus.messages.GameMessageClient.{LeaveGameClient, _}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
+import it.amongsus.view.actor.UiActorGameMessages.{GameLostUi, GameStateUpdatedUi, GameWonUi, InvalidPlayerActionUi, PlayerLeftUi}
 import it.amongsus.view.actor.UiActorLobbyMessages.{GameFoundUi, Init, PrivateLobbyCreatedUi, UserAddedToLobbyUi}
 
 import scala.util.{Failure, Success}
@@ -60,17 +61,17 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
   private def gameBehaviour(state: GameActorInfo): Receive = {
     case PlayerReadyClient() => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
 
-    case LeaveGameClient() => state.gameServerRef.get ! LeaveGameClient()
+    case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
 
-    case GameWonClient() => state.guiRef.get ! GameWonClient()
+    case GameWonClient() => state.guiRef.get ! GameWonUi()
 
-    case GameLostClient() => state.guiRef.get ! GameLostClient()
+    case GameLostClient() => state.guiRef.get ! GameLostUi()
 
-    case PlayerLeftClient() => state.guiRef.get ! PlayerLeftClient()
+    case PlayerLeftClient() => state.guiRef.get ! PlayerLeftUi()
 
-    case InvalidPlayerActionClient() => state.guiRef.get ! InvalidPlayerActionClient()
+    case InvalidPlayerActionClient() => state.guiRef.get ! InvalidPlayerActionUi()
 
-    case GameStateUpdatedClient() => GameStateUpdatedClient()
+    case GameStateUpdatedClient() => GameStateUpdatedUi()
 
     case _ => println("error")
   }
