@@ -48,13 +48,6 @@ object LobbyMessagesServer {
   case class LobbyErrorOccurred(error: LobbyError)
 
   /**
-   * Message sent by the server after private lobby creation
-   *
-   * @param lobbyCode code of the created lobby
-   */
-  case class PrivateLobbyCreated(lobbyCode: String)
-
-  /**
    * Message sent by the server on match found
    *
    * @param gameRoom actorRef of the game room to join

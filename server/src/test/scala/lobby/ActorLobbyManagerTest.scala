@@ -3,10 +3,9 @@ package lobby
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.messages.LobbyMessagesClient.{Connected, UserAddedToLobbyClient}
+import it.amongsus.messages.LobbyMessagesClient.{Connected, PrivateLobbyCreated, UserAddedToLobbyClient}
 import it.amongsus.messages.LobbyMessagesServer.{ConnectServer, CreatePrivateLobbyServer, JoinPrivateLobbyServer}
 import it.amongsus.messages.LobbyMessagesServer.{JoinPublicLobbyServer, LobbyError, LobbyErrorOccurred}
-import it.amongsus.messages.LobbyMessagesServer.PrivateLobbyCreated
 import it.amongsus.server.lobby.LobbyManagerActor
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike

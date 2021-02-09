@@ -39,6 +39,13 @@ object LobbyMessagesClient {
   case class CreatePrivateLobbyClient(username: String, numberOfPlayers: Int)
 
   /**
+   * Message sent by the server after private lobby creation
+   *
+   * @param lobbyCode code of the created lobby
+   */
+  case class PrivateLobbyCreated(lobbyCode: String)
+
+  /**
    * Message sent by the client to leave the current lobby
    *
    */
