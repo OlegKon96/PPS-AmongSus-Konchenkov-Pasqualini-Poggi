@@ -27,7 +27,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.clientRef.get ! CreatePrivateLobbyClient(username, playersNumber)
     case LeaveLobbyUi() => state.clientRef.get ! LeaveLobbyClient()
     case RetryServerConnectionUi() => ???
-    case UserAddedToLobbyClient() => state.prova()
+    case UserAddedToLobbyUi() => state.prova()
     case PrivateLobbyCreatedUi(lobbyCode) => ???
     case GameFoundUi() =>
       state.clientRef.get ! PlayerReadyClient()
