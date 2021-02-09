@@ -3,6 +3,7 @@ package it.amongsus.view.actor
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
+import it.amongsus.view.actor.UiActorGameMessages.{GameLostUi, GameStateUpdatedUi, GameWonUi, InvalidPlayerActionUi, LeaveGameUi, PlayerLeftUi, PlayerReadyUi}
 import it.amongsus.view.actor.UiActorLobbyMessages._
 
 
@@ -36,13 +37,13 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
   }
 
   private def gameBehaviour(state: UiActorInfo): Receive = {
-    case PlayerReadyClient() => state.clientRef.get ! PlayerReadyClient()
-    case LeaveGameClient() => state.clientRef.get ! LeaveGameClient()
-    case GameWonClient() => ???
-    case GameLostClient() => ???
-    case PlayerLeftClient() => ???
-    case InvalidPlayerActionClient() => ???
-    case GameStateUpdatedClient() => ???
+    case PlayerReadyUi() => state.clientRef.get ! PlayerReadyClient()
+    case LeaveGameUi() => state.clientRef.get ! LeaveGameClient()
+    case GameWonUi() => ???
+    case GameLostUi() => ???
+    case PlayerLeftUi() => ???
+    case InvalidPlayerActionUi() => ???
+    case GameStateUpdatedUi() => ???
     case _ => println("ERROR")
   }
 }
