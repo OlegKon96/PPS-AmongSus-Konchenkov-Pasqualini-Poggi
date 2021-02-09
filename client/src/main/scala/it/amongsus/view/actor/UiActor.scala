@@ -18,11 +18,11 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case Init() => context become defaultBehaviour(UiActorData(Option(sender), None))
     case InitFrame(frame) =>
       context become defaultBehaviour(UiActorData(state.clientRef, Option(frame)))
-    case PublicGameSubmitViewEvent(username, playersNumber) =>
+    case PublicGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! JoinPublicLobbyClient(username, playersNumber)
-    case PrivateGameSubmitViewEvent(username, privateCode) =>
+    case PrivateGameSubmitUi(username, privateCode) =>
       state.clientRef.get ! JoinPrivateLobbyClient(username, privateCode)
-    case CreatePrivateGameSubmitViewEvent(username, playersNumber) =>
+    case CreatePrivateGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! CreatePrivateLobbyClient(username, playersNumber)
     case LeaveLobbyUi() => state.clientRef.get ! LeaveLobbyClient()
     case RetryServerConnectionUi() => ???

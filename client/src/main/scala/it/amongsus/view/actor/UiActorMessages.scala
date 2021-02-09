@@ -20,7 +20,7 @@ object UiActorMessages {
    * @param username      the username of the player
    * @param playersNumber the number of players in the public lobby
    */
-  case class PublicGameSubmitViewEvent(username: String, playersNumber: Int)
+  case class PublicGameSubmitUi(username: String, playersNumber: Int)
 
   /**
    * Join on a Private Lobby view event
@@ -28,7 +28,7 @@ object UiActorMessages {
    * @param username    the username of the player
    * @param privateCode the private code of the lobby
    */
-  case class PrivateGameSubmitViewEvent(username: String, privateCode: String)
+  case class PrivateGameSubmitUi(username: String, privateCode: String)
 
   /**
    * Create a Private Lobby view event
@@ -36,7 +36,7 @@ object UiActorMessages {
    * @param username      the username of the player
    * @param playersNumber the number of players in the private lobby
    */
-  case class CreatePrivateGameSubmitViewEvent(username: String, playersNumber: Int)
+  case class CreatePrivateGameSubmitUi(username: String, playersNumber: Int)
 
   /**
    * Leave the lobby view event
