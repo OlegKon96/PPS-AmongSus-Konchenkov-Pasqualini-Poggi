@@ -3,10 +3,10 @@ package lobby
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.messages.LobbyMessagesClient.Connected
+import it.amongsus.messages.LobbyMessagesClient.{Connected, UserAddedToLobbyClient}
 import it.amongsus.messages.LobbyMessagesServer.{ConnectServer, CreatePrivateLobbyServer, JoinPrivateLobbyServer}
 import it.amongsus.messages.LobbyMessagesServer.{JoinPublicLobbyServer, LobbyError, LobbyErrorOccurred}
-import it.amongsus.messages.LobbyMessagesServer.{PrivateLobbyCreated, UserAddedToLobby}
+import it.amongsus.messages.LobbyMessagesServer.PrivateLobbyCreated
 import it.amongsus.server.lobby.LobbyManagerActor
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -36,7 +36,7 @@ class ActorLobbyManagerTest extends TestKit(ActorSystem("test", ConfigFactory.lo
       lobbyActor ! ConnectServer(client.ref)
       val id = client.expectMsgPF() { case Connected(id) => id }
       lobbyActor ! JoinPublicLobbyServer(id, "user", NUM_PLAYERS)
-      client.expectMsgType[UserAddedToLobby]
+      client.expectMsgType[UserAddedToLobbyClient]
     }
 
     "create a private lobby" in {
@@ -59,7 +59,7 @@ class ActorLobbyManagerTest extends TestKit(ActorSystem("test", ConfigFactory.lo
       lobbyActor ! ConnectServer(secondPlayer.ref)
       val secondClientId = secondPlayer.expectMsgPF() { case Connected(secondId) => secondId }
       secondPlayer.send(lobbyActor, JoinPrivateLobbyServer(secondClientId, "secondPlayer", lobbyCode))
-      secondPlayer.expectMsgType[UserAddedToLobby]
+      secondPlayer.expectMsgType[UserAddedToLobbyClient]
     }
   }
 

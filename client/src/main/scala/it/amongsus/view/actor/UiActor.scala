@@ -3,7 +3,6 @@ package it.amongsus.view.actor
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
-import it.amongsus.messages.LobbyMessagesServer.UserAddedToLobby
 import it.amongsus.view.actor.UiActorMessages._
 
 
@@ -27,7 +26,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.clientRef.get ! CreatePrivateLobbyClient(username, playersNumber)
     case LeaveLobbyViewEvent() => state.clientRef.get ! LeaveLobbyClient()
     case RetryServerConnection() => ???
-    case UserAddedToLobby() => state.prova()
+    case UserAddedToLobbyClient() => state.prova()
     case PrivateLobbyCreated(lobbyCode) => ???
     case GameFound() =>
       state.clientRef.get ! PlayerReadyClient()

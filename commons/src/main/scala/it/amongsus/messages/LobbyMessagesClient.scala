@@ -43,4 +43,9 @@ object LobbyMessagesClient {
    *
    */
   case class LeaveLobbyClient()
+
+  /**
+   * Message sent by the server after a successful lobby connection
+   */
+  case class UserAddedToLobbyClient()
 }

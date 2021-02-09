@@ -41,11 +41,6 @@ object LobbyMessagesServer {
   case class LeaveLobbyServer(clientId: String)
 
   /**
-   * Message sent by the server after a successful lobby connection
-   */
-  case class UserAddedToLobby()
-
-  /**
    * Notify an error during the lobby phase
    *
    * @param error occurred
