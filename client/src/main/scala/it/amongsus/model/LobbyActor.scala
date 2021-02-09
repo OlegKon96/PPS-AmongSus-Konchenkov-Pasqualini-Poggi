@@ -5,7 +5,7 @@ import it.amongsus.messages.GameMessageClient.{LeaveGameClient, _}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.view.actor.UiActorMessages.{GameFound, Init}
+import it.amongsus.view.actor.UiActorMessages.{GameFoundUi, Init}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -47,7 +47,7 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
     case UserAddedToLobbyClient() => state.guiRef.get ! UserAddedToLobbyClient()
     case PrivateLobbyCreated(lobbyCode) => state.guiRef.get ! PrivateLobbyCreated(lobbyCode)
     case MatchFound(gameRoom) =>{
-      state.guiRef.get ! GameFound()
+      state.guiRef.get ! GameFoundUi()
       context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
     }
     case LobbyErrorOccurred(error) => error match {

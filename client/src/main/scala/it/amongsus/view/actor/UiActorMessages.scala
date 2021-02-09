@@ -41,26 +41,26 @@ object UiActorMessages {
   /**
    * Leave the lobby view event
    */
-  case class LeaveLobbyViewEvent()
+  case class LeaveLobbyUi()
 
   /**
    * Retry the connection to server view event
    */
-  case class RetryServerConnection()
+  case class RetryServerConnectionUi()
 
   /**
    * Notify User that was added to a Lobby
    */
-  case class PrivateLobbyCreated(lobbyCode: String)
+  case class PrivateLobbyCreatedUi(lobbyCode: String)
 
   /**
    * Notify User that there is a match to a Lobby
    */
-  case class GameFound()
+  case class GameFoundUi()
 
   /**
    * Notify User that there's an Error
    */
-  case class LobbyErrorOccurred()
+  case class LobbyErrorOccurredUi()
 
 }
