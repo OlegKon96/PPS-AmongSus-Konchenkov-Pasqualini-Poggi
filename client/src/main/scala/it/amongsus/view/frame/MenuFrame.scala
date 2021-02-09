@@ -5,7 +5,7 @@ import cats.effect.IO
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JTextFieldIO}
 import java.awt.{BorderLayout, GridLayout}
 
-import it.amongsus.view.actor.UiActorMessages.{InitFrame, PublicGameSubmitUi}
+import it.amongsus.view.actor.UiActorLobbyMessages.{InitFrame, PublicGameSubmitUi}
 import javax.swing.JFrame
 
 trait MenuFrame {

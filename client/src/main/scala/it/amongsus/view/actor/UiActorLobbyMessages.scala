@@ -2,7 +2,7 @@ package it.amongsus.view.actor
 
 import it.amongsus.view.frame.MenuFrame
 
-object UiActorMessages {
+object UiActorLobbyMessages {
 
   /**
    * Initialize Actor

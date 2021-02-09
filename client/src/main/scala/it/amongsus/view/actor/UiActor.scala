@@ -3,7 +3,7 @@ package it.amongsus.view.actor
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
-import it.amongsus.view.actor.UiActorMessages._
+import it.amongsus.view.actor.UiActorLobbyMessages._
 
 
 object UiActor {
