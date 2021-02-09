@@ -61,7 +61,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case InvalidPlayerActionUi() => ???
 
     case GameStateUpdatedUi() => ???
-      
+
     case _ => println("ERROR")
   }
 }

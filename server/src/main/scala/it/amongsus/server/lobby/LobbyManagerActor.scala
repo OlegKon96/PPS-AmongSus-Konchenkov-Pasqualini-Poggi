@@ -28,6 +28,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       context.watch(clientRef)
       clientRef ! Connected(clientId)
     }
+
     case JoinPublicLobbyServer(clientId, username, numberOfPlayers) => {
       log.info(s"client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
@@ -37,6 +38,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
         this.checkAndCreateGame(lobbyType)
       }
     }
+
     case CreatePrivateLobbyServer(clientId, username, numberOfPlayers) => {
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
@@ -44,6 +46,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
         ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId)
       }
     }
+
     case JoinPrivateLobbyServer(clientId, username, lobbyCode) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
@@ -56,6 +59,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
       }
+      
     case LeaveLobbyServer(userId) => {
       log.info(s"client $userId")
       this.lobbyManger.removePlayer(userId)
