@@ -30,20 +30,20 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case UserAddedToLobby() => state.prova()
     case PrivateLobbyCreated(lobbyCode) => ???
     case GameFound() =>
-      state.clientRef.get ! PlayerReady()
+      state.clientRef.get ! PlayerReadyClient()
       context become gameBehaviour(state)
     case LobbyErrorOccurred => ???
     case _ => println("ERROR")
   }
 
   private def gameBehaviour(state: UiActorInfo): Receive = {
-    case PlayerReady() => state.clientRef.get ! PlayerReady()
-    case LeaveGame() => state.clientRef.get ! LeaveGame()
-    case GameWon() => ???
-    case GameLost() => ???
-    case GameEndedBecousePlayerLeft() => ???
-    case InvalidPlayerAction() => ???
-    case GameStateUpdated() => ???
+    case PlayerReadyClient() => state.clientRef.get ! PlayerReadyClient()
+    case LeaveGameClient() => state.clientRef.get ! LeaveGameClient()
+    case GameWonClient() => ???
+    case GameLostClient() => ???
+    case PlayerLeftClient() => ???
+    case InvalidPlayerActionClient() => ???
+    case GameStateUpdatedClient() => ???
     case _ => println("ERROR")
   }
 }

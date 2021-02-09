@@ -50,7 +50,7 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
    * @param playersReady players ready for the game
    */
   private def initializing(playersReady: Seq[GamePlayer]): Receive = {
-    case Ready(id, ref) => {
+    case PlayerReadyServer(id, ref) => {
       this.withPlayer(id) { p =>
         log.info(s"player ${p.username} ready")
 
@@ -85,7 +85,7 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
           log.info(s"player ${player.username} terminated before the game starts")
           // become in behaviour in cui a ogni ready che mi arriva invio il messaggio di fine partita
           // dopo x secondi mi uccido
-          broadcastMessageToPlayers(GameEndedForPlayerLeft)
+          broadcastMessageToPlayers(PlayerLeftServer)
           context.become(gameEndedWithErrorBeforeStarts())
           context.system.scheduler.scheduleOnce(20.second) {
             log.info("Terminating game actor..")
@@ -104,12 +104,12 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
     case Terminated(ref) => this.players.find(_.actorRef == ref) match {
       case Some(player) =>
         log.info(s"Player ${player.username} left the game")
-        this.broadcastMessageToPlayers(GameEndedForPlayerLeft)
+        this.broadcastMessageToPlayers(PlayerLeftServer)
         self ! PoisonPill
     }
-    case LeaveGame(playerId) => withPlayer(playerId) { player =>
+    case LeaveGameServer(playerId) => withPlayer(playerId) { player =>
       log.info(s"Player ${player.username} left the game")
-      this.broadcastMessageToPlayers(GameEndedForPlayerLeft)
+      this.broadcastMessageToPlayers(PlayerLeftServer)
       self ! PoisonPill
     }
   }
@@ -118,7 +118,7 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
    * notify termination to next player if one of them terminates during the game loading
    */
   private def gameEndedWithErrorBeforeStarts(): Receive = {
-    case Ready(_, ref) => ref ! GameEndedForPlayerLeft
+    case PlayerReadyServer(_, ref) => ref ! PlayerLeftServer
   }
 
   /**

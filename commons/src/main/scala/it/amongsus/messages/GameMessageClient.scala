@@ -4,29 +4,29 @@ object GameMessageClient {
   /**
    * Tells the server that a player is ready to start a game
    */
-  case class PlayerReady()
+  case class PlayerReadyClient()
   /**
    * Tells the server that a player wants to leave the game
    */
-  case class LeaveGame()
+  case class LeaveGameClient()
   /**
    * Tells the gui actor that the game is won
    */
-  case class GameWon()
+  case class GameWonClient()
   /**
    * Tells the gui actor that the game is lost
    */
-  case class GameLost()
+  case class GameLostClient()
   /**
    * Tells the gui actor that the a player left
    */
-  case class GameEndedBecousePlayerLeft()
+  case class PlayerLeftClient()
   /**
    * Tells the gui actor that the his action is illegal
    */
-  case class InvalidPlayerAction()
+  case class InvalidPlayerActionClient()
   /**
    * Tells the server that a client updated his state
    */
-  case class GameStateUpdated()
+  case class GameStateUpdatedClient()
 }
