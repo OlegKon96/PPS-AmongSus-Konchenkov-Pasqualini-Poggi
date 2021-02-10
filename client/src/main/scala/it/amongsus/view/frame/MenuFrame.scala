@@ -3,8 +3,10 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.swingio._
+
 import java.awt.{BorderLayout, GridLayout}
 import it.amongsus.view.actor.UiActorLobbyMessages.{InitFrame, PublicGameSubmitUi}
+
 import javax.swing.JFrame
 
 trait MenuFrame {
@@ -64,5 +66,15 @@ object MenuFrame {
         _ <- frame.setVisible(true)
         _ <- IO(guiRef.get ! InitFrame(this))
       } yield ()
+
+    private def checkName(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
+      case "" => false
+      case _ => true
+    }
+
+    private def checkCode(codeField : JTextFieldIO) : Boolean =  codeField.text.unsafeRunSync() match {
+      case "" => false
+      case _ => true
+    }
   }
 }
