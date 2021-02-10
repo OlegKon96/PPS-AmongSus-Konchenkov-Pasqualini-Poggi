@@ -7,6 +7,8 @@ import javax.swing.JFrame
 
 trait LobbyFrame {
   def start(numPlayers: Int, code : String): IO[Unit]
+
+  def toMenu : IO[Unit]
 }
 
 object LobbyFrame {
@@ -37,8 +39,7 @@ object LobbyFrame {
         _ <- topPanel.setBorder(basicBorder)
         back <- JButtonIO("<")
         _ <- back.addActionListener(for {
-          _ <- lobbyFrame.dispose()
-          _ <- menuView.start()
+          _ <- toMenu
         } yield ())
         _ <- topPanel.add(back, BorderLayout.WEST)
         players <- JLabelIO("Partecipanti 9/10")
@@ -61,5 +62,10 @@ object LobbyFrame {
         _ <- lobbyFrame.setResizable(false)
 
       } yield ()
+
+    override def toMenu: IO[Unit] = for {
+      _ <- lobbyFrame.dispose()
+      _ <- menuView start()
+    } yield()
   }
 }
