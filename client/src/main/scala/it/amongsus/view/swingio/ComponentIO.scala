@@ -1,7 +1,6 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
-
 import java.awt.event.{ComponentAdapter, ComponentEvent, ComponentListener, MouseListener}
 import java.awt.{Component, Dimension, Font}
 

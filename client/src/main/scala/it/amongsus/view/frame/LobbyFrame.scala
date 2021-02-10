@@ -1,8 +1,7 @@
 package it.amongsus.view.frame
 
 import cats.effect.IO
-import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO}
-
+import it.amongsus.view.swingio._
 import java.awt.{BorderLayout, GridLayout}
 import javax.swing.JFrame
 
@@ -14,6 +13,11 @@ object LobbyFrame {
 
   def apply(menuView: MenuFrame): LobbyFrame = new LobbyFrameImpl(menuView)
 
+  /**
+   * The Frame that manages the Lobby
+   *
+   * @param menuView The Menu' View of the Game
+   */
   private class LobbyFrameImpl(menuView: MenuFrame) extends LobbyFrame {
 
     val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
@@ -58,5 +62,4 @@ object LobbyFrame {
 
       } yield ()
   }
-
 }

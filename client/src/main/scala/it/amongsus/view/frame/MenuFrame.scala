@@ -2,9 +2,8 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JTextFieldIO}
+import it.amongsus.view.swingio._
 import java.awt.{BorderLayout, GridLayout}
-
 import it.amongsus.view.actor.UiActorLobbyMessages.{InitFrame, PublicGameSubmitUi}
 import javax.swing.JFrame
 
@@ -16,9 +15,10 @@ object MenuFrame {
 
   def apply(guiRef: Option[ActorRef]): MenuFrame = new MenuFrameImpl(guiRef)
 
-  /** Frame to start the game.
+  /**
+   * The Frame that starts the game
    *
-   * @param guiRef ActorRef responsible for receiving and send all the messages about lobby management
+   * @param guiRef ActorRef that is responsible to receiving and send all the messages about lobby
    */
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
@@ -65,5 +65,4 @@ object MenuFrame {
         _ <- IO(guiRef.get ! InitFrame(this))
       } yield ()
   }
-
 }
