@@ -5,7 +5,7 @@ import cats.effect.IO
 import it.amongsus.view.swingio._
 
 import java.awt.{BorderLayout, GridLayout}
-import it.amongsus.view.actor.UiActorLobbyMessages.{InitFrame, PublicGameSubmitUi}
+import it.amongsus.view.actor.UiActorLobbyMessages.{CreatePrivateGameSubmitUi, InitFrame, PrivateGameSubmitUi, PublicGameSubmitUi}
 
 import javax.swing.JFrame
 
@@ -28,6 +28,7 @@ object MenuFrame {
     val lobbyView : LobbyFrame = LobbyFrame(this)
     val WIDTH: Int = 500
     val HEIGHT: Int = 250
+    var code : String = ""
 
     override def start(): IO[Unit] =
       for {
@@ -49,14 +50,31 @@ object MenuFrame {
         _ <- inputPanel.add(nameField)
         joinPublic <- JButtonIO("Partecipa ad una partita pubblica")
         _ <- joinPublic.addActionListener(for {
-          _ <- IO.pure(guiRef.get ! PublicGameSubmitUi("asd",2))
+          nameText <- nameField.text
+          _ <- IO(if(checkName(nameField)) {
+            guiRef.get ! PublicGameSubmitUi(nameText,3)
+          })
         } yield())
         _ <- inputPanel.add(joinPublic)
         startPrivate <- JButtonIO("Crea una partita privata")
+        _ <- startPrivate.addActionListener(for {
+          nameText <- nameField.text
+          _ <- IO(if(checkName(nameField)) {
+            guiRef.get ! CreatePrivateGameSubmitUi(nameText,3)
+          })
+        } yield())
         _ <- inputPanel.add(startPrivate)
         codeField <- JTextFieldIO()
         _ <- inputPanel.add(codeField)
         joinPrivate <- JButtonIO("Partecipa ad una partita privata")
+        _ <- joinPrivate.addActionListener(for {
+          codeText <- codeField.text
+          nameText <- nameField.text
+          _ <- IO(if(checkName(nameField) && checkCode(codeField)){
+            code = codeText
+            guiRef.get ! PrivateGameSubmitUi(nameText,code)
+          })
+        } yield())
         _ <- inputPanel.add(joinPrivate)
         _ <- menuPanel.add(inputPanel,BorderLayout.SOUTH)
         cp <- frame.contentPane()
