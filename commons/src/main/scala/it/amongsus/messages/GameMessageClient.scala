@@ -2,31 +2,31 @@ package it.amongsus.messages
 
 object GameMessageClient {
   /**
-   * Tells the controller that a player is ready to start a game
+   * Tells the controller actor that a player is ready to start a game
    */
   case class PlayerReadyClient()
   /**
-   * Tells the controller that a player wants to leave the game
+   * Tells the controller actor that a player wants to leave the game
    */
   case class LeaveGameClient()
   /**
-   * Tells the controller actor that the game is won
+   * Tells the controller actor that the game is ended with a win
    */
   case class GameWonClient()
   /**
-   * Tells the controller actor that the game is lost
+   * Tells the controller actor that the game is ended with a lose
    */
   case class GameLostClient()
   /**
-   * Tells the controller actor that the a player left
+   * Tells the controller actor that the player left the game
    */
   case class PlayerLeftClient()
   /**
-   * Tells the controller actor that the his action is illegal
+   * Tells the controller actor that player actions is illegal
    */
   case class InvalidPlayerActionClient()
   /**
-   * Tells the controller that a client updated his state
+   * Tells the controller actor that the Client updated his state
    */
   case class GameStateUpdatedClient()
 }
