@@ -12,6 +12,8 @@ trait LobbyFrame {
 
   def toMenu : IO[Unit]
 
+  def toGame : IO[Unit]
+
   def updatePlayers(numPlayers : Int) : Unit
 }
 
@@ -27,6 +29,7 @@ object LobbyFrame {
   private class LobbyFrameImpl(menuView: MenuFrame,guiRef: ActorRef) extends LobbyFrame {
 
     val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
+    val gameView : GameFrame = GameFrame(Option(guiRef),menuView)
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
     val players = JLabelIO()
@@ -75,5 +78,10 @@ object LobbyFrame {
     override def updatePlayers(numPlayers: Int): Unit = {
       players.unsafeRunSync().setText("Partecipanti" + numPlayers.toString + "/10")
     }
+
+    override def toGame: IO[Unit] = for {
+      _ <- lobbyFrame.dispose()
+      _ <- gameView start()
+    } yield()
   }
 }
