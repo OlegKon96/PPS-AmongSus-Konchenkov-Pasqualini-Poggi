@@ -3,9 +3,8 @@ package it.amongsus.view.actor
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
-import it.amongsus.view.actor.UiActorGameMessages.{GameLostUi, GameStateUpdatedUi, GameWonUi, InvalidPlayerActionUi, LeaveGameUi, PlayerLeftUi, PlayerReadyUi}
+import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-
 
 object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))

@@ -10,7 +10,7 @@ object UiActorLobbyMessages {
   case class Init()
 
   /**
-   * Initialize Actor
+   * Initialize Actor with a Menu' Frame
    */
   case class InitFrame(frame: MenuFrame)
 
@@ -23,7 +23,7 @@ object UiActorLobbyMessages {
   case class PublicGameSubmitUi(username: String, playersNumber: Int)
 
   /**
-   * Join on a Private Lobby view event
+   * Join in a Private Lobby view event
    *
    * @param username    the username of the player
    * @param privateCode the private code of the lobby
@@ -39,33 +39,32 @@ object UiActorLobbyMessages {
   case class CreatePrivateGameSubmitUi(username: String, playersNumber: Int)
 
   /**
-   * Leave the lobby view event
+   * Leave the Lobby view event
    */
   case class LeaveLobbyUi()
 
   /**
-   * Retry the connection to server view event
+   * Retry the connection to the Server view event
    */
   case class RetryServerConnectionUi()
 
   /**
-   * Notify User that was added to a Lobby
+   * Notify User that he was added to a Lobby
    */
   case class PrivateLobbyCreatedUi(lobbyCode: String)
 
   /**
-   * Message sent by the server after a successful lobby connection
+   * Server send a Message to the Ui that there was a successful lobby connection
    */
   case class UserAddedToLobbyUi(numPlayers: Int)
 
   /**
-   * Notify User that there is a match to a Lobby
+   * Notify the User that there's a match to a Lobby
    */
   case class GameFoundUi()
 
   /**
-   * Notify User that there's an Error
+   * Notify the User that there's an Error Occurred
    */
   case class LobbyErrorOccurredUi()
-
 }

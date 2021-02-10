@@ -2,31 +2,31 @@ package it.amongsus.view.actor
 
 object UiActorGameMessages {
   /**
-   * Tells the UI that a player is ready to start a game
+   * Tells to UI actor that the player is ready to start the game
    */
   case class PlayerReadyUi()
   /**
-   * Tells the UI that a player wants to leave the game
+   * Tells to UI actor that the player wants to leave the game
    */
   case class LeaveGameUi()
   /**
-   * Tells the UI actor that the game is won
+   * Tells to UI actor that the game is ended with a win
    */
   case class GameWonUi()
   /**
-   * Tells the UI actor that the game is lost
+   * Tells to UI actor that the game is ended with a lose
    */
   case class GameLostUi()
   /**
-   * Tells the UI actor that the a player left
+   * Tells to UI actor that the player has left the game
    */
   case class PlayerLeftUi()
   /**
-   * Tells the UI actor that the his action is illegal
+   * Tells the UI actor that his action is illegal in the game
    */
   case class InvalidPlayerActionUi()
   /**
-   * Tells the UI that a client updated his state
+   * Tells the UI actor that the Client has updated his state
    */
   case class GameStateUpdatedUi()
 }

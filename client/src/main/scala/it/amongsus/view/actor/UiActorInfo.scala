@@ -3,12 +3,26 @@ package it.amongsus.view.actor
 import akka.actor.ActorRef
 import it.amongsus.view.frame.MenuFrame
 
+/**
+ * Trait that contains all Callback functions of UiActor
+ */
 trait UiActorInfo {
-  /** Reference to server actor */
+  /**
+   * The reference of the server actor
+   * @return
+   */
   def clientRef: Option[ActorRef]
-  /** Reference to server actor */
+
+  /**
+   *
+   * @return
+   */
   def frame: Option[MenuFrame]
 
+  /**
+   *
+   * @param numPlayers the number of the players
+   */
   def prova(numPlayers: Int): Unit
 }
 
