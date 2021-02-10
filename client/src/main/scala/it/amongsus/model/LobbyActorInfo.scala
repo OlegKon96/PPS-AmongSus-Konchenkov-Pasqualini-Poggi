@@ -2,26 +2,43 @@ package it.amongsus.model
 
 import akka.actor.ActorRef
 import it.amongsus.ActorSystemManager
-
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
 /**
- * Callback functions for server responses
+ * Trait that contains all the callback functions of the messages to be sent to the server
  */
 trait LobbyActorInfo {
-
-  /** client id */
+  /**
+   * The ID of the Client
+   */
   def clientId: String
-
-  /** Reference to server actor */
+  /**
+   * The reference of the Game Server
+   *
+   * @return
+   */
   def serverRef: Option[ActorRef]
-
-  /** Reference to gui actor */
+  /**
+   * The reference of the Actor's GUI
+   *
+   * @return
+   */
   def guiRef: Option[ActorRef]
 
+  /**
+   *
+   * @param address
+   * @param port
+   * @return
+   */
   def generateServerActorPath(address: String, port: Int): String
 
+  /**
+   *
+   * @param actorPath
+   * @return
+   */
   def resolveRemoteActorPath(actorPath: String): Future[ActorRef]
 }
 
@@ -35,7 +52,6 @@ object LobbyActorInfo {
 case class LobbyActorInfoData(override val serverRef: Option[ActorRef],
                               override val guiRef: Option[ActorRef],
                               override val clientId: String) extends LobbyActorInfo {
-
 
   override def generateServerActorPath(address: String, port: Int): String =
     s"akka.tcp://AmongSusServer@$address:$port/user/lobby"

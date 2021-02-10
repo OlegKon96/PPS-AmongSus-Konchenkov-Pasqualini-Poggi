@@ -10,14 +10,12 @@ trait GameActorInfo {
    * The ID of the Client
    */
   def clientId: String
-
   /**
    * The reference of the Game Server
    *
    * @return
    */
   def gameServerRef: Option[ActorRef]
-
   /**
    * The reference of the Actor's GUI
    *
