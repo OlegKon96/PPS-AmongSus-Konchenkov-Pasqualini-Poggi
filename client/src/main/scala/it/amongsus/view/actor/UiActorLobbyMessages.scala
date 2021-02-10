@@ -1,6 +1,6 @@
 package it.amongsus.view.actor
 
-import it.amongsus.view.frame.MenuFrame
+import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
 
 object UiActorLobbyMessages {
 
@@ -12,7 +12,7 @@ object UiActorLobbyMessages {
   /**
    * Initialize Actor with a Menu' Frame
    */
-  case class InitFrame(frame: MenuFrame)
+  case class InitFrame(menuFrame: MenuFrame, lobbyFrame: LobbyFrame)
 
   /**
    * Create a Public Lobby view event

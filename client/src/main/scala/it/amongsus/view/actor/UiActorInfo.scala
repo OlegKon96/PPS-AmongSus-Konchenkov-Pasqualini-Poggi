@@ -1,7 +1,7 @@
 package it.amongsus.view.actor
 
 import akka.actor.ActorRef
-import it.amongsus.view.frame.MenuFrame
+import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
 
 /**
  * Trait that contains all Callback functions of UiActor
@@ -13,29 +13,33 @@ trait UiActorInfo {
    */
   def clientRef: Option[ActorRef]
 
-  /**
-   *
-   * @return
-   */
-  def frame: Option[MenuFrame]
+  def menuFrame: Option[MenuFrame]
 
-  /**
-   *
-   * @param numPlayers the number of the players
-   */
-  def prova(numPlayers: Int): Unit
+  def lobbyFrame: Option[LobbyFrame]
+
+  def toLobby(numPlayers: Int) : Unit
+
+  def toGame: Unit
+
+  def saveCode(lobbyCode : String) : Unit
+
+  def lobbyError() : Unit
 }
 
 object UiActorInfo {
-  def apply() : UiActorData = UiActorData(None, None)
-  def apply(clientRef: Option[ActorRef], frame: Option[MenuFrame]) : UiActorData = UiActorData(clientRef, frame)
+  def apply() : UiActorData = UiActorData(None, None, None)
+  def apply(clientRef: Option[ActorRef], menuFrame: Option[MenuFrame],lobbyFrame: Option[LobbyFrame]) : UiActorData = UiActorData(clientRef, menuFrame, lobbyFrame)
 }
 
 case class UiActorData(override val clientRef: Option[ActorRef],
-                       override val frame: Option[MenuFrame]) extends UiActorInfo{
+                       override val menuFrame: Option[MenuFrame],
+                       override val lobbyFrame: Option[LobbyFrame]) extends UiActorInfo{
 
-  override def prova(numPlayers: Int): Unit = {
-    println("numPlayers:" + numPlayers)
-    //frame.get.toLobby() unsafeRunSync
-  }
+  override def toLobby(numPlayers: Int): Unit = ???
+
+  override def toGame: Unit = ???
+
+  override def saveCode(lobbyCode: String): Unit = ???
+
+  override def lobbyError(): Unit = ???
 }

@@ -82,7 +82,7 @@ object MenuFrame {
         _ <- frame.setResizable(false)
         _ <- frame.setSize(WIDTH, HEIGHT)
         _ <- frame.setVisible(true)
-        _ <- IO(guiRef.get ! InitFrame(this))
+        _ <- IO(guiRef.get ! InitFrame(this,lobbyView))
       } yield ()
 
     private def checkName(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {

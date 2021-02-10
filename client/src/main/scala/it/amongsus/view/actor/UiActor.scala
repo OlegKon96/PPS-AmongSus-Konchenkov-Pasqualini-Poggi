@@ -15,10 +15,10 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
   override def receive: Receive = defaultBehaviour(serverResponsesListener)
 
   private def defaultBehaviour(state: UiActorInfo): Receive = {
-    case Init() => context become defaultBehaviour(UiActorData(Option(sender), None))
+    case Init() => context become defaultBehaviour(UiActorData(Option(sender), None, None))
 
-    case InitFrame(frame) =>
-      context become defaultBehaviour(UiActorData(state.clientRef, Option(frame)))
+    case InitFrame(menuFrame, lobbyFrame) =>
+      context become defaultBehaviour(UiActorData(state.clientRef, Option(menuFrame), Option(lobbyFrame)))
 
     case PublicGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! JoinPublicLobbyClient(username, playersNumber)
@@ -33,7 +33,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case RetryServerConnectionUi() => ???
 
-    case UserAddedToLobbyUi(numPlayers) => state.prova(numPlayers)
+    case UserAddedToLobbyUi(numPlayers) => ???
 
     case PrivateLobbyCreatedUi(lobbyCode) => ???
 
