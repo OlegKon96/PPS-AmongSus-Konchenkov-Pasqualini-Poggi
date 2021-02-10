@@ -27,16 +27,17 @@ trait LobbyActorInfo {
   def guiRef: Option[ActorRef]
 
   /**
+   * Generates the Server Actor Path
    *
-   * @param address
-   * @param port
+   * @param address address of the server to connect
+   * @param port port of the server to connect
    * @return
    */
   def generateServerActorPath(address: String, port: Int): String
 
   /**
    *
-   * @param actorPath
+   * @param actorPath the path of the actor
    * @return
    */
   def resolveRemoteActorPath(actorPath: String): Future[ActorRef]
