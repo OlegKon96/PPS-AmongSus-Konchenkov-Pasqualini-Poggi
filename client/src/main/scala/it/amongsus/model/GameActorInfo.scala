@@ -3,15 +3,24 @@ package it.amongsus.model
 import akka.actor.ActorRef
 
 /**
- * Callback functions for server responses
+ * Trait that contains all Callback functions for server responses
  */
 trait GameActorInfo {
-  /** client id */
+  /**
+   * The ID of the Client
+   */
   def clientId: String
 
+  /**
+   * The reference of the Game Server
+   * @return
+   */
   def gameServerRef: Option[ActorRef]
 
-  /** Reference to gui actor */
+  /**
+   * The reference of the Actor's GUI
+   * @return
+   */
   def guiRef: Option[ActorRef]
 }
 

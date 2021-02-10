@@ -6,6 +6,9 @@ import it.amongsus.messages.LobbyMessagesClient.ConnectClient
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
 import it.amongsus.view.frame.MenuFrame
 
+/**
+ * Class of the Controller of the Client
+ */
 class MainControllerImpl() extends MainController {
 
   private lazy val guiRef =
@@ -21,6 +24,4 @@ class MainControllerImpl() extends MainController {
 
   private def connect(): Unit =
     this.lobbyActorRef.tell(ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT), lobbyActorRef)
-
-
 }
