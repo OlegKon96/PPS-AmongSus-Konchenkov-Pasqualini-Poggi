@@ -3,19 +3,36 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.swingio._
-
 import java.awt.{BorderLayout, GridLayout}
-import it.amongsus.view.actor.UiActorLobbyMessages.{CreatePrivateGameSubmitUi, InitFrame, PrivateGameSubmitUi, PublicGameSubmitUi}
-
+import it.amongsus.view.actor.UiActorLobbyMessages._
 import javax.swing.JFrame
 
+/**
+ *
+ */
 trait MenuFrame {
+  /**
+   *
+   * @return
+   */
   def start(): IO[Unit]
 
+  /**
+   *
+   * @param numPlayers the number of the players
+   * @return
+   */
   def toLobby(numPlayers : Int): IO[Unit]
 
+  /**
+   *
+   * @param lobbyCode the code of the lobby
+   */
   def saveCode(lobbyCode : String) : Unit
 
+  /**
+   *
+   */
   def lobbyError() : Unit
 }
 

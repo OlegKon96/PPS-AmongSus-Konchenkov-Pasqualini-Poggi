@@ -12,8 +12,8 @@ import javax.swing.JFrame
 trait LobbyFrame {
   /**
    *
-   * @param numPlayers
-   * @param code
+   * @param numPlayers the number of the players
+   * @param code the code of the lobby
    * @return
    */
   def start(numPlayers: Int, code : String): IO[Unit]
@@ -31,8 +31,8 @@ trait LobbyFrame {
   def toGame : IO[Unit]
 
   /**
-   * 
-   * @param numPlayers
+   *
+   * @param numPlayers the number of the players
    */
   def updatePlayers(numPlayers : Int) : Unit
 }
@@ -52,7 +52,7 @@ object LobbyFrame {
     val gameView : GameFrame = GameFrame(Option(guiRef),menuView)
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
-    val players = JLabelIO()
+    val players: IO[JLabelIO] = JLabelIO()
 
     def start(numPlayers: Int, code : String): IO[Unit] =
       for {
