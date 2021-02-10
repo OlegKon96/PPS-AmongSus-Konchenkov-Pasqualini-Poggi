@@ -1,7 +1,6 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
-
 import java.awt.{Component, Container, Frame}
 import javax.swing.JFrame
 
@@ -24,12 +23,16 @@ class JFrameIO(override val component: JFrame) extends ContainerIO(component) {
   def setVisibleInvokingAndWaiting(b: Boolean): IO[Unit] = invokeAndWaitIO(component.setVisible(b))
   def contentPaneInvokingAndWaiting(): IO[Unit] = invokeAndWaitIO(new ContainerIO (component.getContentPane))
   def setSizeInvokingAndWaiting(width: Int, height: Int): IO[Unit] = invokeAndWaitIO(component.setSize(width, height))
-  def setLocationRelativeToInvokingAndWaiting(c:Component): IO[Unit] = invokeAndWaitIO(component.setLocationRelativeTo(c))
-  def setDefaultCloseOperationSetInvokingAndWaiting(operation:Int): IO[Unit] =invokeAndWaitIO(component.setDefaultCloseOperation(operation))
+  def setLocationRelativeToInvokingAndWaiting(c:Component): IO[Unit] =
+    invokeAndWaitIO(component.setLocationRelativeTo(c))
+  def setDefaultCloseOperationSetInvokingAndWaiting(operation:Int): IO[Unit] =
+    invokeAndWaitIO(component.setDefaultCloseOperation(operation))
   def setTitleInvokingAndWaiting(title: String): IO[Unit] =invokeAndWaitIO(component.setTitle(title))
 }
 
-/** Factory for JFrameIO instances*/
+/**
+ * Factory for JFrameIO instances
+ */
 object JFrameIO{
   def apply(): IO[JFrameIO] = IO { new JFrameIO(new JFrame) }
 }

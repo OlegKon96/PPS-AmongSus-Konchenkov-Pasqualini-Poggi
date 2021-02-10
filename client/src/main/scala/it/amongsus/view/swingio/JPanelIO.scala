@@ -1,7 +1,6 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
-
 import javax.swing.JPanel
 import javax.swing.border.Border
 import javax.swing.plaf.PanelUI
@@ -12,14 +11,15 @@ import javax.swing.plaf.PanelUI
  * @param component the jPanel that this class wraps.
  */
 class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
-  def setUI(ui:PanelUI): IO[Unit] = IO {	component.setUI(ui)}
+  def setUI(ui:PanelUI): IO[Unit] = IO {component.setUI(ui)}
   def UI(): IO[PanelUI] = IO {component.getUI}
   def setBorder(border : Border) : IO[Unit] = IO {component.setBorder(border)}
-
   def setUIInvokingAndWaiting(ui:PanelUI): IO[Unit] = invokeAndWaitIO(component.setUI(ui))
 }
 
-/** Factory for JPanelIO instances*/
+/**
+ * Factory for JPanelIO instances
+ */
 object JPanelIO{
   def apply(): IO[JPanelIO] = IO { new JPanelIO(new JPanel) }
 }

@@ -30,7 +30,9 @@ class JButtonIO(override val component: JButton) extends ComponentIO(component){
   def setEnabledInvokingAndWaiting(b: Boolean): IO[Unit] = invokeAndWaitIO(component.setEnabled(b))
 }
 
-/** Factory for JButtonIO instances*/
+/**
+ * Factory for JButtonIO instances
+ */
 object JButtonIO {
   def apply(text:String): IO[JButtonIO] = IO { new JButtonIO(new JButton(text)) }
 }
