@@ -1,7 +1,9 @@
 package it.amongsus.view.frame
 
+import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.swingio._
+
 import java.awt.{BorderLayout, GridLayout}
 import javax.swing.JFrame
 
@@ -13,14 +15,14 @@ trait LobbyFrame {
 
 object LobbyFrame {
 
-  def apply(menuView: MenuFrame): LobbyFrame = new LobbyFrameImpl(menuView)
+  def apply(menuView: MenuFrame, guiRef : ActorRef): LobbyFrame = new LobbyFrameImpl(menuView,guiRef)
 
   /**
    * The Frame that manages the Lobby
    *
    * @param menuView The Menu' View of the Game
    */
-  private class LobbyFrameImpl(menuView: MenuFrame) extends LobbyFrame {
+  private class LobbyFrameImpl(menuView: MenuFrame,guiRef: ActorRef) extends LobbyFrame {
 
     val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
     val WIDTH: Int = 400

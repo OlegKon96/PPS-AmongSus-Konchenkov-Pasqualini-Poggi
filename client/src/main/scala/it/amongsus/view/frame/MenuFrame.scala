@@ -31,7 +31,7 @@ object MenuFrame {
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
     val frame = new JFrameIO(new JFrame("Among Sus"))
-    val lobbyView : LobbyFrame = LobbyFrame(this)
+    val lobbyView : LobbyFrame = LobbyFrame(this,guiRef.get)
     val WIDTH: Int = 500
     val HEIGHT: Int = 250
     var code : String = ""
