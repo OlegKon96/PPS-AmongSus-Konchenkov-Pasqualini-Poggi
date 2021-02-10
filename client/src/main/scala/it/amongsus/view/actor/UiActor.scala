@@ -10,6 +10,11 @@ object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))
 }
 
+/**
+ * Actor that manages the messages from View Actor
+ *
+ * @param serverResponsesListener the server response listener
+ */
 class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor with ActorLogging {
 
   override def receive: Receive = defaultBehaviour(serverResponsesListener)
