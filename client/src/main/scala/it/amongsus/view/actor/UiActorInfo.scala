@@ -41,7 +41,7 @@ case class UiActorData(override val clientRef: Option[ActorRef],
   }
 
   override def toGame(): Unit = {
-    lobbyFrame.get.toGame unsafeRunSync
+    lobbyFrame.get.toGame unsafeRunSync()
   }
 
   override def saveCode(lobbyCode: String): Unit = {
