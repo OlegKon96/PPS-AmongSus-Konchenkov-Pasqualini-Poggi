@@ -11,7 +11,6 @@ trait UiGameActorInfo {
 
   def gameFrame: Option[GameFrame]
 
-
 }
 
 object UiGameActorInfo {
