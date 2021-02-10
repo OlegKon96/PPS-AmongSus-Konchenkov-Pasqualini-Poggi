@@ -7,7 +7,7 @@ import it.amongsus.view.actor.{UiActor, UiActorInfo}
 import it.amongsus.view.frame.MenuFrame
 
 /**
- * Class of the Controller of the Client
+ * Class of the Controller that manages the Client
  */
 class MainControllerImpl() extends MainController {
 

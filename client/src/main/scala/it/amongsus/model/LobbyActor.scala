@@ -7,7 +7,6 @@ import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -17,9 +16,9 @@ object LobbyActor {
 }
 
 /**
- * Actor responsible for receiving server lobby messages
+ * Actor responsible to receiving the message of the lobby server
  *
- * @param state function user to notify back about the received event
+ * @param state State if the function that notify the user about the received event
  */
 class LobbyActor(private val state: LobbyActorInfo) extends Actor
   with ActorLogging {
