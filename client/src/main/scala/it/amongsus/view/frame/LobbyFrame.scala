@@ -11,6 +11,8 @@ trait LobbyFrame {
   def start(numPlayers: Int, code : String): IO[Unit]
 
   def toMenu : IO[Unit]
+
+  def updatePlayers(numPlayers : Int) : Unit
 }
 
 object LobbyFrame {
@@ -27,9 +29,11 @@ object LobbyFrame {
     val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
+    val players = JLabelIO()
 
     def start(numPlayers: Int, code : String): IO[Unit] =
       for {
+        pLabel <- players
         lobbyPanel <- JPanelIO()
         _ <- lobbyPanel.setLayout(new BorderLayout())
         topPanel <- JPanelIO()
@@ -44,16 +48,14 @@ object LobbyFrame {
           _ <- toMenu
         } yield ())
         _ <- topPanel.add(back, BorderLayout.WEST)
-        players <- JLabelIO("Partecipanti 9/10")
-        _ <- controlPanel.add(players, BorderLayout.EAST)
+        _ <- pLabel.setText("Partecipanti" + numPlayers.toString + "/10")
+        _ <- controlPanel.add(pLabel, BorderLayout.EAST)
         mainPanel <- JPanelIO()
-        _ <- mainPanel.setLayout(new GridLayout(2, 1))
+        _ <- mainPanel.setLayout(new BorderLayout())
         mainBorder <- BorderFactoryIO.emptyBorderCreated(20, 160, 50, 20)
         _ <- mainPanel.setBorder(mainBorder)
-        codeLabel <- JLabelIO("Your code is:")
-        code <- JLabelIO("1543512")
-        _ <- mainPanel.add(codeLabel)
-        _ <- mainPanel.add(code)
+        codeLabel <- JLabelIO(if (code == "") "Attendi altri giocatori" else "Il tuo codice è : " + code)
+        _ <- mainPanel.add(codeLabel, BorderLayout.CENTER)
         _ <- lobbyPanel.add(topPanel, BorderLayout.NORTH)
         _ <- lobbyPanel.add(mainPanel, BorderLayout.CENTER)
         _ <- lobbyPanel.add(controlPanel, BorderLayout.SOUTH)
@@ -69,5 +71,9 @@ object LobbyFrame {
       _ <- lobbyFrame.dispose()
       _ <- menuView start()
     } yield()
+
+    override def updatePlayers(numPlayers: Int): Unit = {
+      players.unsafeRunSync().setText("Partecipanti" + numPlayers.toString + "/10")
+    }
   }
 }
