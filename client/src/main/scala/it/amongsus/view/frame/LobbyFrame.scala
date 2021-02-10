@@ -6,7 +6,7 @@ import java.awt.{BorderLayout, GridLayout}
 import javax.swing.JFrame
 
 trait LobbyFrame {
-  def start(): IO[Unit]
+  def start(numPlayers: Int, code : String): IO[Unit]
 }
 
 object LobbyFrame {
@@ -24,7 +24,7 @@ object LobbyFrame {
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
 
-    def start(): IO[Unit] =
+    def start(numPlayers: Int, code : String): IO[Unit] =
       for {
         lobbyPanel <- JPanelIO()
         _ <- lobbyPanel.setLayout(new BorderLayout())

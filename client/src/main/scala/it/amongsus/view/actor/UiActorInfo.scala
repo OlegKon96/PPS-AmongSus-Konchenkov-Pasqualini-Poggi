@@ -19,7 +19,7 @@ trait UiActorInfo {
 
   def toLobby(numPlayers: Int) : Unit
 
-  def toGame: Unit
+  def toGame(): Unit
 
   def saveCode(lobbyCode : String) : Unit
 
@@ -35,9 +35,11 @@ case class UiActorData(override val clientRef: Option[ActorRef],
                        override val menuFrame: Option[MenuFrame],
                        override val lobbyFrame: Option[LobbyFrame]) extends UiActorInfo{
 
-  override def toLobby(numPlayers: Int): Unit = ???
+  override def toLobby(numPlayers: Int): Unit = {
 
-  override def toGame: Unit = ???
+  }
+
+  override def toGame(): Unit = ???
 
   override def saveCode(lobbyCode: String): Unit = ???
 

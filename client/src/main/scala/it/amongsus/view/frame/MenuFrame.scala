@@ -11,6 +11,12 @@ import javax.swing.JFrame
 
 trait MenuFrame {
   def start(): IO[Unit]
+
+  def toLobby(numPlayers : Int): IO[Unit]
+
+  def saveCode(lobbyCode : String) : Unit
+
+  def lobbyError() : Unit
 }
 
 object MenuFrame {
@@ -93,6 +99,19 @@ object MenuFrame {
     private def checkCode(codeField : JTextFieldIO) : Boolean =  codeField.text.unsafeRunSync() match {
       case "" => false
       case _ => true
+    }
+
+    override def toLobby(numPlayers: Int): IO[Unit] = for {
+      _ <- frame.dispose()
+      _ <- lobbyView start(numPlayers,code)
+    } yield()
+
+    override def saveCode(lobbyCode: String): Unit = {
+      code = lobbyCode
+    }
+
+    override def lobbyError(): Unit = {
+      code = ""
     }
   }
 }
