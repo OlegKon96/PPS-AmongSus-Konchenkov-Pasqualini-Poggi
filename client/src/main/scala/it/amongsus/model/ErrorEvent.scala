@@ -5,18 +5,17 @@ sealed class ErrorEvent
 object ErrorEvent {
 
   /**
-   * A Generic Error Occurred
-   * @param reason the string that describe the error
+   * Generic Error Message that was Occurred
+   *
+   * @param reason the string that describes the error
    */
   case class GenericError(reason: String) extends ErrorEvent
-
   /**
-   * Message of Error that Server Not Found
+   * Error Message that the Server is not Found
    */
   case object ServerNotFound extends ErrorEvent
-
   /**
-   * Message that the Lobby Code inserted is not valid
+   * Error Message that the Lobby Code inserted is not valid
    */
   case object LobbyCodeNotValid extends ErrorEvent
 }
