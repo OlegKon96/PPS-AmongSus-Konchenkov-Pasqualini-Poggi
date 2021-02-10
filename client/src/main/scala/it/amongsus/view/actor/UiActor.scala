@@ -39,6 +39,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case GameFoundUi() =>
       state.clientRef.get ! PlayerReadyClient()
+      state.toGame()
       context become gameBehaviour(state)
 
     case LobbyErrorOccurredUi => state.lobbyError()

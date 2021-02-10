@@ -37,9 +37,12 @@ case class UiActorData(override val clientRef: Option[ActorRef],
 
   override def toLobby(numPlayers: Int): Unit = {
     menuFrame.get.toLobby(numPlayers) unsafeRunSync()
+    lobbyFrame.get.updatePlayers(numPlayers)
   }
 
-  override def toGame(): Unit = ???
+  override def toGame(): Unit = {
+    lobbyFrame.get.toGame unsafeRunSync
+  }
 
   override def saveCode(lobbyCode: String): Unit = {
     menuFrame.get.saveCode(lobbyCode)
