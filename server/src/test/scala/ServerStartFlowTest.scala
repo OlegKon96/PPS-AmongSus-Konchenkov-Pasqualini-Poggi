@@ -34,6 +34,7 @@ class ServerStartFlowTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
       firstClient.expectMsgType[UserAddedToLobbyClient]
       secondClient.expectMsgType[UserAddedToLobbyClient]
+      firstClient.expectMsgType[UserAddedToLobbyClient]
       firstClient.expectMsgType[MatchFound]
       secondClient.expectMsgType[MatchFound]
     }
