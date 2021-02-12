@@ -3,17 +3,14 @@ package it.amongsus.view.actor
 import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
 
 object UiActorLobbyMessages {
-
   /**
    * Initialize Actor
    */
   case class Init()
-
   /**
    * Initialize Actor with a Menu' Frame
    */
   case class InitFrame(menuFrame: MenuFrame, lobbyFrame: LobbyFrame)
-
   /**
    * Create a Public Lobby view event
    *
@@ -21,7 +18,6 @@ object UiActorLobbyMessages {
    * @param playersNumber the number of players in the public lobby
    */
   case class PublicGameSubmitUi(username: String, playersNumber: Int)
-
   /**
    * Join in a Private Lobby view event
    *
@@ -29,7 +25,6 @@ object UiActorLobbyMessages {
    * @param privateCode the private code of the lobby
    */
   case class PrivateGameSubmitUi(username: String, privateCode: String)
-
   /**
    * Create a Private Lobby view event
    *
@@ -37,32 +32,26 @@ object UiActorLobbyMessages {
    * @param playersNumber the number of players in the private lobby
    */
   case class CreatePrivateGameSubmitUi(username: String, playersNumber: Int)
-
   /**
    * Leave the Lobby view event
    */
   case class LeaveLobbyUi()
-
   /**
    * Retry the connection to the Server view event
    */
   case class RetryServerConnectionUi()
-
   /**
    * Notify User that he was added to a Lobby
    */
   case class PrivateLobbyCreatedUi(lobbyCode: String)
-
   /**
    * Server send a Message to the Ui that there was a successful lobby connection
    */
   case class UserAddedToLobbyUi(numPlayers: Int)
-
   /**
    * Notify the User that there's a match to a Lobby
    */
   case class GameFoundUi()
-
   /**
    * Notify the User that there's an Error Occurred
    */

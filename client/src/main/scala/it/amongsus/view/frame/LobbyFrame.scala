@@ -3,17 +3,37 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.swingio._
-
-import java.awt.{BorderLayout, GridLayout}
+import java.awt.BorderLayout
 import javax.swing.JFrame
 
+/**
+ *
+ */
 trait LobbyFrame {
+  /**
+   *
+   * @param numPlayers the number of the players
+   * @param code the code of the lobby
+   * @return
+   */
   def start(numPlayers: Int, code : String): IO[Unit]
 
+  /**
+   *
+   * @return
+   */
   def toMenu : IO[Unit]
 
+  /**
+   *
+   * @return
+   */
   def toGame : IO[Unit]
 
+  /**
+   *
+   * @param numPlayers the number of the players
+   */
   def updatePlayers(numPlayers : Int) : Unit
 }
 
@@ -32,7 +52,7 @@ object LobbyFrame {
     val gameView : GameFrame = GameFrame(Option(guiRef),menuView)
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
-    val players = JLabelIO()
+    val players: IO[JLabelIO] = JLabelIO()
 
     def start(numPlayers: Int, code : String): IO[Unit] =
       for {

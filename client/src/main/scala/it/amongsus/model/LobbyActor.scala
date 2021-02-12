@@ -18,15 +18,14 @@ object LobbyActor {
 /**
  * Actor responsible to receiving the message of the lobby server
  *
- * @param state State if the function that notify the user about the received event
+ * @param state state of the lobbyActorInfo that represents the function that notify the user about the received event
  */
-class LobbyActor(private val state: LobbyActorInfo) extends Actor
-  with ActorLogging {
+class LobbyActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
 
   override def receive: Receive = defaultBehaviour(state)
 
   private def defaultBehaviour(state: LobbyActorInfo): Receive = {
-    case ConnectClient(address, port) => {
+    case ConnectClient(address, port) =>
       state.guiRef.get ! Init()
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
@@ -34,7 +33,6 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
         case Failure(t) =>
           println(LobbyJoinErrorEvent(ErrorEvent.ServerNotFound))
       }
-    }
     case Connected(id) => context become defaultBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
 
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
@@ -53,10 +51,9 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor
 
     case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
 
-    case MatchFound(gameRoom) =>{
+    case MatchFound(gameRoom) =>
       state.guiRef.get ! GameFoundUi()
       context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
-    }
 
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???

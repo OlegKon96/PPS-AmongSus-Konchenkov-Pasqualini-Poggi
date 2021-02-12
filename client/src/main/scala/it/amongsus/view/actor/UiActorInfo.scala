@@ -9,26 +9,54 @@ import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
 trait UiActorInfo {
   /**
    * The reference of the server actor
+   *
    * @return
    */
   def clientRef: Option[ActorRef]
 
+  /**
+   *
+   *
+   * @return
+   */
   def menuFrame: Option[MenuFrame]
 
+  /**
+   *
+   *
+   * @return
+   */
   def lobbyFrame: Option[LobbyFrame]
 
+  /**
+   * Open the lobby panel
+   *
+   * @param numPlayers the numbers of the players
+   */
   def toLobby(numPlayers: Int) : Unit
 
+  /**
+   * Open the game panel
+   */
   def toGame(): Unit
 
+  /**
+   * Saves the code of the lobby
+   *
+   * @param lobbyCode the code of the lobby
+   */
   def saveCode(lobbyCode : String) : Unit
 
+  /**
+   * Notify an error occurred
+   */
   def lobbyError() : Unit
 }
 
 object UiActorInfo {
   def apply() : UiActorData = UiActorData(None, None, None)
-  def apply(clientRef: Option[ActorRef], menuFrame: Option[MenuFrame],lobbyFrame: Option[LobbyFrame]) : UiActorData = UiActorData(clientRef, menuFrame, lobbyFrame)
+  def apply(clientRef: Option[ActorRef], menuFrame: Option[MenuFrame],lobbyFrame: Option[LobbyFrame]) : UiActorData =
+    UiActorData(clientRef, menuFrame, lobbyFrame)
 }
 
 case class UiActorData(override val clientRef: Option[ActorRef],

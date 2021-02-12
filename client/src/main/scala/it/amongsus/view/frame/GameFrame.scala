@@ -6,15 +6,21 @@ import it.amongsus.view.swingio.JFrameIO
 
 import javax.swing.JFrame
 
+/**
+ *
+ */
 trait GameFrame {
+  /**
+   *
+   * @return
+   */
   def start(): IO[Unit]
 
   def toMenu: IO[Unit]
 }
 
 object GameFrame {
-
-  def apply(guiRef: Option[ActorRef],menuFrame: MenuFrame): GameFrame = new GameFrameImpl(guiRef,menuFrame)
+  def apply(guiRef: Option[ActorRef],menuFrame: MenuFrame): GameFrame = new GameFrameImpl(guiRef, menuFrame)
 
   private class GameFrameImpl(guiRef: Option[ActorRef],menuFrame: MenuFrame) extends GameFrame {
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
@@ -25,10 +31,9 @@ object GameFrame {
       _ <- gameFrame.setVisible(true)
     } yield ()
 
-    override def toMenu: IO[Unit] = for{
+    override def toMenu: IO[Unit] = for {
       _ <- gameFrame.dispose()
       _ <- menuFrame start
-    } yield()
+    } yield ()
   }
-
 }
