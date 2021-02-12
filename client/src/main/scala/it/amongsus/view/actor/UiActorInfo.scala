@@ -71,7 +71,7 @@ case class UiActorData(override val clientRef: Option[ActorRef],
                        override val lobbyFrame: Option[LobbyFrame]) extends UiActorInfo{
 
   override def toLobby(numPlayers: Int): Unit = menuFrame.get.toLobby(numPlayers) unsafeRunSync()
-  
+
   override def updateLobby(numPlayers: Int): Unit = lobbyFrame.get.updatePlayers(numPlayers) unsafeRunSync()
 
   override def toGame(): Unit = {
