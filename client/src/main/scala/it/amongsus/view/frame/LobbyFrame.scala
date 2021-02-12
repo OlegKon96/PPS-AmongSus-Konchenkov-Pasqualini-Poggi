@@ -2,7 +2,9 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
+import it.amongsus.view.actor.UiActorLobbyMessages.LeaveLobbyUi
 import it.amongsus.view.swingio._
+
 import java.awt.BorderLayout
 import javax.swing.JFrame
 
@@ -67,7 +69,8 @@ object LobbyFrame {
         _ <- topPanel.setBorder(basicBorder)
         back <- JButtonIO("<")
         _ <- back.addActionListener(for {
-          _ <- players.setText("ASDASDASD")
+          _ <- IO(guiRef ! LeaveLobbyUi)
+          _ <- toMenu
         } yield ())
         _ <- topPanel.add(back, BorderLayout.WEST)
         _ <- IO(println("frame1:" + numPlayers))
