@@ -1,7 +1,7 @@
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.messages.LobbyMessagesClient.{Connected, UserAddedToLobbyClient}
+import it.amongsus.messages.LobbyMessagesClient.{Connected, UpdateLobbyClient, UserAddedToLobbyClient}
 import it.amongsus.messages.LobbyMessagesServer.{ConnectServer, JoinPublicLobbyServer, MatchFound}
 import it.amongsus.server.lobby.LobbyManagerActor
 import org.scalatest.BeforeAndAfterAll
@@ -33,8 +33,10 @@ class ServerStartFlowTest extends TestKit(ActorSystem("test", ConfigFactory.load
       actorOfLobby ! JoinPublicLobbyServer(clientTwo, "me2", NUM_PLAYERS)
 
       firstClient.expectMsgType[UserAddedToLobbyClient]
+      firstClient.expectMsgType[UpdateLobbyClient]
       secondClient.expectMsgType[UserAddedToLobbyClient]
-      firstClient.expectMsgType[UserAddedToLobbyClient]
+      firstClient.expectMsgType[UpdateLobbyClient]
+      secondClient.expectMsgType[UpdateLobbyClient]
       firstClient.expectMsgType[MatchFound]
       secondClient.expectMsgType[MatchFound]
     }
