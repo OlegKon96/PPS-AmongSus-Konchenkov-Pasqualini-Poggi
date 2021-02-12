@@ -48,9 +48,14 @@ object LobbyMessagesClient {
   /**
    * Message sent by the server after a successful lobby connection
    *
-   * @param numPlayers the number of the players required to start the match
+   * @param numPlayers the number of the players currently in the lobby
    */
   case class UserAddedToLobbyClient(numPlayers: Int)
 
-  case class NewUserAddedToLobbyClient(numPlayers: Int)
+  /**
+   * Message sent by the server tu update current number of players in a lobby
+   *
+   * @param numPlayers the number of the players currently in the lobby
+   */
+  case class UpdateLobbyClient(numPlayers: Int)
 }

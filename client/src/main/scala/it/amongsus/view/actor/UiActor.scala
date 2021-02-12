@@ -40,7 +40,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case UserAddedToLobbyUi(numPlayers) => state.updateLobby(numPlayers)
 
-    case NewUserAddedToLobbyClient(numPlayers) => state.toLobby(numPlayers)
+    case UpdateLobbyClient(numPlayers) => state.toLobby(numPlayers)
 
     case PrivateLobbyCreatedUi(lobbyCode) => state.saveCode(lobbyCode)
 
