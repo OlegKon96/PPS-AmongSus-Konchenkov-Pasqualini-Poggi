@@ -34,6 +34,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
         this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        ref ! NewUserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
         this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
           player.actorRef ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
         })

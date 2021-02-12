@@ -34,7 +34,7 @@ trait LobbyFrame {
    *
    * @param numPlayers the number of the players
    */
-  def updatePlayers(numPlayers : Int) : Unit
+  def updatePlayers(numPlayers : Int) : IO[Unit]
 }
 
 object LobbyFrame {
@@ -52,11 +52,10 @@ object LobbyFrame {
     val gameView : GameFrame = GameFrame(Option(guiRef),menuView)
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
-    val players: IO[JLabelIO] = JLabelIO()
+    val players = JLabelIO().unsafeRunSync()
 
     def start(numPlayers: Int, code : String): IO[Unit] =
       for {
-        pLabel <- players
         lobbyPanel <- JPanelIO()
         _ <- lobbyPanel.setLayout(new BorderLayout())
         topPanel <- JPanelIO()
@@ -68,11 +67,13 @@ object LobbyFrame {
         _ <- topPanel.setBorder(basicBorder)
         back <- JButtonIO("<")
         _ <- back.addActionListener(for {
-          _ <- toMenu
+          _ <- players.setText("ASDASDASD")
         } yield ())
         _ <- topPanel.add(back, BorderLayout.WEST)
-        _ <- pLabel.setText("Partecipanti" + numPlayers.toString + "/10")
-        _ <- controlPanel.add(pLabel, BorderLayout.EAST)
+        _ <- IO(println("frame1:" + numPlayers))
+        _ <- players.setText("Partecipanti" + numPlayers.toString + "/10")
+        _ <- IO(println("frame2:" + numPlayers))
+        _ <- controlPanel.add(players, BorderLayout.EAST)
         mainPanel <- JPanelIO()
         _ <- mainPanel.setLayout(new BorderLayout())
         mainBorder <- BorderFactoryIO.emptyBorderCreated(20, 160, 50, 20)
@@ -95,9 +96,10 @@ object LobbyFrame {
       _ <- menuView start()
     } yield()
 
-    override def updatePlayers(numPlayers: Int): Unit = {
-      players.unsafeRunSync().setText("Partecipanti" + numPlayers.toString + "/10")
-    }
+    override def updatePlayers(numPlayers: Int): IO[Unit] = for{
+      _ <- IO(println("frame3:" + numPlayers))
+      _ <- players.setText("Partecipanti" + numPlayers.toString + "/10")
+    }yield()
 
     override def toGame: IO[Unit] = for {
       _ <- lobbyFrame.dispose()

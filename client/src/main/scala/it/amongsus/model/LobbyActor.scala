@@ -49,6 +49,9 @@ class LobbyActor(private val state: LobbyActorInfo) extends Actor  with ActorLog
 
     case UserAddedToLobbyClient(numPlayers) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers)
 
+    case NewUserAddedToLobbyClient(numPlayers) => println("prova ")
+      state.guiRef.get ! NewUserAddedToLobbyClient(numPlayers)
+
     case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
 
     case MatchFound(gameRoom) =>

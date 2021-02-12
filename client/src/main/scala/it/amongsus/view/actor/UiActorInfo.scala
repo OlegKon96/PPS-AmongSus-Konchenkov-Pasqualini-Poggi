@@ -36,6 +36,13 @@ trait UiActorInfo {
   def toLobby(numPlayers: Int) : Unit
 
   /**
+   * Open the lobby panel
+   *
+   * @param numPlayers the numbers of the players
+   */
+  def updateLobby(numPlayers: Int) : Unit
+
+  /**
    * Open the game panel
    */
   def toGame(): Unit
@@ -63,10 +70,9 @@ case class UiActorData(override val clientRef: Option[ActorRef],
                        override val menuFrame: Option[MenuFrame],
                        override val lobbyFrame: Option[LobbyFrame]) extends UiActorInfo{
 
-  override def toLobby(numPlayers: Int): Unit = {
-    menuFrame.get.toLobby(numPlayers) unsafeRunSync()
-    lobbyFrame.get.updatePlayers(numPlayers)
-  }
+  override def toLobby(numPlayers: Int): Unit = menuFrame.get.toLobby(numPlayers) unsafeRunSync()
+  
+  override def updateLobby(numPlayers: Int): Unit = lobbyFrame.get.updatePlayers(numPlayers) unsafeRunSync()
 
   override def toGame(): Unit = {
     lobbyFrame.get.toGame unsafeRunSync()

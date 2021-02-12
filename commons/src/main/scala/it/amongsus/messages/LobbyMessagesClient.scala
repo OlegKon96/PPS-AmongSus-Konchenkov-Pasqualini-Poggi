@@ -51,4 +51,6 @@ object LobbyMessagesClient {
    * @param numPlayers the number of the players required to start the match
    */
   case class UserAddedToLobbyClient(numPlayers: Int)
+
+  case class NewUserAddedToLobbyClient(numPlayers: Int)
 }
