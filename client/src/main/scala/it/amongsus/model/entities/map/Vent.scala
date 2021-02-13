@@ -5,7 +5,7 @@ trait Vent extends Floor{
 }
 
 object Vent{
-  def apply(/*position: Point2D*/): Vent = VentImpl(position)
+  def apply(/*position: Point2D*/): Vent = VentImpl(/*position*/)
 }
 
 case class VentImpl(/*override val position: Point2D*/) extends Vent {
