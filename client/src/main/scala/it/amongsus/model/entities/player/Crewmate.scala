@@ -11,7 +11,7 @@ object Crewmate{
 
 case class CrewmateImpl(override val position: Point2D) extends Crewmate{
 
-  override def move(direction: Any): Unit = ???
+  override def move(direction: Point2D): Unit = ???
 
   override def vote(): Unit = ???
 
