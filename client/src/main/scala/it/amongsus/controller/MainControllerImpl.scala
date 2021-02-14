@@ -14,14 +14,8 @@ class MainControllerImpl() extends MainController {
   private lazy val guiRef =
     ActorSystemManager.actorSystem.actorOf(UiActor.props(UiActorInfo()), "gui")
   private lazy val lobbyActorRef =
-    ActorSystemManager.actorSystem.actorOf(LobbyActor.props(LobbyActorInfo(Option(guiRef))), "client-lobby")
-  val menuView: MenuFrame  =  MenuFrame(Option(guiRef))
+    ActorSystemManager.actorSystem.actorOf(LobbyActor.props(LobbyActorInfo(Option(guiRef))), "client-controller")
 
-  override def start(): Unit = {
-    connect()
-    menuView.start() unsafeRunSync()
-  }
-
-  private def connect(): Unit =
+  override def start(): Unit =
     this.lobbyActorRef.tell(ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT), lobbyActorRef)
 }
