@@ -23,9 +23,9 @@ object ControllerActor {
  */
 class ControllerActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
 
-  override def receive: Receive = defaultBehaviour(state)
+  override def receive: Receive = lobbyBehaviour(state)
 
-  private def defaultBehaviour(state: LobbyActorInfo): Receive = {
+  private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
     case ConnectClient(address, port) =>
       state.guiRef.get ! Init()
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
@@ -34,7 +34,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         case Failure(t) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
-    case Connected(id) => context become defaultBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
+    case Connected(id) => context become lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
 
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
