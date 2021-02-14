@@ -31,6 +31,12 @@ trait LobbyManager[T <: Player] {
   def removePlayer(playerId: String): Unit
 
   /**
+   * Return a the lobby of the given player id
+   * @param playerId the id of the player in the lobby
+   * @return the lobby
+   */
+  def getLobbyPlayer(playerId: String): Option[Lobby[T]]
+  /**
    *
    * @param lobbyType type of the lobby to retrieve
    * @return the lobbing corresponding the the specified type, if present
@@ -80,7 +86,18 @@ class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
       }
       case None => log(s"player $playerId to remove not found")
     }
+  }
 
+  /**
+   * @inheritdoc
+   */
+  override def getLobbyPlayer(playerId: String): Option[Lobby[T]] = {
+    playersToLobby.get(playerId) match {
+      case Some(lobbyType) => {
+        lobbies.get(lobbyType)
+      }
+      case None => None
+    }
   }
 
   /**
