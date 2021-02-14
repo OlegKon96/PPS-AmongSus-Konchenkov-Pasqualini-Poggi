@@ -1,4 +1,6 @@
 package it.amongsus.model.entities.map
 
-trait Tile /*extends Drawable*/ {
+import it.amongsus.model.entities.Drawable
+
+trait Tile extends Drawable {
 }
