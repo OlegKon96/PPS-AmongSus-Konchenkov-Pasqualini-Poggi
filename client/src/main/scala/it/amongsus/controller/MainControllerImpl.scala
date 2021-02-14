@@ -1,6 +1,7 @@
 package it.amongsus.controller
 
-import it.amongsus.model.{LobbyActor, LobbyActorInfo}
+import it.amongsus.controller.actor.LobbyActorInfo
+import it.amongsus.model.LobbyActor
 import it.amongsus.{ActorSystemManager, Constants}
 import it.amongsus.messages.LobbyMessagesClient.ConnectClient
 import it.amongsus.view.actor.{UiActor, UiActorInfo}

@@ -1,4 +1,4 @@
-package it.amongsus.model
+package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.messages.GameMessageClient._
@@ -7,12 +7,13 @@ import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 
-object LobbyActor {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
+
+object ControllerActor {
   def props(state: LobbyActorInfo): Props =
-    Props(new LobbyActor(state))
+    Props(new ControllerActor(state))
 }
 
 /**
@@ -20,7 +21,7 @@ object LobbyActor {
  *
  * @param state state of the lobbyActorInfo that represents the function that notify the user about the received event
  */
-class LobbyActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
+class ControllerActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
 
   override def receive: Receive = defaultBehaviour(state)
 

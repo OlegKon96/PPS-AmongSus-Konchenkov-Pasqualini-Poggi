@@ -1,7 +1,8 @@
-package it.amongsus.model
+package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
 import it.amongsus.ActorSystemManager
+
 import scala.concurrent.Future
 import scala.concurrent.duration._
 

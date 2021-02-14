@@ -1,4 +1,4 @@
-package it.amongsus.model
+package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
 

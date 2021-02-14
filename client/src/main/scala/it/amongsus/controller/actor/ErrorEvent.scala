@@ -1,4 +1,4 @@
-package it.amongsus.model
+package it.amongsus.controller.actor
 
 sealed class ErrorEvent
 
