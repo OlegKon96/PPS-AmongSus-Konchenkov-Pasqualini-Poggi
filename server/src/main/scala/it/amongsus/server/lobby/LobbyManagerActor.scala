@@ -33,12 +33,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       log.info(s"client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
-        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-        this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
-          player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-        })
-        this.checkAndCreateGame(lobbyType)
+        this.addUserToLobby(clientId, username, ref, lobbyType)
       }
     }
 
@@ -54,13 +49,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
           case Some(lobbyType) => {
-            val player = GamePlayer(clientId, username, ref)
-            this.lobbyManger.addPlayer(player, lobbyType)
-            ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-            this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
-              player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-            })
-            this.checkAndCreateGame(lobbyType)
+            this.addUserToLobby(clientId, username, ref, lobbyType)
           }
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
@@ -68,13 +57,27 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
 
     case LeaveLobbyServer(userId) => {
       log.info(s"client $userId")
+      val lobby = lobbyManger.getLobbyPlayer(userId).get
       this.lobbyManger.removePlayer(userId)
+      lobby.removePlayer(userId).players.foreach(player =>
+        player.actorRef ! UpdateLobbyClient(lobby.players.length - 1))
     }
 
     case Terminated(actorRef) => {
       log.info(s"terminated $actorRef, connected players: $connectedPlayers")
       removeClient(actorRef)
     }
+  }
+
+  private def addUserToLobby(clientId: String, username: String, ref: ActorRef, lobbyType: LobbyType): Unit = {
+    this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+    if (this.lobbyManger.getLobby(lobbyType).get.players.length != lobbyType.numberOfPlayers) {
+      ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
+    }
+    this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
+      player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
+    })
+    this.checkAndCreateGame(lobbyType)
   }
 
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
