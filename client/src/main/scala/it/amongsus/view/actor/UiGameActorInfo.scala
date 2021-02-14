@@ -19,23 +19,16 @@ trait UiGameActorInfo {
    *
    * @return
    */
-  def menuFrame: Option[MenuFrame]
-
-  /**
-   *
-   *
-   * @return
-   */
   def gameFrame: Option[GameFrame]
 }
 
 object UiGameActorInfo {
-  def apply() : UiGameActorData = UiGameActorData(None, None,None)
-  def apply(clientRef: Option[ActorRef], menuFrame: Option[MenuFrame], gameFrame: Option[GameFrame]) : UiGameActorData =
-    UiGameActorData(clientRef, menuFrame, gameFrame)
+  def apply() : UiGameActorData = UiGameActorData(None, None)
+  def apply(clientRef: Option[ActorRef], gameFrame: Option[GameFrame]) : UiGameActorData =
+    UiGameActorData(clientRef, gameFrame)
 }
 
-case class UiGameActorData(override val clientRef: Option[ActorRef], override val menuFrame: Option[MenuFrame],
-                          override val gameFrame: Option[GameFrame]) extends UiGameActorInfo {
+case class UiGameActorData(override val clientRef: Option[ActorRef],
+                           override val gameFrame: Option[GameFrame]) extends UiGameActorInfo {
 
 }

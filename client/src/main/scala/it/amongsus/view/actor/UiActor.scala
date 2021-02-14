@@ -5,6 +5,7 @@ import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
+import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame}
 
 object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))
@@ -20,10 +21,10 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
   override def receive: Receive = defaultBehaviour(serverResponsesListener)
 
   private def defaultBehaviour(state: UiActorInfo): Receive = {
-    case Init() => context become defaultBehaviour(UiActorData(Option(sender), None, None))
-
-    case InitFrame(menuFrame, lobbyFrame) =>
-      context become defaultBehaviour(UiActorData(state.clientRef, Option(menuFrame), Option(lobbyFrame)))
+    case Init() =>
+      val frame = MenuFrame(Option(self))
+      frame.start().unsafeRunSync()
+      context become defaultBehaviour(UiActorData(Option(sender), Option(frame)))
 
     case PublicGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! JoinPublicLobbyClient(username, playersNumber)
@@ -34,20 +35,36 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case CreatePrivateGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! CreatePrivateLobbyClient(username, playersNumber)
 
-    case LeaveLobbyUi() => state.clientRef.get ! LeaveLobbyClient()
+    case LeaveLobbyUi() =>
+      state.currentFrame.get.dispose().unsafeRunSync()
+      val frame = MenuFrame(Option(self))
+      frame.start().unsafeRunSync()
+      context become defaultBehaviour(UiActorData(state.clientRef, Option(frame)))
+      state.clientRef.get ! LeaveLobbyClient()
 
     case RetryServerConnectionUi() => ???
 
-    case UserAddedToLobbyUi(numPlayers) => state.updateLobby(numPlayers)
+    case UserAddedToLobbyUi(numPlayers) =>
+      state.currentFrame.get.dispose().unsafeRunSync()
+      val lobby = LobbyFrame(self)
+      lobby.start(numPlayers, state.getCode()).unsafeRunSync()
+      context become defaultBehaviour(UiActorData(state.clientRef, Option(lobby)))
 
-    case UpdateLobbyClient(numPlayers) => state.toLobby(numPlayers)
+    case UpdateLobbyClient(numPlayers) => state.updateLobby(numPlayers)
 
-    case PrivateLobbyCreatedUi(lobbyCode) => state.saveCode(lobbyCode)
+    case PrivateLobbyCreatedUi(lobbyCode) =>
+      state.currentFrame.get.dispose().unsafeRunSync()
+      val lobby = LobbyFrame(self)
+      lobby.start(1, lobbyCode).unsafeRunSync()
+      context become defaultBehaviour(UiActorData(state.clientRef, Option(lobby)))
+      state.saveCode(lobbyCode)
 
     case GameFoundUi() =>
       state.clientRef.get ! PlayerReadyClient()
-      state.toGame()
-      context become gameBehaviour(UiGameActorData(Option(sender), None, None))
+      state.currentFrame.get.dispose().unsafeRunSync()
+      val game = GameFrame(Option(self))
+      game.start().unsafeRunSync()
+      context become gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
 
     case LobbyErrorOccurredUi => state.lobbyError()
 
