@@ -1,7 +1,7 @@
 package it.amongsus.view.actor
 
 import akka.actor.ActorRef
-import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
+import it.amongsus.view.frame.{Frame, LobbyFrame, MenuFrame}
 
 /**
  * Trait that contains all Callback functions of UiActor
@@ -19,71 +19,54 @@ trait UiActorInfo {
    *
    * @return
    */
-  def menuFrame: Option[MenuFrame]
-
-  /**
-   *
-   *
-   * @return
-   */
-  def lobbyFrame: Option[LobbyFrame]
+  def currentFrame: Option[Frame]
 
   /**
    * Open the lobby panel
    *
    * @param numPlayers the numbers of the players
    */
-  def toLobby(numPlayers: Int) : Unit
-
-  /**
-   * Open the lobby panel
-   *
-   * @param numPlayers the numbers of the players
-   */
-  def updateLobby(numPlayers: Int) : Unit
-
-  /**
-   * Open the game panel
-   */
-  def toGame(): Unit
+  def updateLobby(numPlayers: Int): Unit
 
   /**
    * Saves the code of the lobby
    *
    * @param lobbyCode the code of the lobby
    */
-  def saveCode(lobbyCode : String) : Unit
+  def saveCode(lobbyCode: String): Unit
+
+  /**
+   * Returns lobby code if it exist
+   * @return lobby code
+   */
+  def getCode(): String
 
   /**
    * Notify an error occurred
    */
-  def lobbyError() : Unit
-}
+  def lobbyError(): Unit
 
+}
 object UiActorInfo {
-  def apply() : UiActorData = UiActorData(None, None, None)
-  def apply(clientRef: Option[ActorRef], menuFrame: Option[MenuFrame],lobbyFrame: Option[LobbyFrame]) : UiActorData =
-    UiActorData(clientRef, menuFrame, lobbyFrame)
+  def apply() : UiActorData = UiActorData(None, None)
+  def apply(clientRef: Option[ActorRef], currentFrame: Option[Frame]): UiActorData =
+    UiActorData(clientRef, currentFrame)
 }
 
 case class UiActorData(override val clientRef: Option[ActorRef],
-                       override val menuFrame: Option[MenuFrame],
-                       override val lobbyFrame: Option[LobbyFrame]) extends UiActorInfo{
+                       override val currentFrame: Option[Frame]) extends UiActorInfo{
 
-  override def toLobby(numPlayers: Int): Unit = menuFrame.get.toLobby(numPlayers) unsafeRunSync()
+  override def updateLobby(numPlayers: Int): Unit =
+    currentFrame.get.asInstanceOf[LobbyFrame].updatePlayers(numPlayers).unsafeRunSync()
 
-  override def updateLobby(numPlayers: Int): Unit = lobbyFrame.get.updatePlayers(numPlayers) unsafeRunSync()
-
-  override def toGame(): Unit = {
-    lobbyFrame.get.toGame unsafeRunSync()
-  }
 
   override def saveCode(lobbyCode: String): Unit = {
-    menuFrame.get.saveCode(lobbyCode)
-    menuFrame.get.toLobby(1) unsafeRunSync()
+    currentFrame.get.asInstanceOf[MenuFrame].saveCode(lobbyCode)
   }
 
   override def lobbyError(): Unit = {
-    menuFrame.get.lobbyError()
+    currentFrame.get.asInstanceOf[MenuFrame].lobbyError()
   }
+
+  override def getCode(): String = currentFrame.get.asInstanceOf[MenuFrame].code
 }
