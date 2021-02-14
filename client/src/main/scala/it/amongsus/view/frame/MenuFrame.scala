@@ -10,7 +10,7 @@ import javax.swing.JFrame
 /**
  *
  */
-trait MenuFrame {
+trait MenuFrame extends Frame {
   /**
    *
    * @return
@@ -18,11 +18,10 @@ trait MenuFrame {
   def start(): IO[Unit]
 
   /**
-   *
-   * @param numPlayers the number of the players
-   * @return
+   * Returns the lobby code if it exist
+   * @return lobby code
    */
-  def toLobby(numPlayers : Int): IO[Unit]
+  def code: String
 
   /**
    *
@@ -48,13 +47,13 @@ object MenuFrame {
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
     val frame = new JFrameIO(new JFrame("Among Sus"))
-    val lobbyView : LobbyFrame = LobbyFrame(this,guiRef.get)
     val WIDTH: Int = 500
     val HEIGHT: Int = 250
     var code : String = ""
 
     override def start(): IO[Unit] =
       for {
+        _ <- IO(code = "")
         menuPanel <- JPanelIO()
         menuBorder <- BorderFactoryIO.emptyBorderCreated(10, 10, 10, 10)
         _ <- menuPanel.setBorder(menuBorder)
@@ -74,16 +73,16 @@ object MenuFrame {
         joinPublic <- JButtonIO("Partecipa ad una partita pubblica")
         _ <- joinPublic.addActionListener(for {
           nameText <- nameField.text
-          _ <- IO(if(checkName(nameField)) {
-            guiRef.get ! PublicGameSubmitUi(nameText,3)
+          _ <- IO(if (checkName(nameField)) {
+            guiRef.get ! PublicGameSubmitUi(nameText, 4)
           })
         } yield())
         _ <- inputPanel.add(joinPublic)
         startPrivate <- JButtonIO("Crea una partita privata")
         _ <- startPrivate.addActionListener(for {
           nameText <- nameField.text
-          _ <- IO(if(checkName(nameField)) {
-            guiRef.get ! CreatePrivateGameSubmitUi(nameText,3)
+          _ <- IO(if (checkName(nameField)) {
+            guiRef.get ! CreatePrivateGameSubmitUi(nameText, 2)
           })
         } yield())
         _ <- inputPanel.add(startPrivate)
@@ -93,9 +92,9 @@ object MenuFrame {
         _ <- joinPrivate.addActionListener(for {
           codeText <- codeField.text
           nameText <- nameField.text
-          _ <- IO(if(checkName(nameField) && checkCode(codeField)){
+          _ <- IO(if (checkName(nameField) && checkCode(codeField)) {
             code = codeText
-            guiRef.get ! PrivateGameSubmitUi(nameText,code)
+            guiRef.get ! PrivateGameSubmitUi(nameText, code)
           })
         } yield())
         _ <- inputPanel.add(joinPrivate)
@@ -105,7 +104,6 @@ object MenuFrame {
         _ <- frame.setResizable(false)
         _ <- frame.setSize(WIDTH, HEIGHT)
         _ <- frame.setVisible(true)
-        _ <- IO(guiRef.get ! InitFrame(this,lobbyView))
       } yield ()
 
     private def checkName(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
@@ -118,11 +116,6 @@ object MenuFrame {
       case _ => true
     }
 
-    override def toLobby(numPlayers: Int): IO[Unit] = for {
-      _ <- frame.dispose()
-      _ <- lobbyView start(numPlayers,code)
-    } yield()
-
     override def saveCode(lobbyCode: String): Unit = {
       code = lobbyCode
     }
@@ -130,5 +123,9 @@ object MenuFrame {
     override def lobbyError(): Unit = {
       code = ""
     }
+
+    override def dispose(): IO[Unit] = for {
+      _ <- frame.dispose()
+    } yield ()
   }
 }
