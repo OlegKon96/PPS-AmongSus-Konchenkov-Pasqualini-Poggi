@@ -8,10 +8,6 @@ object UiActorLobbyMessages {
    */
   case class Init()
   /**
-   * Initialize Actor with a Menu' Frame
-   */
-  case class InitFrame(menuFrame: MenuFrame, lobbyFrame: LobbyFrame)
-  /**
    * Create a Public Lobby view event
    *
    * @param username      the username of the player
