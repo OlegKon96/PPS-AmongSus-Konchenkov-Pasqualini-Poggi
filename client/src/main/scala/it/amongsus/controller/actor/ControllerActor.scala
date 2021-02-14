@@ -32,7 +32,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         case Success(ref) =>
           ref ! ConnectServer(context.self)
         case Failure(t) =>
-          println(LobbyJoinErrorEvent(ErrorEvent.ServerNotFound))
+          state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
     case Connected(id) => context become defaultBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
 
@@ -45,13 +45,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case JoinPrivateLobbyClient(username: String, privateLobbyCode: String) =>
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
 
-    case LeaveLobbyClient() =>
-      state.serverRef.get ! LeaveLobbyServer(state.clientId)
+    case LeaveLobbyClient() => state.serverRef.get ! LeaveLobbyServer(state.clientId)
 
     case UserAddedToLobbyClient(numPlayers) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers)
 
-    case UpdateLobbyClient(numPlayers) => println("prova ")
-      state.guiRef.get ! UpdateLobbyClient(numPlayers)
+    case UpdateLobbyClient(numPlayers) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
 
     case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
 
