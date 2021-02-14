@@ -74,7 +74,7 @@ object MenuFrame {
         _ <- joinPublic.addActionListener(for {
           nameText <- nameField.text
           _ <- IO(if (checkName(nameField)) {
-            guiRef.get ! PublicGameSubmitUi(nameText, 4)
+            guiRef.get ! PublicGameSubmitUi(nameText, 2)
           })
         } yield())
         _ <- inputPanel.add(joinPublic)

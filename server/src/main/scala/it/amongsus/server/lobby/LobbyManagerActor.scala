@@ -73,10 +73,11 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
     this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
     if (this.lobbyManger.getLobby(lobbyType).get.players.length != lobbyType.numberOfPlayers) {
       ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
+      this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
+        player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
+      })
     }
-    this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
-      player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-    })
+
     this.checkAndCreateGame(lobbyType)
   }
 
