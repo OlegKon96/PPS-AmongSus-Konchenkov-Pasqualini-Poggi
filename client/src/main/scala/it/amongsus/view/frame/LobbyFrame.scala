@@ -11,7 +11,10 @@ import javax.swing.JFrame
 /**
  *
  */
-trait LobbyFrame {
+trait LobbyFrame extends Frame {
+
+  def lobbyFrame: JFrameIO
+
   /**
    *
    * @param numPlayers the number of the players
@@ -22,18 +25,6 @@ trait LobbyFrame {
 
   /**
    *
-   * @return
-   */
-  def toMenu : IO[Unit]
-
-  /**
-   *
-   * @return
-   */
-  def toGame : IO[Unit]
-
-  /**
-   *
    * @param numPlayers the number of the players
    */
   def updatePlayers(numPlayers : Int) : IO[Unit]
@@ -41,17 +32,16 @@ trait LobbyFrame {
 
 object LobbyFrame {
 
-  def apply(menuView: MenuFrame, guiRef : ActorRef): LobbyFrame = new LobbyFrameImpl(menuView,guiRef)
+  def apply(guiRef : ActorRef): LobbyFrame = new LobbyFrameImpl(guiRef)
 
   /**
    * The Frame that manages the Lobby
    *
    * @param menuView The Menu' View of the Game
    */
-  private class LobbyFrameImpl(menuView: MenuFrame,guiRef: ActorRef) extends LobbyFrame {
+  private class LobbyFrameImpl(guiRef: ActorRef) extends LobbyFrame {
 
     val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
-    val gameView : GameFrame = GameFrame(Option(guiRef),menuView)
     val WIDTH: Int = 400
     val HEIGHT: Int = 300
     val players = JLabelIO().unsafeRunSync()
@@ -69,13 +59,10 @@ object LobbyFrame {
         _ <- topPanel.setBorder(basicBorder)
         back <- JButtonIO("<")
         _ <- back.addActionListener(for {
-          _ <- IO(guiRef ! LeaveLobbyUi)
-          _ <- toMenu
+          _ <- IO(guiRef ! LeaveLobbyUi())
         } yield ())
         _ <- topPanel.add(back, BorderLayout.WEST)
-        _ <- IO(println("frame1:" + numPlayers))
         _ <- players.setText("Partecipanti" + numPlayers.toString + "/10")
-        _ <- IO(println("frame2:" + numPlayers))
         _ <- controlPanel.add(players, BorderLayout.EAST)
         mainPanel <- JPanelIO()
         _ <- mainPanel.setLayout(new BorderLayout())
@@ -94,19 +81,10 @@ object LobbyFrame {
 
       } yield ()
 
-    override def toMenu: IO[Unit] = for {
-      _ <- lobbyFrame.dispose()
-      _ <- menuView start()
-    } yield()
-
-    override def updatePlayers(numPlayers: Int): IO[Unit] = for{
-      _ <- IO(println("frame3:" + numPlayers))
+    override def updatePlayers(numPlayers: Int): IO[Unit] = for {
       _ <- players.setText("Partecipanti" + numPlayers.toString + "/10")
-    }yield()
+    } yield ()
 
-    override def toGame: IO[Unit] = for {
-      _ <- lobbyFrame.dispose()
-      _ <- gameView start()
-    } yield()
+    override def dispose(): IO[Unit] = lobbyFrame.dispose()
   }
 }
