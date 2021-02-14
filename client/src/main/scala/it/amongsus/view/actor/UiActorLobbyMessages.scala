@@ -1,6 +1,5 @@
 package it.amongsus.view.actor
 
-import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
 
 object UiActorLobbyMessages {
   /**
