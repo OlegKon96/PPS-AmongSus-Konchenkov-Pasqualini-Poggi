@@ -1,13 +1,16 @@
 package it.amongsus.model.entities.map
 
-trait DeadBody /*extends Entity*/{
+import it.amongsus.model.entities.Entity
+import it.amongsus.model.entities.util.Point2D
+
+trait DeadBody extends Entity{
   def report() : Unit
 }
 
 object DeadBody{
-  def apply(/*position: Point2D*/): DeadBody = DeadBodyImpl(/*position*/)
+  def apply(position: Point2D): DeadBody = DeadBodyImpl(position)
 }
 
-case class DeadBodyImpl(/*override val position: Point2D*/) extends DeadBody {
+case class DeadBodyImpl(override val position: Point2D) extends DeadBody {
   override def report(): Unit = ???
 }
