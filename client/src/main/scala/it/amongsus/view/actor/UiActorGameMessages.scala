@@ -1,5 +1,7 @@
 package it.amongsus.view.actor
 
+import it.amongsus.core.entities.player.{Movement, Player}
+
 object UiActorGameMessages {
   /**
    * Tells to UI actor that the player is ready to start the game
@@ -17,6 +19,14 @@ object UiActorGameMessages {
    * Tells to UI actor that the game is ended with a lose
    */
   case class GameLostUi()
+  /**
+   * Tells to the controller that his character moved
+   */
+  case class MyCharMovedUi(direction: Movement)
+  /**
+   * Tells to the ui actor that a player was updated
+   */
+  case class PlayerUpdatedUi(player: Player)
   /**
    * Tells to UI actor that the player has left the game
    */
