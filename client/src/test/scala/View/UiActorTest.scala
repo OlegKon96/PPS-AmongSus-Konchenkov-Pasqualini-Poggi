@@ -11,4 +11,11 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
   with AnyWordSpecLike
   with BeforeAndAfterAll {
 
+  override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
+  private val NUM_PLAYERS = 4
+
+  "The UiActor" should {
+
+  }
+
 }
