@@ -1,6 +1,8 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
+import it.amongsus.controller.actor.ControllerActorMessages.{ModelReadyCotroller, MyCharMovedCotroller, UpdatedMyCharController, UpdatedPlayerController}
+import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitPlayersModel, PlayerMovedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -8,5 +10,29 @@ object ModelActor {
 }
 
 class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
-  override def receive: Receive = ???
+  override def receive: Receive = gameBehaviour(state)
+
+  private def gameBehaviour(state: ModelActorInfo): Receive = {
+    case InitMapModel(map) =>
+      context become gameBehaviour(ModelActorInfo(state.controllerRef, Option(state.generateMap(map)), state.clientId))
+
+    case InitPlayersModel(players) => {
+      state.generatePlayers(players)
+      state.controllerRef.get ! ModelReadyCotroller(state.gameMap.get, state.playersList, state.collectionables)
+    }
+
+    case MyCharMovedCotroller(direction) => {
+      state.controllerRef.get ! UpdatedMyCharController(state.myCharacter)
+    }
+
+    case PlayerMovedModel(player) => {
+      state.controllerRef.get ! UpdatedPlayerController(state.myCharacter)
+    }
+
+    case _ => println("error model game")
+  }
+
+  private def voteBehaviour(state: ModelActorInfo): Receive = {
+    case _ => println("error model vote")
+  }
 }
