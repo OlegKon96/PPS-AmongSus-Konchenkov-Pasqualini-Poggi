@@ -1,5 +1,8 @@
 package it.amongsus.view.actor
 
+import it.amongsus.core.entities.map.{Collectionable, Tile}
+import it.amongsus.core.entities.player.Player
+
 
 object UiActorLobbyMessages {
   /**
@@ -44,9 +47,14 @@ object UiActorLobbyMessages {
    */
   case class UserAddedToLobbyUi(numPlayers: Int)
   /**
+   * Notify the UI Actor that a game is starting
+   */
+  case class GameFoundUi(map: Array[Array[Tile]], players: Seq[Player], collectionables: Seq[Collectionable])
+
+  /**
    * Notify the User that there's a match to a Lobby
    */
-  case class GameFoundUi()
+  case class MatchFoundUi()
   /**
    * Notify the User that there's an Error Occurred
    */
