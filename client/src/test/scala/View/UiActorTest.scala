@@ -6,10 +6,13 @@ import com.typesafe.config.ConfigFactory
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
-import it.amongsus.view.frame.{LobbyFrame, MenuFrame}
+import it.amongsus.view.frame.MenuFrame
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
+/**
+ * Class that tests the UiActor
+ */
 class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")))
   with ImplicitSender
   with AnyWordSpecLike
@@ -39,8 +42,7 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
     "Create a private lobby" in {
       val client = TestProbe()
       val menuFrame = MenuFrame.apply(Option(client.ref))
-      val uiActor =
-        system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
+      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
       uiActor ! CreatePrivateGameSubmitUi("asdasdasd", NUM_PLAYERS)
       client.expectMsgType[CreatePrivateLobbyClient]
     }
@@ -48,8 +50,7 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
     "Leave a Lobby" in {
       val client = TestProbe()
       val menuFrame = MenuFrame.apply(Option(client.ref))
-      val uiActor =
-        system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
+      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
       uiActor ! LeaveLobbyUi()
       client.expectMsgType[LeaveLobbyClient]
     }
