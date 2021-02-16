@@ -72,7 +72,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
           case "0" => tileMatrix(j)(k) = Wall(Point2D(j, k))
           case "40" => tileMatrix(j)(k) = Floor(Point2D(j, k))
         }
-        println(tileMatrix(j)(k))
         k = k + 1
       })
       j = j + 1
@@ -94,7 +93,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       this.collectionablesSeq = collectionables :+ Collectionable(tiles(rand).position)
       tiles = tiles.take(rand) ++ tiles.drop(rand + 1)
     }
-    collectionables.foreach(x => println(x.position))
   }
 
   override def collectionables: Seq[Collectionable] = collectionablesSeq

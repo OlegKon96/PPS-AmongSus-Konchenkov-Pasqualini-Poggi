@@ -29,7 +29,8 @@ trait GameActorInfo {
 }
 
 object GameActorInfo {
-  def apply(gameServerRef: Option[ActorRef], guiRef: Option[ActorRef], modelRef: Option[ActorRef], clientId: String): GameActorInfo =
+  def apply(gameServerRef: Option[ActorRef], guiRef: Option[ActorRef],
+            modelRef: Option[ActorRef], clientId: String): GameActorInfo =
     GameActorInfoData(gameServerRef,guiRef,modelRef, clientId)
 }
 

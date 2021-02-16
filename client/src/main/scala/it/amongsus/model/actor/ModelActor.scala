@@ -1,8 +1,8 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages.{ModelReadyCotroller, MyCharMovedCotroller, UpdatedMyCharController, UpdatedPlayerController}
-import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitPlayersModel, PlayerMovedModel}
+import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitPlayersModel, MyCharMovedModel, PlayerMovedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -21,7 +21,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.controllerRef.get ! ModelReadyCotroller(state.gameMap.get, state.playersList, state.collectionables)
     }
 
-    case MyCharMovedCotroller(direction) => {
+    case MyCharMovedModel(direction) => {
       state.controllerRef.get ! UpdatedMyCharController(state.myCharacter)
     }
 
