@@ -1,6 +1,7 @@
 package it.amongsus.view.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
+import it.amongsus.controller.actor.ControllerActorMessages.MyCharMovedCotroller
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages._
@@ -59,13 +60,13 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       context become defaultBehaviour(UiActorData(state.clientRef, Option(lobby)))
       state.saveCode(lobbyCode)
 
-    case GameFoundUi() =>
-      state.clientRef.get ! PlayerReadyClient()
+    case MatchFoundUi() => state.clientRef.get ! PlayerReadyClient()
+
+    case GameFoundUi(map, players, collectionables) =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val game = GameFrame(Option(self))
-      game.start().unsafeRunSync()
+      //game.start(map, players).unsafeRunSync()
       context become gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
-
     case LobbyErrorOccurredUi => state.lobbyError()
 
     case _ => println("ERROR")
@@ -75,6 +76,10 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case PlayerReadyUi() => state.clientRef.get ! PlayerReadyClient()
 
     case LeaveGameUi() => state.clientRef.get ! LeaveGameClient()
+
+    case MyCharMovedUi(direction) => state.clientRef.get ! MyCharMovedCotroller(direction)
+
+    case PlayerUpdatedUi(player) => ???
 
     case GameWonUi() => ???
 
