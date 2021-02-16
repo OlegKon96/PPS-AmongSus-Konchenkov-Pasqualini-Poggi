@@ -22,13 +22,24 @@ trait GameActorInfo {
    * @return
    */
   def guiRef: Option[ActorRef]
+
+  def modelRef: Option[ActorRef]
+
+  def loadMap(): Iterator[String]
 }
 
 object GameActorInfo {
-  def apply(gameServerRef: Option[ActorRef], guiRef: Option[ActorRef], clientId: String): GameActorInfo =
-    GameActorInfoData(gameServerRef,guiRef, clientId)
+  def apply(gameServerRef: Option[ActorRef], guiRef: Option[ActorRef], modelRef: Option[ActorRef], clientId: String): GameActorInfo =
+    GameActorInfoData(gameServerRef,guiRef,modelRef, clientId)
 }
 
 case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
                              override val guiRef: Option[ActorRef],
-                             override val clientId: String) extends GameActorInfo {}
+                             override val modelRef: Option[ActorRef],
+                             override val clientId: String) extends GameActorInfo {
+
+  override def loadMap(): Iterator[String] = {
+    val bufferedSource = scala.io.Source.fromFile("res/map.csv")
+    bufferedSource.getLines
+  }
+}
