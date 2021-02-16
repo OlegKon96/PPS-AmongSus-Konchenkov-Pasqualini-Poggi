@@ -1,7 +1,5 @@
 package it.amongsus.core.entities.map
 
-import java.awt.Color
-
 import it.amongsus.core.entities.Entity
 import it.amongsus.core.entities.util.Point2D
 
