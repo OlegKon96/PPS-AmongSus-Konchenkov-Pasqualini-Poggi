@@ -7,7 +7,7 @@ import it.amongsus.core.entities.util.Point2D
  * Trait that represents the actions of the Game's Player
  */
 trait Player extends Entity{
-  def move(direction: Point2D) : Unit
+  def move(direction: Movement) : Unit
   def username: String
   def clientId: String
 }
