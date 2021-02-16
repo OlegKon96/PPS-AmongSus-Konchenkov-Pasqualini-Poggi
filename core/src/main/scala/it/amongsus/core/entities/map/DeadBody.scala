@@ -10,9 +10,9 @@ trait DeadBody extends Entity{
 }
 
 object DeadBody{
-  def apply(position: Point2D): DeadBody = DeadBodyImpl(Color.GREEN, position)
+  def apply(position: Point2D): DeadBody = DeadBodyImpl("green", position)
 }
 
-case class DeadBodyImpl(override val color: Color, override val position: Point2D) extends DeadBody {
+case class DeadBodyImpl(override val color: String, override val position: Point2D) extends DeadBody {
   override def report(): Unit = ???
 }
