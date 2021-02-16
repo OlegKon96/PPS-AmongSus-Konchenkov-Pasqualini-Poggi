@@ -1,5 +1,7 @@
 package it.amongsus.core.entities.player
 
+import java.awt.Color
+
 import it.amongsus.core.entities.util.Point2D
 
 /**
@@ -13,11 +15,21 @@ trait ImpostorGhost extends DeadPlayer{
 }
 
 object ImpostorGhost{
-  def apply(position: Point2D): ImpostorGhost = ImpostorGhostImpl(position)
+  def apply(clientId: String, username: String, position: Point2D): ImpostorGhost =
+    ImpostorGhostImpl(Color.GREEN, clientId, username, position)
 }
 
-case class ImpostorGhostImpl(override val position: Point2D) extends ImpostorGhost {
-  override def move(direction: Point2D): Unit = ???
+case class ImpostorGhostImpl(override val color: Color,
+                             override val clientId: String,
+                             override val username: String,
+                             override val position: Point2D) extends ImpostorGhost {
+
+  override def move(direction: Movement): Unit = direction match{
+    case Up() => ImpostorGhost(clientId, username, Point2D(position.x, position.y + 1))
+    case Down() => ImpostorGhost(clientId, username, Point2D(position.x, position.y - 1))
+    case Left() => ImpostorGhost(clientId, username, Point2D(position.x - 1, position.y))
+    case Right() => ImpostorGhost(clientId,username, Point2D(position.x + 1, position.y))
+  }
 
   override def sabotage(): Unit = ???
 }
