@@ -1,7 +1,5 @@
 package it.amongsus.core.entities.player
 
-import java.awt.Color
-
 import it.amongsus.core.entities.map.Collectionable
 import it.amongsus.core.entities.player.Movement.{Down, Left, Right, Up}
 import it.amongsus.core.entities.util.Point2D
@@ -10,9 +8,9 @@ trait CrewmateGhost extends DeadPlayer
 
 object CrewmateGhost{
   def apply(clientId: String, username: String, position: Point2D): CrewmateGhost =
-    CrewmateGhostImpl(Color.GREEN, clientId, username, position)}
+    CrewmateGhostImpl("green", clientId, username, position)}
 
-case class CrewmateGhostImpl(override val color: Color,
+case class CrewmateGhostImpl(override val color: String,
                              override val clientId: String,
                              override val username: String,
                              override val position: Point2D) extends CrewmateGhost {
