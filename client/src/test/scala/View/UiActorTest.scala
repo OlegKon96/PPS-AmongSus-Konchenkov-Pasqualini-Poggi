@@ -1,3 +1,5 @@
+package View
+
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
 import com.typesafe.config.ConfigFactory
