@@ -8,4 +8,6 @@ import it.amongsus.core.entities.util.Point2D
  */
 trait Player extends Entity{
   def move(direction: Point2D) : Unit
+  def username: String
+  def clientId: String
 }
