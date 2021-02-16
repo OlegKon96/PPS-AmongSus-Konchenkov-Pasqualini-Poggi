@@ -1,5 +1,7 @@
 package it.amongsus.core.entities
 
-trait Entity extends Drawable {
+import java.awt.Color
 
+trait Entity extends Drawable {
+  def color: Color
 }
