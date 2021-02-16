@@ -1,5 +1,10 @@
 name: Scala CI
 
+image: gitpod/workspace-full-vnc
+ports:
+  - port: 6080
+    onOpen: open-preview
+
 on:
   push:
     branches: [ master, develop ]
