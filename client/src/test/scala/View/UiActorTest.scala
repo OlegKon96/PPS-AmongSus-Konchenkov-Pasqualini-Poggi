@@ -28,6 +28,15 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
       client.expectMsgType[JoinPublicLobbyClient]
     }
 
+    "Accept into a private lobby connection with code" in {
+      val client = TestProbe()
+      val menuFrame = MenuFrame.apply(Option(client.ref))
+      val uiActor =
+        system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
+      uiActor ! PrivateGameSubmitUi("asdasdasd", "qwerty")
+      client.expectMsgType[JoinPrivateLobbyClient]
+    }
+
   }
 
 }
