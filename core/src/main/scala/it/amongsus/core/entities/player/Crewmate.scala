@@ -1,17 +1,29 @@
 package it.amongsus.core.entities.player
 
+import java.awt.Color
+
 import it.amongsus.core.entities.map.Collectionable
+import it.amongsus.core.entities.player.Movement.{Down, Left, Right, Up}
 import it.amongsus.core.entities.util.Point2D
 
 trait Crewmate extends AlivePlayer{}
 
 object Crewmate{
-  def apply(position: Point2D): Crewmate = CrewmateImpl(position)
+  def apply(clientId: String, username: String, position: Point2D): Crewmate =
+    CrewmateImpl(Color.GREEN, clientId, username, position)
 }
 
-case class CrewmateImpl(override val position: Point2D) extends Crewmate{
+case class CrewmateImpl(override val color: Color,
+                        override val clientId: String,
+                        override val username: String,
+                        override val position: Point2D) extends Crewmate {
 
-  override def move(direction: Point2D): Unit = ???
+  override def move(direction: Movement): Unit = direction match {
+    case Up() => Crewmate(clientId, username, Point2D(position.x, position.y + 1))
+    case Down() => Crewmate(clientId, username, Point2D(position.x, position.y - 1))
+    case Left() => Crewmate(clientId, username, Point2D(position.x - 1, position.y))
+    case Right() => Crewmate(clientId, username, Point2D(position.x + 1, position.y))
+  }
 
   override def vote(): Unit = ???
 
