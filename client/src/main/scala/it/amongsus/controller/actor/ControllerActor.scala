@@ -1,12 +1,16 @@
 package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
+import it.amongsus.ActorSystemManager
+import it.amongsus.controller.actor.ControllerActorMessages.{ModelReadyCotroller, MyCharMovedCotroller, UpdatedMyCharController, UpdatedPlayerController}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.view.actor.UiActorGameMessages._
-import it.amongsus.view.actor.UiActorLobbyMessages._
+import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
+import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitPlayersModel, MyCharMovedModel, PlayerMovedModel}
+import it.amongsus.view.actor.UiActorGameMessages.{PlayerUpdatedUi, _}
+import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
@@ -53,10 +57,13 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
 
-    case MatchFound(gameRoom) =>
-      state.guiRef.get ! GameFoundUi()
-      context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, state.clientId))
-
+    case MatchFound(gameRoom) =>{
+      state.guiRef.get ! MatchFoundUi()
+      val model =
+        ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelActorInfo(Option(self),
+          None, state.clientId)), "model")
+      context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef, Option(model), state.clientId))
+    }
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
       case _ =>
@@ -70,6 +77,24 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
 
+    case GamePlayersClient(players) => {
+      state.modelRef.get ! InitMapModel(state.loadMap())
+      state.modelRef.get ! InitPlayersModel(players)
+    }
+
+    case ModelReadyCotroller(map, players, collectionables) =>
+      state.guiRef.get ! GameFoundUi(map, players, collectionables)
+
+    case MyCharMovedCotroller(direction) => state.modelRef.get ! MyCharMovedModel(direction)
+
+    case PlayerMovedCotroller(player) => state.modelRef.get ! PlayerMovedModel(player)
+
+    case UpdatedMyCharController(player) => {
+      state.guiRef.get ! PlayerUpdatedUi(player)
+      state.gameServerRef.get ! PlayerMovedServer(player)
+    }
+
+    case UpdatedPlayerController(player) => state.guiRef.get ! PlayerUpdatedUi(player)
     case GameWonClient() => state.guiRef.get ! GameWonUi()
 
     case GameLostClient() => state.guiRef.get ! GameLostUi()
