@@ -20,7 +20,7 @@ object UiActorGameMessages {
    */
   case class GameLostUi()
   /**
-   * Tells to the controller that his character moved
+   * Tells to the UI actor that his character moved
    */
   case class MyCharMovedUi(direction: Movement)
   /**

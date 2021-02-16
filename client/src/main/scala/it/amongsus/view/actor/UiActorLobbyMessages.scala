@@ -43,7 +43,7 @@ object UiActorLobbyMessages {
    */
   case class PrivateLobbyCreatedUi(lobbyCode: String)
   /**
-   * Server send a Message to the Ui that there was a successful lobby connection
+   * Controller send a Message to the Ui that there was a successful lobby connection
    */
   case class UserAddedToLobbyUi(numPlayers: Int)
   /**
