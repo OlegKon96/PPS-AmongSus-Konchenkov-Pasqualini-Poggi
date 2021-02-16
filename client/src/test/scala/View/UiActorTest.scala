@@ -19,7 +19,6 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
   private val NUM_PLAYERS = 4
 
   "The UiActor" should {
-
     "Successfully connected to the server" in {
       val client = TestProbe()
       val menuFrame = MenuFrame.apply(Option(client.ref))
@@ -35,6 +34,15 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
         system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
       uiActor ! PrivateGameSubmitUi("asdasdasd", "qwerty")
       client.expectMsgType[JoinPrivateLobbyClient]
+    }
+
+    "Create a private lobby" in {
+      val client = TestProbe()
+      val menuFrame = MenuFrame.apply(Option(client.ref))
+      val uiActor =
+        system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
+      uiActor ! CreatePrivateGameSubmitUi("asdasdasd", NUM_PLAYERS)
+      client.expectMsgType[CreatePrivateLobbyClient]
     }
 
   }
