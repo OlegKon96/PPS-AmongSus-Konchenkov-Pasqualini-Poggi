@@ -1,12 +1,16 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
+import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
+import it.amongsus.core.entities.util.Point2D
+import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedCotroller}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameMatchActor.GamePlayers
 
 import scala.concurrent.duration.DurationInt
+import scala.util.Random
 
 
 object GameMatchActor {
@@ -71,7 +75,9 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
    *
    */
   private def inGame(): Receive = {
-    case _ => ???
+    case PlayerMovedServer(player) =>
+      players.filter(p => p.id != player.clientId).foreach(p => p.actorRef ! PlayerMovedCotroller(player))
+
   }
 
   /**
@@ -135,10 +141,27 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
     log.debug(s"updated players $players")
 
     // watch the players with the new actor ref
-    this.players.foreach(p => context.watch(p.actorRef))
-
-    this.broadcastGameStateToPlayers()
+    val playersRole = defineRoles(players)
+    this.players.foreach(p => {
+      p.actorRef ! GamePlayersClient(playersRole)
+      context.watch(p.actorRef)
+    })
     context.become(inGame() orElse terminationAfterGameStarted())
+  }
+
+  private def defineRoles(players: Seq[GamePlayer]): Seq[Player] = {
+    var playersRole: Seq[Player] = Seq()
+    val rand1 = Random.nextInt(players.length)
+    val rand2 = Random.nextInt(players.length)
+
+    for (n <- 0 until players.length) {
+      n match {
+        case n if n == rand1 || n == rand2 =>
+          playersRole = playersRole :+ Impostor(players(n).id, players(n).username, Point2D(0,0))
+        case _ => playersRole = playersRole :+ Crewmate(players(n).id, players(n).username, Point2D(0,0))
+      }
+    }
+    playersRole
   }
 
   /**
