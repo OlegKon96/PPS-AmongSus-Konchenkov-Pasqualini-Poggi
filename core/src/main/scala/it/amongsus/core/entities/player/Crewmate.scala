@@ -10,10 +10,10 @@ trait Crewmate extends AlivePlayer{}
 
 object Crewmate{
   def apply(clientId: String, username: String, position: Point2D): Crewmate =
-    CrewmateImpl(Color.GREEN, clientId, username, position)
+    CrewmateImpl("green", clientId, username, position)
 }
 
-case class CrewmateImpl(override val color: Color,
+case class CrewmateImpl(override val color: String,
                         override val clientId: String,
                         override val username: String,
                         override val position: Point2D) extends Crewmate {
