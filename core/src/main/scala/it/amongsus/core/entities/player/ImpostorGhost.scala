@@ -2,6 +2,7 @@ package it.amongsus.core.entities.player
 
 import java.awt.Color
 
+import it.amongsus.core.entities.player.Movement._
 import it.amongsus.core.entities.util.Point2D
 
 /**
