@@ -25,10 +25,10 @@ trait Impostor extends AlivePlayer{
 
 object Impostor{
   def apply(clientId: String, username: String, position: Point2D): Impostor =
-    ImpostorImpl(Color.GREEN, clientId, username, position)
+    ImpostorImpl("green", clientId, username, position)
 }
 
-case class ImpostorImpl(override val color: Color,
+case class ImpostorImpl(override val color: String,
                         override val clientId: String,
                         override val username: String,
                         override val position: Point2D) extends Impostor {

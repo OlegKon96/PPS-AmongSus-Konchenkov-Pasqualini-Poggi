@@ -17,10 +17,10 @@ trait ImpostorGhost extends DeadPlayer{
 
 object ImpostorGhost{
   def apply(clientId: String, username: String, position: Point2D): ImpostorGhost =
-    ImpostorGhostImpl(Color.GREEN, clientId, username, position)
+    ImpostorGhostImpl("green", clientId, username, position)
 }
 
-case class ImpostorGhostImpl(override val color: Color,
+case class ImpostorGhostImpl(override val color: String,
                              override val clientId: String,
                              override val username: String,
                              override val position: Point2D) extends ImpostorGhost {
