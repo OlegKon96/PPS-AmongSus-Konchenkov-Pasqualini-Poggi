@@ -1,7 +1,7 @@
-package it.amongsus.model.entities.player
+package it.amongsus.core.entities.player
 
-import it.amongsus.model.entities.map.Collectionable
-import it.amongsus.model.entities.util.Point2D
+import it.amongsus.core.entities.map.Collectionable
+import it.amongsus.core.entities.util.Point2D
 
 trait CrewmateGhost extends DeadPlayer
 

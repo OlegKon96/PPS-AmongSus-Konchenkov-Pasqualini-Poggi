@@ -1,4 +1,4 @@
-package it.amongsus.model.entities
+package it.amongsus.core.entities
 
 trait Entity extends Drawable {
 

@@ -1,4 +1,4 @@
-package it.amongsus.model.entities.player
+package it.amongsus.core.entities.player
 
 /**
  * Trait that manages the Alive Player of the game

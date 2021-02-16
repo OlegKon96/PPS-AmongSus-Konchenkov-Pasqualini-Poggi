@@ -1,7 +1,7 @@
-package it.amongsus.model.entities.map
+package it.amongsus.core.entities.map
 
-import it.amongsus.model.entities.Entity
-import it.amongsus.model.entities.util.Point2D
+import it.amongsus.core.entities.Entity
+import it.amongsus.core.entities.util.Point2D
 
 trait Collectionable extends Entity{
   def collect(): Unit

@@ -1,4 +1,4 @@
-package it.amongsus.model.entities.util
+package it.amongsus.core.entities.util
 
 trait Point2D{
   def x: Int
