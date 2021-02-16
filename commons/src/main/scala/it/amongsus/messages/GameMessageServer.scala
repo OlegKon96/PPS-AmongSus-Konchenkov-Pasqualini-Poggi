@@ -1,6 +1,7 @@
 package it.amongsus.messages
 
 import akka.actor.ActorRef
+import it.amongsus.core.entities.player.Player
 
 object GameMessageServer {
   /**
@@ -10,6 +11,10 @@ object GameMessageServer {
    * @param gameClientActorRef The Reference of the client actor responsible for the communication with the server during the game
    */
   case class PlayerReadyServer(playerId: String, gameClientActorRef: ActorRef)
+  /**
+   * Tells the server that a player was updated
+   */
+  case class PlayerMovedServer(player: Player)
   /**
    * Message sent by the client to leave the game
    *

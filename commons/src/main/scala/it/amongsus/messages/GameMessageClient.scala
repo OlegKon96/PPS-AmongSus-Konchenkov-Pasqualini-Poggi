@@ -1,10 +1,22 @@
 package it.amongsus.messages
 
+import it.amongsus.core.entities.player.Player
+
 object GameMessageClient {
   /**
    * Tells the controller actor that a player is ready to start a game
    */
   case class PlayerReadyClient()
+  /**
+   * Tells the controller actor that the list of players of a game
+   */
+  case class GamePlayersClient(asd : Seq[Player])
+
+  /**
+   *
+   * @param player
+   */
+  case class PlayerMovedCotroller(player: Player)
   /**
    * Tells the controller actor that a player wants to leave the game
    */
