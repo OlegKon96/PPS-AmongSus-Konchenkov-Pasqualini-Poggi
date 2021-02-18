@@ -2,6 +2,7 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
+import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.JFrameIO
 
 import javax.swing.JFrame
@@ -24,6 +25,7 @@ object GameFrame {
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
     val WIDTH: Int = 500
     val HEIGHT: Int = 500
+    val gamePanel: GamePanel = GamePanel()
 
     override def start(): IO[Unit] = for {
       _ <- gameFrame.setSize(WIDTH, HEIGHT)

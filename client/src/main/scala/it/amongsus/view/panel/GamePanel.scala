@@ -10,6 +10,6 @@ object GamePanel {
   def apply() : GamePanel = new GamePanelImpl()
 
   private class GamePanelImpl() extends GamePanel {
-    
+
   }
 }
