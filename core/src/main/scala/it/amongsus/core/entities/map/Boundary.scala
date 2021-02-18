@@ -1,6 +1,5 @@
 package it.amongsus.core.entities.map
 
-
 import it.amongsus.core.entities.util.Point2D
 
 trait Boundary extends Wall
