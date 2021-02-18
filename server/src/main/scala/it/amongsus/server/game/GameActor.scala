@@ -1,7 +1,7 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
-import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
+import it.amongsus.core.entities.player.{Crewmate, CrewmateAlive, Impostor, ImpostorAlive, Player}
 import it.amongsus.core.entities.util.Point2D
 import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedCotroller}
 import it.amongsus.messages.GameMessageServer._
@@ -157,8 +157,8 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
     for (n <- 0 until players.length) {
       n match {
         case n if n == rand1 || n == rand2 =>
-          playersRole = playersRole :+ Impostor(players(n).id, players(n).username, Point2D(0,0))
-        case _ => playersRole = playersRole :+ Crewmate(players(n).id, players(n).username, Point2D(0,0))
+          playersRole = playersRole :+ ImpostorAlive(players(n).id, players(n).username, Point2D(0,0))
+        case _ => playersRole = playersRole :+ CrewmateAlive(players(n).id, players(n).username, Point2D(0,0))
       }
     }
     playersRole

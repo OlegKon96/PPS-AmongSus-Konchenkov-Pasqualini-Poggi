@@ -1,7 +1,8 @@
 package it.amongsus.controller.actor
 
 import it.amongsus.core.entities.map.{Collectionable, Tile}
-import it.amongsus.core.entities.player.{Movement, Player}
+import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.Movement
 
 object ControllerActorMessages {
   /**

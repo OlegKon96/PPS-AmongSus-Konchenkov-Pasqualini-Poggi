@@ -1,6 +1,7 @@
 package it.amongsus.view.actor
 
-import it.amongsus.core.entities.player.{Movement, Player}
+import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.Movement
 
 object UiActorGameMessages {
   /**

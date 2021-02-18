@@ -47,7 +47,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   val mapCenter: Point2D = Point2D(0, 0)
   var gamePlayers: Seq[Player] = Seq()
-  var myChar: Player = Crewmate("", "", mapCenter)
+  var myChar: Player = CrewmateAlive("", "", mapCenter)
   var collectionablesSeq: Seq[Collectionable] = Seq()
 
   override def generatePlayers(players: Seq[Player]): Unit = {
