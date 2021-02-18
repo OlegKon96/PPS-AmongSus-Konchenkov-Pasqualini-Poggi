@@ -1,26 +1,37 @@
 package it.amongsus.core.entities.player
 
-import it.amongsus.core.entities.map.Collectionable
-import it.amongsus.core.entities.player.Movement.{Down, Left, Right, Up}
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.core.entities.map.Tile
+import it.amongsus.core.entities.util.Movement._
+import it.amongsus.core.entities.util.{Movement, Point2D}
 
-trait CrewmateGhost extends DeadPlayer
+trait CrewmateGhost extends DeadPlayer with Crewmate
 
-object CrewmateGhost{
+object CrewmateGhost {
   def apply(clientId: String, username: String, position: Point2D): CrewmateGhost =
-    CrewmateGhostImpl("green", clientId, username, position)}
+    CrewmateGhostImpl("green", clientId, username, Constants.Crewmate.FIELD_OF_VIEW,
+      Constants.Crewmate.NUM_COINS, position)
 
-case class CrewmateGhostImpl(override val color: String,
-                             override val clientId: String,
-                             override val username: String,
-                             override val position: Point2D) extends CrewmateGhost {
+  private case class CrewmateGhostImpl(override val color: String,
+                                       override val clientId: String,
+                                       override val username: String,
+                                       override val fieldOfView: Int,
+                                       override var numCoins: Int,
+                                       override val position: Point2D) extends CrewmateGhost {
 
-  override def move(direction: Movement): Unit = direction match{
-    case Up() => CrewmateGhost(clientId, username, Point2D(position.x, position.y + 1))
-    case Down() => CrewmateGhost(clientId, username, Point2D(position.x, position.y - 1))
-    case Left() => CrewmateGhost(clientId, username, Point2D(position.x - 1, position.y))
-    case Right() => CrewmateGhost(clientId,username, Point2D(position.x + 1, position.y))
+    override def move(direction: Movement, map: Array[Array[Tile]]): Option[Player] = {
+      val newPlayer = direction match {
+        case Up() => CrewmateGhost(clientId, username, Point2D(position.x - 1, position.y))
+        case Down() => CrewmateGhost(clientId, username, Point2D(position.x + 1, position.y))
+        case Left() => CrewmateGhost(clientId, username, Point2D(position.x, position.y - 1))
+        case Right() => CrewmateGhost(clientId, username, Point2D(position.x, position.y + 1))
+      }
+
+      checkCollision(newPlayer.position, map) match {
+        case true => None
+        case false => Option(newPlayer)
+      }
+    }
   }
 
-  private def collect(): Unit = Collectionable.apply(position)
 }
+
