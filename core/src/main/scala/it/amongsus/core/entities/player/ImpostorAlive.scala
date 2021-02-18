@@ -2,7 +2,7 @@ package it.amongsus.core.entities.player
 
 import it.amongsus.core.entities.map.{Tile, Vent}
 import it.amongsus.core.entities.util.Movement.{Down, Left, Right, Up}
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.core.entities.util.{Movement, Point2D}
 
 /**
  * Trait that manages the Impostor of the game

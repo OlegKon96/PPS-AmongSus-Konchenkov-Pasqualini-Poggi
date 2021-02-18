@@ -26,10 +26,7 @@ object CrewmateAlive {
         case Right() => CrewmateAlive(clientId, username, Point2D(position.x, position.y + 1))
       }
 
-      checkCollision(newPlayer.position, map) match {
-        case true => None
-        case false => Option(newPlayer)
-      }
+      if (checkCollision(newPlayer.position, map)) None else Option(newPlayer)
     }
   }
 }

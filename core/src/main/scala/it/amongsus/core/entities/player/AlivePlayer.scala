@@ -19,7 +19,7 @@ trait AlivePlayer extends Player {
 
   def checkCollision(pos: Point2D, map: Array[Array[Tile]]): Boolean = {
     map(pos.x)(pos.y) match {
-      case tile : Floor => false
+      case _: Floor => false
       case _ => true
     }
   }
