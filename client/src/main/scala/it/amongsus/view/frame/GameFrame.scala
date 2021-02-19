@@ -4,8 +4,6 @@ import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.map.{Collectionable, Tile}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
-import it.amongsus.view.actor.UiActorGameMessages.UiButtonPressedUi
 import it.amongsus.view.controller.Keyboard
 import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
