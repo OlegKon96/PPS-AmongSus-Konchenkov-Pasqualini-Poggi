@@ -13,6 +13,7 @@ import javax.swing.plaf.PanelUI
 class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
   def setUI(ui:PanelUI): IO[Unit] = IO {component.setUI(ui)}
   def UI(): IO[PanelUI] = IO {component.getUI}
+  def setSize(width: Int, height: Int) : IO[Unit] = IO{component.setSize(width,height)}
   def setBorder(border : Border) : IO[Unit] = IO {component.setBorder(border)}
   def setUIInvokingAndWaiting(ui:PanelUI): IO[Unit] = invokeAndWaitIO(component.setUI(ui))
 }

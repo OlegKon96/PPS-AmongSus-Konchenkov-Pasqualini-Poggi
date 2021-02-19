@@ -16,6 +16,7 @@ class JButtonIO(override val component: JButton) extends ComponentIO(component){
   def addActionListenerFromUnit(l: => Unit): IO[Unit] = IO {component.addActionListener(_ => l)}
   def removeActionListener(l:ActionListener): IO[Unit] = IO {component.removeActionListener(l)}
   def text(): IO[String] = IO {component.getText}
+  def setFocusable(boolean: Boolean): IO[Unit] = IO {component.setFocusable(boolean)}
 
   //enabling event listener description by monad
   def addActionListener(l:ActionEvent => IO[Unit]): IO[Unit] =
@@ -24,6 +25,7 @@ class JButtonIO(override val component: JButton) extends ComponentIO(component){
   def addActionListener(l: => IO[Unit]): IO[Unit] =
     IO {component.addActionListener( _ => l.unsafeRunSync() )}
 
+  def setSize(width : Int, height : Int) : IO[Unit] = IO {component.setSize(width,height)}
   def setText(text: String): IO[Unit] = IO {component.setText(text)}
   def setEnabled(b: Boolean): IO[Unit] = IO { component.setEnabled(b) }
   def setTextInvokingAndWaiting(text: String): IO[Unit] = invokeAndWaitIO(component.setText(text))
