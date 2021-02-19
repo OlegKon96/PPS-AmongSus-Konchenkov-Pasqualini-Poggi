@@ -41,8 +41,8 @@ object GameFrame {
                               override val players : Seq[Player],
                               override val collectionables : Seq[Collectionable]) extends GameFrame {
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
-    val WIDTH: Int = 500
-    val HEIGHT: Int = 500
+    val WIDTH: Int = 1230
+    val HEIGHT: Int = 775
     val gamePanel: GamePanel = GamePanel(map,players,collectionables)
     val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
     val killButton: JButtonIO = JButtonIO("Kill").unsafeRunSync()
@@ -50,6 +50,7 @@ object GameFrame {
     val ventButton: JButtonIO = JButtonIO("Vent").unsafeRunSync()
 
     override def start(): IO[Unit] = for {
+      _ <- gameFrame.addKeyListener(Keyboard(this))
       _ <- IO(gamePanel.setSize(1080,775))
       buttonPanel <- createButtonPanel()
       cp <- gameFrame.contentPane()
