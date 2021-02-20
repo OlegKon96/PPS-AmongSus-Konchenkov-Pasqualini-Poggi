@@ -14,6 +14,8 @@ object ModelActorMessages {
   case class InitModel(map: Iterator[String], players: Seq[Player])
   /**
    * Tells to the model that his character moved
+   *
+   * @param direction to move on
    */
   case class MyCharMovedModel(direction: Movement)
   /**
