@@ -3,7 +3,7 @@ package it.amongsus.server.game
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
 import it.amongsus.core.entities.player.{Crewmate, CrewmateAlive, Impostor, ImpostorAlive, Player}
 import it.amongsus.core.entities.util.Point2D
-import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedCotroller}
+import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient, PlayerMovedCotroller}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
@@ -75,9 +75,8 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
    *
    */
   private def inGame(): Receive = {
-    case PlayerMovedServer(player) =>
-      players.filter(p => p.id != player.clientId).foreach(p => p.actorRef ! PlayerMovedCotroller(player))
-
+    case PlayerMovedServer(player, deadBodys) =>
+      players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
   }
 
   /**

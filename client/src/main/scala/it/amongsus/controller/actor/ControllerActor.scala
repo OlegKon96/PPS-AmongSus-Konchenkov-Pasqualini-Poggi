@@ -8,8 +8,8 @@ import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitModel, InitPlayersModel, MyCharMovedModel, PlayerMovedModel}
-import it.amongsus.view.actor.UiActorGameMessages.{PlayerUpdatedUi, _}
+import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel}
+import it.amongsus.view.actor.UiActorGameMessages.{_}
 import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
