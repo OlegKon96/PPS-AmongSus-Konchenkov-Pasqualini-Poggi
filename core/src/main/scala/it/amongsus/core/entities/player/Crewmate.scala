@@ -14,7 +14,7 @@ trait Crewmate extends Player {
   /**
    * Method to collect the coin
    *
-   * @param player          of the game
+   * @param player of the game
    * @return
    */
   def collect(player: Crewmate):  Player = {
