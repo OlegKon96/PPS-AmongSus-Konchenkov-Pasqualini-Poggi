@@ -2,6 +2,9 @@ package it.amongsus.core.entities.map
 
 import it.amongsus.core.entities.util.Point2D
 
+/**
+ * Trait that represents the Boundary of the game
+ */
 trait Boundary extends Wall
 
 object Boundary{
