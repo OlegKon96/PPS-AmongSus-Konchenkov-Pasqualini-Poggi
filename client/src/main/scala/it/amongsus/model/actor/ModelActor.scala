@@ -2,7 +2,7 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitPlayersModel, MyCharMovedModel, PlayerMovedModel}
+import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitModel, InitPlayersModel, MyCharMovedModel, PlayerMovedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -13,13 +13,14 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
   override def receive: Receive = gameBehaviour(state)
 
   private def gameBehaviour(state: ModelActorInfo): Receive = {
-    case InitMapModel(map) =>
-      context become gameBehaviour(ModelActorInfo(state.controllerRef, Option(state.generateMap(map)), state.clientId))
-
-    case InitPlayersModel(players) => {
-      state.generatePlayers(players)
-      state.controllerRef.get ! ModelReadyCotroller(state.gameMap.get, state.playersList, state.collectionables)
-    }
+    case InitModel(map, players) =>
+      state.gamePlayers = players
+      val gameMap = state.generateMap(map)
+      state.generateCollectionables(gameMap)
+      state.controllerRef.get ! ModelReadyCotroller(gameMap, state.myCharacter, state.gamePlayers,
+        state.gameCollectionables)
+      context become gameBehaviour(ModelActorInfo(state.controllerRef,
+        Option(gameMap), players, state.gameCollectionables, state.clientId))
 
     case MyCharMovedModel(direction) => {
       state.controllerRef.get ! UpdatedMyCharController(state.myCharacter)
