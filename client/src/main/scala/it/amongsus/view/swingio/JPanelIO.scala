@@ -1,6 +1,7 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
+import java.awt.event.KeyListener
 import javax.swing.JPanel
 import javax.swing.border.Border
 import javax.swing.plaf.PanelUI
@@ -13,9 +14,13 @@ import javax.swing.plaf.PanelUI
 class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
   def setUI(ui:PanelUI): IO[Unit] = IO {component.setUI(ui)}
   def UI(): IO[PanelUI] = IO {component.getUI}
-  def setSize(width: Int, height: Int) : IO[Unit] = IO{component.setSize(width,height)}
   def setBorder(border : Border) : IO[Unit] = IO {component.setBorder(border)}
+  def setSize(width: Int, height: Int) : IO[Unit] = IO{component.setSize(width,height)}
+  //def paintComponent(g: Graphics) : IO[Unit] = IO{component.paintComponents(g)}
   def setUIInvokingAndWaiting(ui:PanelUI): IO[Unit] = invokeAndWaitIO(component.setUI(ui))
+  def addKeyListener(k : KeyListener) : IO[Unit] = IO(component.addKeyListener(k))
+  def requestFocusInWindow() : IO[Unit] = IO(component.requestFocusInWindow())
+  def setFocusable(boolean: Boolean): IO[Unit] = IO {component.setFocusable(boolean)}
 }
 
 /**
@@ -23,4 +28,5 @@ class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
  */
 object JPanelIO{
   def apply(): IO[JPanelIO] = IO { new JPanelIO(new JPanel) }
+  def apply(panel : JPanel): IO[JPanelIO] = IO {new JPanelIO(panel)}
 }
