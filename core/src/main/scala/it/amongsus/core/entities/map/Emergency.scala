@@ -6,6 +6,9 @@ import it.amongsus.core.entities.util.Point2D
  * Trait that manages the emergency button item of the game
  */
 trait Emergency extends Wall{
+  /**
+   * Method to call an emergency during the game
+   */
   def callEmergency() : Unit
 }
 
