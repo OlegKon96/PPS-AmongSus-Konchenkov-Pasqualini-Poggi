@@ -1,62 +1,91 @@
 package it.amongsus.model.actor
 
 import akka.actor.ActorRef
-import it.amongsus.core.entities.map.{Collectionable, Floor, Tile, Wall}
+import it.amongsus.core.entities.map.{Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.entities.player._
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.core.entities.util.{Movement, Point2D}
 
 import scala.Array.ofDim
 import scala.util.Random
 
 trait ModelActorInfo {
   /**
+   * Sequence of Players of the game
+   */
+  var gamePlayers: Seq[Player]
+  /**
+   * Sequence of Collectionables of the game
+   */
+  var gameCollectionables: Seq[Collectionable]
+  /**
    * The ID of the Client
    */
   def clientId: String
-
   /**
    * The reference of the Game Server
    *
    * @return
    */
   def controllerRef: Option[ActorRef]
-
+  /**
+   * The map of the game
+   *
+   * @return
+   */
   def gameMap: Option[Array[Array[Tile]]]
-
+  /**
+   * Method that generates the map of the game
+   *
+   * @param map of the game
+   * @return
+   */
   def generateMap(map: Iterator[String]): Array[Array[Tile]]
-
-  def generatePlayers(players: Seq[Player]): Unit
-
-  def playersList: Seq[Player]
-
+  /**
+   * Method that generates the collectionables of the game
+   *
+   * @param map of the game
+   */
+  def generateCollectionables(map: Array[Array[Tile]]): Unit
+  /**
+   * Method that finds my characters
+   *
+   * @return
+   */
   def myCharacter: Player
-
-  def collectionables: Seq[Collectionable]
+  /**
+   * Method that updates position of the characters
+   *
+   * @param direction to move on
+   */
+  def updateMyChar(direction: Movement): Unit
+  /**
+   * Method that updates buttons of the characters
+   *
+   * @param player of the game to update
+   * @return
+   */
+  def updatePlayer(player: Player): Seq[Player]
+  /**
+   * Sequence of a players' DeadBody
+   */
+  var deadBodys: Seq[DeadBody]
 }
 
 object ModelActorInfo {
-  def apply(): ModelActorInfo = ModelActorInfoData(None, None, "")
+  def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "")
 
-  def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Tile]]], clientId: String): ModelActorInfo =
-    ModelActorInfoData(controllerRef, map, clientId)
+  def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Tile]]],
+            playersList: Seq[Player], gameCollectionables: Seq[Collectionable], clientId: String): ModelActorInfo =
+    ModelActorInfoData(controllerRef, map, playersList, gameCollectionables, clientId)
 }
 
 case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override val gameMap: Option[Array[Array[Tile]]],
+                              override var gamePlayers: Seq[Player],
+                              override var gameCollectionables: Seq[Collectionable],
                               override val clientId: String) extends ModelActorInfo {
 
-  val mapCenter: Point2D = Point2D(0, 0)
-  var gamePlayers: Seq[Player] = Seq()
-  var myChar: Player = CrewmateAlive("", "", mapCenter)
-  var collectionablesSeq: Seq[Collectionable] = Seq()
-
-  override def generatePlayers(players: Seq[Player]): Unit = {
-    gamePlayers = players
-    myChar = gamePlayers.filter(player => player.clientId == this.clientId).lift(0).get
-    println("myChar: " + myCharacter.username)
-  }
-
-  override def myCharacter: Player = myChar
+  override var deadBodys: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Tile]] = {
     var j = 0
@@ -81,21 +110,35 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     tileMatrix
   }
 
-  private def generateCollectionables(map: Array[Array[Tile]]): Unit = {
+  override def generateCollectionables(map: Array[Array[Tile]]): Unit = {
     var tiles: Seq[Tile] = Seq.empty
-    map.foreach(x => x.foreach(y => y match {
+    map.foreach(x => x.foreach {
       case tile: Floor => tiles = tiles :+ tile
       case tile: Wall =>
-    }))
+      case tile: Other =>
+    })
 
     for (i <- 0 until 10) {
       val rand = Random.nextInt(tiles.length)
-      this.collectionablesSeq = collectionables :+ Collectionable(tiles(rand).position)
+      this.gameCollectionables = gameCollectionables :+ Collectionable(tiles(rand).position)
       tiles = tiles.take(rand) ++ tiles.drop(rand + 1)
     }
   }
 
-  override def collectionables: Seq[Collectionable] = collectionablesSeq
+  override def myCharacter: Player = gamePlayers.find(player => player.clientId == this.clientId).get
 
-  override def playersList: Seq[Player] = gamePlayers
+  /**
+   * Method that updates position of the characters
+   *
+   * @param direction to move on
+   */
+  override def updateMyChar(direction: Movement): Unit = ???
+
+  /**
+   * Method that updates buttons of the characters
+   *
+   * @param player of the game to update
+   * @return
+   */
+  override def updatePlayer(player: Player): Seq[Player] = ???
 }
