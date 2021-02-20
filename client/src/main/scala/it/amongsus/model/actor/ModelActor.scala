@@ -1,7 +1,7 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, _}
 import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel}
 
 object ModelActor {
@@ -22,13 +22,11 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       context become gameBehaviour(ModelActorInfo(state.controllerRef,
         Option(gameMap), players, state.gameCollectionables, state.clientId))
 
-    case MyCharMovedModel(direction) => {
-      state.controllerRef.get ! UpdatedMyCharController(state.myCharacter)
-    }
+    case MyCharMovedModel(direction) => state.updateMyChar(direction)
 
-    case PlayerMovedModel(player) => {
-      state.controllerRef.get ! UpdatedPlayerController(state.myCharacter)
-    }
+    case PlayerMovedModel(player, deadBodys) =>
+      state.deadBodys = deadBodys
+      state.updatePlayer(player)
 
     case _ => println("error model game")
   }
