@@ -1,22 +1,25 @@
 package it.amongsus.core.entities.util
 
+/**
+ * Trait that manages the movement in the game
+ */
 trait Movement
 
 object Movement {
   /**
-   * Tells that the Player wants to move up
+   * Tells that Player wants to move up
    */
   case class Up() extends Movement
   /**
-   * Tells that the Player wants to move down
+   * Tells that Player wants to move down
    */
   case class Down() extends Movement
   /**
-   * Tells that the Player wants to move left
+   * Tells that Player wants to move left
    */
   case class Left() extends Movement
   /**
-   * Tells that the Player wants to move right
+   * Tells that Player wants to move right
    */
   case class Right() extends Movement
 }
