@@ -1,10 +1,9 @@
 package it.amongsus.model.actor
 
 import akka.actor.ActorRef
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, UpdatedMyCharController, UpdatedPlayersController}
-import it.amongsus.core.entities.map.{Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
+import it.amongsus.controller.actor.ControllerActorMessages.{UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.core.entities.map.{Collectionable, DeadBody, Floor, Other, Tile, Wall}
 import it.amongsus.core.entities.player._
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
 import it.amongsus.core.entities.util.{Movement, Point2D}
 
 import scala.Array.ofDim
