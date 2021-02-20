@@ -49,7 +49,8 @@ object UiActorLobbyMessages {
   /**
    * Notify the UI Actor that a game is starting
    */
-  case class GameFoundUi(map: Array[Array[Tile]], players: Seq[Player], collectionables: Seq[Collectionable])
+  case class GameFoundUi(map: Array[Array[Tile]], myChar: Player,
+                         players: Seq[Player], collectionables: Seq[Collectionable])
 
   /**
    * Notify the User that there's a match to a Lobby
