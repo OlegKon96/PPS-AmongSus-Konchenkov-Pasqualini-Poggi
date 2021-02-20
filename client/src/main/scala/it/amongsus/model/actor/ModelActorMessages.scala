@@ -5,14 +5,12 @@ import it.amongsus.core.entities.util.Movement
 
 object ModelActorMessages {
   /**
-   * Tells to the model actor to initialize the map
+   * Tells to UI actor that the player is ready to start the game
+   *
+   * @param map of the game
+   * @param players of the game
    */
-  case class InitMapModel(map: Iterator[String])
-
-  /**
-   * Tells to the model actor to initialize the players
-   */
-  case class InitPlayersModel(players: Seq[Player])
+  case class InitModel(map: Iterator[String], players: Seq[Player])
   /**
    * Tells to the model that his character moved
    */
