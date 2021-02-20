@@ -1,6 +1,7 @@
 package it.amongsus.messages
 
 import akka.actor.ActorRef
+import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
 
 object GameMessageServer {
@@ -13,8 +14,11 @@ object GameMessageServer {
   case class PlayerReadyServer(playerId: String, gameClientActorRef: ActorRef)
   /**
    * Tells the server that a player was updated
+   *
+   * @param player of the game
+   * @param deadBodys of the game
    */
-  case class PlayerMovedServer(player: Player)
+  case class PlayerMovedServer(player: Player, deadBodys: Seq[DeadBody])
   /**
    * Message sent by the client to leave the game
    *
