@@ -1,5 +1,6 @@
 package it.amongsus.messages
 
+import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
 
 object GameMessageClient {
@@ -11,12 +12,13 @@ object GameMessageClient {
    * Tells the controller actor that the list of players of a game
    */
   case class GamePlayersClient(asd : Seq[Player])
-
   /**
+   * Tells the controller actor that player moved to another position
    *
-   * @param player
+   * @param player of the game
+   * @param deadBodys of the game
    */
-  case class PlayerMovedCotroller(player: Player)
+  case class PlayerMovedClient(player: Player, deadBodys: Seq[DeadBody])
   /**
    * Tells the controller actor that a player wants to leave the game
    */
