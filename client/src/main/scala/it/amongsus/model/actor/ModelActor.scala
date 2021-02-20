@@ -1,7 +1,7 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, _}
+import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel}
 
 object ModelActor {
