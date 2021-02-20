@@ -12,5 +12,3 @@ object BorderFactoryIO {
     BorderFactory.createEmptyBorder(top, left, bottom, right)
   }
 }
-
-
