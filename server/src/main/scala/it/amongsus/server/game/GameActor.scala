@@ -1,9 +1,9 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
-import it.amongsus.core.entities.player.{Crewmate, CrewmateAlive, Impostor, ImpostorAlive, Player}
+import it.amongsus.core.entities.player.{Constants, CrewmateAlive, ImpostorAlive, Player}
 import it.amongsus.core.entities.util.Point2D
-import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient, PlayerMovedCotroller}
+import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
@@ -151,13 +151,14 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
   private def defineRoles(players: Seq[GamePlayer]): Seq[Player] = {
     var playersRole: Seq[Player] = Seq()
     val rand1 = Random.nextInt(players.length)
-    val rand2 = Random.nextInt(players.length)
+    //val rand2 = Random.nextInt(players.length)
 
-    for (n <- 0 until players.length) {
+    for (n <- players.indices) {
       n match {
-        case n if n == rand1 || n == rand2 =>
-          playersRole = playersRole :+ ImpostorAlive(players(n).id, players(n).username, Point2D(0,0))
-        case _ => playersRole = playersRole :+ CrewmateAlive(players(n).id, players(n).username, Point2D(0,0))
+        case n if n == rand1 /*|| n == rand2*/ =>
+          playersRole = playersRole :+ ImpostorAlive(players(n).id, players(n).username, Point2D(35,35))
+        case _ => playersRole = playersRole :+ CrewmateAlive(players(n).id, players(n).username,
+          Constants.Crewmate.NUM_COINS, Point2D(35,35))
       }
     }
     playersRole
