@@ -2,7 +2,7 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.model.actor.ModelActorMessages.{InitMapModel, InitModel, InitPlayersModel, MyCharMovedModel, PlayerMovedModel}
+import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =

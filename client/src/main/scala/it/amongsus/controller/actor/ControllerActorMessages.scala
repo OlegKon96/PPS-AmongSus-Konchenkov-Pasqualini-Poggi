@@ -1,6 +1,6 @@
 package it.amongsus.controller.actor
 
-import it.amongsus.core.entities.map.{Collectionable, Tile}
+import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.Movement
 
@@ -8,7 +8,8 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the model is ready
    */
-  case class ModelReadyCotroller(map: Array[Array[Tile]], players: Seq[Player], collectionables: Seq[Collectionable])
+  case class ModelReadyCotroller(map: Array[Array[Tile]], myChar: Player, players: Seq[Player],
+                                 collectionables: Seq[Collectionable])
   /**
    * Tells to the controller that his character moved
    */
@@ -16,7 +17,12 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the model has updated his character status
    */
-  case class UpdatedMyCharController(player: Player)
+  case class UpdatedMyCharController(player: Player, deadBodys: Seq[DeadBody])
+  /**
+   * Tells to the controller that the model has updated a player status
+   */
+  case class UpdatedPlayersController(myChar: Player, player: Seq[Player], collectionables: Seq[Collectionable],
+                                      deadBodies: Seq[DeadBody])
   /**
    * Tells to the controller that the model has updated a player status
    */

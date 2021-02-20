@@ -1,7 +1,7 @@
 package it.amongsus.model.actor
 
 import akka.actor.ActorRef
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.entities.player._
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
@@ -151,5 +151,11 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     val index = gamePlayers.indexOf(gamePlayers.find(p => p.clientId == player.clientId).get)
     gamePlayers = gamePlayers.updated(index, player)
     gamePlayers
+  }
+
+  private def playerUpdated(player: Player): Unit = {
+    updatePlayer(player)
+    controllerRef.get ! UpdatedMyCharController(myCharacter, deadBodys)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
   }
 }
