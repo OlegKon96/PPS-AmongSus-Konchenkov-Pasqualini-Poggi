@@ -1,8 +1,10 @@
 package it.amongsus.model.actor
 
 import akka.actor.ActorRef
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController}
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.entities.player._
+import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
 import it.amongsus.core.entities.util.{Movement, Point2D}
 
 import scala.Array.ofDim
@@ -127,18 +129,27 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def myCharacter: Player = gamePlayers.find(player => player.clientId == this.clientId).get
 
-  /**
-   * Method that updates position of the characters
-   *
-   * @param direction to move on
-   */
-  override def updateMyChar(direction: Movement): Unit = ???
+  override def updateMyChar(direction: Movement): Unit = {
+    myCharacter.move(direction, gameMap.get) match {
+      case Some(player) =>
+        playerUpdated(player match {
+          case crew: Crewmate =>
+            crew.canCollect(gameCollectionables, crew) match {
+              case Some(collect) => {
+                gameCollectionables = gameCollectionables.filter(c => c != collect)
+                crew.collect(crew)
+              }
+              case None => crew
+            }
+          case _ => player
+        })
+      case None =>
+    }
+  }
 
-  /**
-   * Method that updates buttons of the characters
-   *
-   * @param player of the game to update
-   * @return
-   */
-  override def updatePlayer(player: Player): Seq[Player] = ???
+  override def updatePlayer(player: Player): Seq[Player] = {
+    val index = gamePlayers.indexOf(gamePlayers.find(p => p.clientId == player.clientId).get)
+    gamePlayers = gamePlayers.updated(index, player)
+    gamePlayers
+  }
 }
