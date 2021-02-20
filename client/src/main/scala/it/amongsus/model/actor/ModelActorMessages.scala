@@ -1,5 +1,6 @@
 package it.amongsus.model.actor
 
+import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.Movement
 
@@ -17,6 +18,9 @@ object ModelActorMessages {
   case class MyCharMovedModel(direction: Movement)
   /**
    * Tells to the model that another player moved
+   *
+   * @param player of the game
+   * @param deadBodys of the game
    */
-  case class PlayerMovedModel(player: Player)
+  case class PlayerMovedModel(player: Player, deadBodys: Seq[DeadBody])
 }
