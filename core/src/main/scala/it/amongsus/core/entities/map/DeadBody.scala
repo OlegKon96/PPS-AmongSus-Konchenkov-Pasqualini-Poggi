@@ -7,6 +7,9 @@ import it.amongsus.core.entities.util.Point2D
  * Trait that manages the report of a dead body
  */
 trait DeadBody extends Entity{
+  /**
+   * Method to report a dead body found
+   */
   def report() : Unit
 }
 
