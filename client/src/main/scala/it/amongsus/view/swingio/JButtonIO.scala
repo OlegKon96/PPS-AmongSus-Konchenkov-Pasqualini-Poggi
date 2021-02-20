@@ -24,7 +24,6 @@ class JButtonIO(override val component: JButton) extends ComponentIO(component){
   //event listener that doesn't leverage action event parameter
   def addActionListener(l: => IO[Unit]): IO[Unit] =
     IO {component.addActionListener( _ => l.unsafeRunSync() )}
-
   def setSize(width : Int, height : Int) : IO[Unit] = IO {component.setSize(width,height)}
   def setText(text: String): IO[Unit] = IO {component.setText(text)}
   def setEnabled(b: Boolean): IO[Unit] = IO { component.setEnabled(b) }
