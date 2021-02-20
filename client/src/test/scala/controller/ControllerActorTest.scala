@@ -23,7 +23,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
   "The Controller Actor" should {
 
-    "Get Ready, Win a Match and then Leave the Client" in {
+    /*"Get Ready, Win a Match and then Leave the Client" in {
       val client = TestProbe()
       val controllerActor =
         system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
@@ -35,7 +35,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       client.expectMsgType[GameWonUi]
       controllerActor ! LeaveGameClient()
       client.expectMsgType[LeaveGameServer]
-    }
+    }*/
 
     "Add a User to a Lobby Client" in {
       val client = TestProbe()
