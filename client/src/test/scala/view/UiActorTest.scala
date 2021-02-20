@@ -1,4 +1,4 @@
-package View
+package view
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
