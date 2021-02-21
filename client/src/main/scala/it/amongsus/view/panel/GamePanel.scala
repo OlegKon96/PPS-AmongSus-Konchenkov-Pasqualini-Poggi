@@ -10,6 +10,7 @@ import javax.imageio.ImageIO
 import javax.swing.JPanel
 
 trait GamePanel extends JPanel{
+  def updateGame(players: Seq[Player]) : Unit
 
 }
 
@@ -36,6 +37,7 @@ object GamePanel {
     override def paintComponent(g : Graphics): Unit = {
       g.clearRect(0, 0, 1080, 750)
       drawMap(g)
+      drawPlayers(g)
     }
 
     private def drawMap(g : Graphics) : Unit = {
@@ -48,8 +50,14 @@ object GamePanel {
         case tile: Other => g.drawImage(space, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
       })
 
-      gamePlayers.foreach(player => g.drawImage(playerPic, player.position.y * 15 + 1, player.position.x * 15 + 1, 15, 15, null))
-    }
 
+    }
+    private def drawPlayers(g : Graphics) : Unit =
+      gamePlayers.foreach(player => g.drawImage(playerPic, player.position.y * 15 + 1, player.position.x * 15 + 1, 15, 15, null))
+
+    override def updateGame(players: Seq[Player]): Unit = {
+      this.gamePlayers = players
+      repaint()
+    }
   }
 }

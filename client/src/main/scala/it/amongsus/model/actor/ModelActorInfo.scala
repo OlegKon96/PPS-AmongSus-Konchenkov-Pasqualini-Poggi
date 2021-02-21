@@ -99,7 +99,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       line.split(",").map(_.trim).foreach(col => {
         col match {
           case "189" => tileMatrix(j)(k) = Wall(Point2D(j, k))
-          case "0" => tileMatrix(j)(k) = Wall(Point2D(j, k))
+          case "0" => tileMatrix(j)(k) = Other(Point2D(j, k))
           case "40" => tileMatrix(j)(k) = Floor(Point2D(j, k))
           case "1" => tileMatrix(j)(k) = Boundary(Point2D(j, k))
           case "66" => tileMatrix(j)(k) = Vent(Point2D(j, k))

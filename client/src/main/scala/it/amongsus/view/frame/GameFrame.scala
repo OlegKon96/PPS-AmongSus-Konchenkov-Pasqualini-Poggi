@@ -30,6 +30,8 @@ trait GameFrame extends Frame {
   def collectionables : Seq[Collectionable]
 
   def movePlayer(direction: Movement): Unit
+
+  def updatePlayers(players: Seq[Player]) :Unit
 }
 
 object GameFrame {
@@ -89,6 +91,8 @@ object GameFrame {
     override def dispose(): IO[Unit] = gameFrame.dispose()
 
     override def movePlayer(direction: Movement): Unit = guiRef.get ! MyCharMovedUi(direction)
+
+    override def updatePlayers(players: Seq[Player]): Unit = gamePanel.updateGame(players)
   }
 
 }
