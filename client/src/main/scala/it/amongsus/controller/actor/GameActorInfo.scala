@@ -40,7 +40,7 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
                              override val clientId: String) extends GameActorInfo {
 
   override def loadMap(): Iterator[String] = {
-    val bufferedSource = scala.io.Source.fromFile("res/map.csv")
+    val bufferedSource = scala.io.Source.fromFile("res/gameMap.csv")
     bufferedSource.getLines
   }
 }
