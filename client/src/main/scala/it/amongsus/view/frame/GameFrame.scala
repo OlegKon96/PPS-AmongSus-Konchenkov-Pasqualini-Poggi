@@ -4,6 +4,8 @@ import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.map.{Collectionable, Tile}
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.Movement
+import it.amongsus.view.actor.UiActorGameMessages.MyCharMovedUi
 import it.amongsus.view.controller.Keyboard
 import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
@@ -26,6 +28,8 @@ trait GameFrame extends Frame {
   def players : Seq[Player]
 
   def collectionables : Seq[Collectionable]
+
+  def movePlayer(direction: Movement): Unit
 }
 
 object GameFrame {
@@ -83,6 +87,8 @@ object GameFrame {
     } yield(buttonPanel)
 
     override def dispose(): IO[Unit] = gameFrame.dispose()
+
+    override def movePlayer(direction: Movement): Unit = guiRef.get ! MyCharMovedUi(direction)
   }
 
 }
