@@ -2,14 +2,14 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{ModelReadyCotroller, MyCharMovedCotroller, UpdatedMyCharController, UpdatedPlayerController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ModelReadyCotroller, MyCharMovedCotroller, UpdatedMyCharController, UpdatedPlayerController, UpdatedPlayersController}
 import it.amongsus.messages.GameMessageClient.{PlayerMovedClient, _}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel}
-import it.amongsus.view.actor.UiActorGameMessages.{_}
+import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -89,6 +89,9 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
     case UpdatedMyCharController(player, deadBodys) => state.gameServerRef.get ! PlayerMovedServer(player, deadBodys)
+
+    case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
+      state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
     case GameWonClient() => state.guiRef.get ! GameWonUi()
 

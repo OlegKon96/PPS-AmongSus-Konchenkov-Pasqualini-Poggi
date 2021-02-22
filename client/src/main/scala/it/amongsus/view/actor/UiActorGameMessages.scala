@@ -1,5 +1,6 @@
 package it.amongsus.view.actor
 
+import it.amongsus.core.entities.map.{Collectionable, DeadBody}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.Movement
 
@@ -27,7 +28,8 @@ object UiActorGameMessages {
   /**
    * Tells to the ui actor that a player was updated
    */
-  case class PlayerUpdatedUi(player: Player)
+  case class PlayerUpdatedUi(myChar: Player, player: Seq[Player], collectionables: Seq[Collectionable],
+                             deadBodies: Seq[DeadBody])
   /**
    * Tells to UI actor that the player has left the game
    */
