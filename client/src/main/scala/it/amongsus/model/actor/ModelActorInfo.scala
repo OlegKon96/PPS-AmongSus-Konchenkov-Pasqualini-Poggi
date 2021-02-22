@@ -86,6 +86,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override var gameCollectionables: Seq[Collectionable],
                               override val clientId: String) extends ModelActorInfo {
 
+  val ventList: Seq[(Vent, Vent)] = generateVentLinks()
   override var deadBodys: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Tile]] = {
@@ -153,6 +154,36 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     val index = gamePlayers.indexOf(gamePlayers.find(p => p.clientId == player.clientId).get)
     gamePlayers = gamePlayers.updated(index, player)
     gamePlayers
+  }
+
+  override def useVent(): Unit = {
+    myCharacter match {
+      case p: ImpostorAlive => p.useVent(ventList) match {
+        case Some(p) =>
+          playerUpdated(p)
+        case None =>
+      }
+      case _ =>
+    }
+  }
+
+  private def generateVentLinks(): Seq[(Vent, Vent)] = {
+    var vents: Seq[Vent] = Seq()
+    gameMap match {
+      case Some(map) => map.foreach(t => {
+        t.foreach {
+          case v: Vent => vents = vents :+ v
+          case _ =>
+        }
+      })
+      case None =>
+    }
+
+    var v: Seq[(Vent, Vent)] = Seq()
+    for (i <- 0 until vents.length / 2) {
+      v = v :+ (vents(i), vents(vents.length - i - 1))
+    }
+    v
   }
 
   private def playerUpdated(player: Player): Unit = {
