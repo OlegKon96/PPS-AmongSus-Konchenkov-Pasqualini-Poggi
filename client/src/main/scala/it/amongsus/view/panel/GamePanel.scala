@@ -33,6 +33,7 @@ object GamePanel {
     val vent : BufferedImage = ImageIO.read(new File("res/vent.png"))
     val emergency : BufferedImage = ImageIO.read(new File("res/emergencyButton.png"))
     val playerPic : BufferedImage = ImageIO.read(new File("res/playerAlivegreen.png"))
+    val coin : BufferedImage = ImageIO.read(new File("res/coin.png"))
 
     override def paintComponent(g : Graphics): Unit = {
       g.clearRect(0, 0, 1080, 750)
@@ -52,8 +53,12 @@ object GamePanel {
 
 
     }
-    private def drawPlayers(g : Graphics) : Unit =
+    private def drawPlayers(g : Graphics) : Unit = {
       gamePlayers.foreach(player => g.drawImage(playerPic, player.position.y * 15 + 1, player.position.x * 15 + 1, 15, 15, null))
+      gameCollectionables.foreach(collectionable => g.drawImage(coin, collectionable.position.y * 15 + 1, collectionable.position.x * 15 + 1, 15, 15, null))
+    }
+
+
 
     override def updateGame(players: Seq[Player],collectionables: Seq[Collectionable]): Unit = {
       this.gamePlayers = players
