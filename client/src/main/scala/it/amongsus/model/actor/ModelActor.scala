@@ -2,7 +2,8 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel}
+import it.amongsus.core.entities.util.ButtonType
+import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -27,6 +28,8 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case PlayerMovedModel(player, deadBodys) =>
       state.deadBodys = deadBodys
       state.updatePlayer(player)
+
+    case  UiButtonPressedModel(button) => state.useVent()
 
     case _ => println("error model game")
   }

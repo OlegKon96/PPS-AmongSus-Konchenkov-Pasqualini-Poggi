@@ -2,7 +2,7 @@ package it.amongsus.view.actor
 
 import it.amongsus.core.entities.map.{Collectionable, DeadBody}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.Movement
+import it.amongsus.core.entities.util.{ButtonType, Movement}
 
 object UiActorGameMessages {
   /**
@@ -30,6 +30,10 @@ object UiActorGameMessages {
    */
   case class PlayerUpdatedUi(myChar: Player, player: Seq[Player], collectionables: Seq[Collectionable],
                              deadBodies: Seq[DeadBody])
+  /**
+   * Tells to UI actor that a Button is pressed
+   */
+  case class UiButtonPressedUi(button: ButtonType)
   /**
    * Tells to UI actor that the player has left the game
    */

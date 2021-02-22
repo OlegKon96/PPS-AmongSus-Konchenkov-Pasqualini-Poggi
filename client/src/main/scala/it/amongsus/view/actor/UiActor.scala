@@ -1,7 +1,8 @@
 package it.amongsus.view.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages.MyCharMovedCotroller
+import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, UiButtonPressedController}
+import it.amongsus.core.entities.util.ButtonType
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages._
@@ -81,6 +82,8 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case MyCharMovedUi(direction) => state.clientRef.get ! MyCharMovedCotroller(direction)
 
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) => state.updatePlayer(players)
+
+    case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
 
     case GameWonUi() => ???
 

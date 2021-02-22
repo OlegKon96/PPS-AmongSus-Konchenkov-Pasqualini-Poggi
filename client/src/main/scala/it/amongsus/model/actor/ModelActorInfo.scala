@@ -67,6 +67,10 @@ trait ModelActorInfo {
    */
   def updatePlayer(player: Player): Seq[Player]
   /**
+   * Method of the Impostor to use vent
+   */
+  def useVent(): Unit
+  /**
    * Sequence of a players' DeadBody
    */
   var deadBodys: Seq[DeadBody]

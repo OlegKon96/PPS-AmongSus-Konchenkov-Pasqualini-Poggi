@@ -2,7 +2,7 @@ package it.amongsus.model.actor
 
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.Movement
+import it.amongsus.core.entities.util.{ButtonType, Movement}
 
 object ModelActorMessages {
   /**
@@ -25,4 +25,10 @@ object ModelActorMessages {
    * @param deadBodys of the game
    */
   case class PlayerMovedModel(player: Player, deadBodys: Seq[DeadBody])
+  /**
+   * Tells to the model that a button is pressed
+   *
+   * @param button of the GUI
+   */
+  case class UiButtonPressedModel(button: ButtonType)
 }

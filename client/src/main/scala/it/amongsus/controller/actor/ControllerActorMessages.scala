@@ -2,7 +2,7 @@ package it.amongsus.controller.actor
 
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.Movement
+import it.amongsus.core.entities.util.{ButtonType, Movement}
 
 object ControllerActorMessages {
   /**
@@ -27,4 +27,9 @@ object ControllerActorMessages {
    * Tells to the controller that the model has updated a player status
    */
   case class UpdatedPlayerController(player: Player)
+  /**
+   * Tells to the controller that the Ui Button is pressed
+   * @param button that is pressed
+   */
+  case class UiButtonPressedController(button: ButtonType)
 }
