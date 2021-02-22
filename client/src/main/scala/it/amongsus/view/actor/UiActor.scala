@@ -81,7 +81,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case MyCharMovedUi(direction) => state.clientRef.get ! MyCharMovedCotroller(direction)
 
-    case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) => state.updatePlayer(players)
+    case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) => state.updatePlayer(players,collectionables)
 
     case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
 

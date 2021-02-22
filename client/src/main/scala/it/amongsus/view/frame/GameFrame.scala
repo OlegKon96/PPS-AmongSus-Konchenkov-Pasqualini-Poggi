@@ -4,8 +4,9 @@ import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.map.{Collectionable, Tile}
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.ButtonType.VentButton
 import it.amongsus.core.entities.util.Movement
-import it.amongsus.view.actor.UiActorGameMessages.MyCharMovedUi
+import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiButtonPressedUi}
 import it.amongsus.view.controller.Keyboard
 import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
@@ -31,7 +32,7 @@ trait GameFrame extends Frame {
 
   def movePlayer(direction: Movement): Unit
 
-  def updatePlayers(players: Seq[Player]) :Unit
+  def updatePlayers(players: Seq[Player],collectionables: Seq[Collectionable]) :Unit
 }
 
 object GameFrame {
@@ -69,8 +70,11 @@ object GameFrame {
       buttonPanel <- JPanelIO()
       _ <- buttonPanel.setLayout(new GridLayout(4, 1))
       _ <- ventButton.setFocusable(false)
-      _ <- ventButton.setEnabled(false)
+      //_ <- ventButton.setEnabled(false)
       _ <- ventButton.setSize(150,50)
+      _ <- ventButton.addActionListener(for {
+        _ <- IO(guiRef.get ! UiButtonPressedUi(VentButton()))
+      } yield ())
       _ <- buttonPanel.add(ventButton)
       _ <- reportButton.setFocusable(false)
       _ <- reportButton.setEnabled(false)
@@ -92,7 +96,8 @@ object GameFrame {
 
     override def movePlayer(direction: Movement): Unit = guiRef.get ! MyCharMovedUi(direction)
 
-    override def updatePlayers(players: Seq[Player]): Unit = gamePanel.updateGame(players)
+    override def updatePlayers(players: Seq[Player],collectionables: Seq[Collectionable]): Unit =
+      gamePanel.updateGame(players,collectionables)
   }
 
 }
