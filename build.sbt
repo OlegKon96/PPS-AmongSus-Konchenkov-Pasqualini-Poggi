@@ -77,6 +77,16 @@ lazy val settings = commonSettings
  * START PROJECT DEFINITIONS.
  */
 
+// MODEL PROJECT.
+lazy val core = Project(
+  id = "core",
+  base = file("core"))
+  .settings(commonSettings)
+  .settings(
+    name := "core",
+    libraryDependencies ++= (testDependencies)
+  )
+
 lazy val commons = Project(
   id = "common",
   base = file("commons"))
@@ -84,7 +94,7 @@ lazy val commons = Project(
   .settings(
     name := "commons",
     libraryDependencies ++= (testDependencies :+ akkaTyped)
-)
+  ).dependsOn(core)
 
 lazy val server = Project(
   id = "server",
@@ -93,7 +103,7 @@ lazy val server = Project(
   .settings(commonSettings)
   .settings(name := "server",
     libraryDependencies ++= (akkaDependencies ++ testDependencies))
-  .dependsOn(commons)
+  .dependsOn(core, commons)
 
 lazy val client = Project(
   id = "client",
@@ -106,4 +116,4 @@ lazy val client = Project(
         testDependencies ++
       catsDependencies
       )
-  ).dependsOn(commons)
+  ).dependsOn(core, commons)
