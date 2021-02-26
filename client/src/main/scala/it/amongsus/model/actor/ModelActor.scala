@@ -1,10 +1,8 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, _}
-import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
+import it.amongsus.controller.actor.ControllerActorMessages.{_}
+import it.amongsus.core.entities.util.ButtonType.{KillButton, VentButton}
 import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
 
 object ModelActor {
