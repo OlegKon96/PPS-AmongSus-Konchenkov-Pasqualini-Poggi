@@ -31,6 +31,14 @@ object UiActorGameMessages {
   case class PlayerUpdatedUi(myChar: Player, player: Seq[Player], collectionables: Seq[Collectionable],
                              deadBodies: Seq[DeadBody])
   /**
+   * Tells to UI actor that a Button can be pressed
+   */
+  case class ButtonOnUi(button: ButtonType)
+  /**
+   * Tells to UI actor that a Button can't be pressed
+   */
+  case class ButtonOffUi(button: ButtonType)
+  /**
    * Tells to UI actor that a Button is pressed
    */
   case class UiButtonPressedUi(button: ButtonType)
