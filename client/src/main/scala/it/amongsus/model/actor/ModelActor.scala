@@ -2,6 +2,7 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
+import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, _}
 import it.amongsus.core.entities.util.ButtonType.{KillButton, VentButton}
 import it.amongsus.model.actor.ModelActorMessages.{InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
@@ -21,6 +22,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.generateCollectionables(gameMap)
       state.controllerRef.get ! ModelReadyCotroller(gameMap, state.myCharacter, state.gamePlayers,
         state.gameCollectionables)
+      state.checkTimer(TimerStarted)
       context become gameBehaviour(ModelActorInfo(state.controllerRef,
         Option(gameMap), players, state.gameCollectionables, state.clientId))
 

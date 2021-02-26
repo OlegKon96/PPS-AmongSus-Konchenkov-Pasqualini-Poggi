@@ -2,7 +2,7 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, ModelReadyCotroller, MyCharMovedCotroller, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayerController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, KillTimerController, ModelReadyCotroller, MyCharMovedCotroller, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayerController, UpdatedPlayersController}
 import it.amongsus.core.entities.util.ButtonType
 import it.amongsus.messages.GameMessageClient.{PlayerMovedClient, _}
 import it.amongsus.messages.GameMessageServer._
@@ -85,6 +85,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case ModelReadyCotroller(map, myChar, players, collectionables) =>
       state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
 
+    case KillTimerController(status) => state.manageKillTimer(status)
+
     case MyCharMovedCotroller(direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
@@ -100,7 +102,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case ButtonOffController(button) => state.guiRef.get ! ButtonOffUi(button)
 
     case UiButtonPressedController(button) => state.modelRef.get ! UiButtonPressedModel(button)
-
+      state.checkButton(button)
+      
     case GameWonClient() => state.guiRef.get ! GameWonUi()
 
     case GameLostClient() => state.guiRef.get ! GameLostUi()

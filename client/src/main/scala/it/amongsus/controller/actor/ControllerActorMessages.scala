@@ -1,5 +1,6 @@
 package it.amongsus.controller.actor
 
+import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.{ButtonType, Movement}
@@ -42,4 +43,10 @@ object ControllerActorMessages {
    * @param button that can be clicked
    */
   case class ButtonOffController(button: ButtonType)
+  /**
+   * Tells to the controller the timing of the action of players
+   *
+   * @param status of the timer
+   */
+  case class KillTimerController(status: TimerStatus)
 }

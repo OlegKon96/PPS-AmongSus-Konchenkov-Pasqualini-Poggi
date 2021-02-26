@@ -1,7 +1,8 @@
 package it.amongsus.model.actor
 
 import akka.actor.ActorRef
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.TimerStatus
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, KillTimerController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.core.entities.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.entities.player._
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
@@ -81,6 +82,8 @@ trait ModelActorInfo {
    * Method of the Impostor to kill a player
    */
   def kill(): Unit
+
+  def checkTimer(status: TimerStatus): Unit
 }
 
 object ModelActorInfo {
@@ -237,5 +240,10 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
         }
       case _ =>
     }
+  }
+
+  override def checkTimer(status: TimerStatus): Unit = myCharacter match {
+    case i : ImpostorAlive => controllerRef.get ! KillTimerController(status)
+    case _ =>
   }
 }
