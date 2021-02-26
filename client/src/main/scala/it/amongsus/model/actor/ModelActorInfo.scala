@@ -1,9 +1,10 @@
 package it.amongsus.model.actor
 
 import akka.actor.ActorRef
-import it.amongsus.controller.actor.ControllerActorMessages.{UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.core.entities.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.entities.player._
+import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
 import it.amongsus.core.entities.util.{Movement, Point2D}
 
 import scala.Array.ofDim
@@ -22,6 +23,8 @@ trait ModelActorInfo {
    * Sequence of a players' DeadBody
    */
   var deadBodys: Seq[DeadBody]
+
+  var isTimerOn: Boolean
   /**
    * The ID of the Client
    */
@@ -81,18 +84,19 @@ trait ModelActorInfo {
 }
 
 object ModelActorInfo {
-  def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "")
+  def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "", isTimerOn = false)
 
   def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Tile]]],
             playersList: Seq[Player], gameCollectionables: Seq[Collectionable], clientId: String): ModelActorInfo =
-    ModelActorInfoData(controllerRef, map, playersList, gameCollectionables, clientId)
+    ModelActorInfoData(controllerRef, map, playersList, gameCollectionables, clientId, isTimerOn = false)
 }
 
 case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override val gameMap: Option[Array[Array[Tile]]],
                               override var gamePlayers: Seq[Player],
                               override var gameCollectionables: Seq[Collectionable],
-                              override val clientId: String) extends ModelActorInfo {
+                              override val clientId: String,
+                              override var isTimerOn: Boolean) extends ModelActorInfo {
 
   val ventList: Seq[(Vent, Vent)] = generateVentLinks()
   override var deadBodys: Seq[DeadBody] = Seq()
@@ -161,6 +165,24 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   override def updatePlayer(player: Player): Seq[Player] = {
     val index = gamePlayers.indexOf(gamePlayers.find(p => p.clientId == player.clientId).get)
     gamePlayers = gamePlayers.updated(index, player)
+    myCharacter match {
+      case p: AlivePlayer =>
+        p match {
+          case i: ImpostorAlive =>
+            i.canVent(ventList) match {
+              case Some(pos) => controllerRef.get ! ButtonOnController(VentButton())
+              case None => controllerRef.get ! ButtonOffController(VentButton())
+            }
+
+            if (i.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
+              controllerRef.get ! ButtonOnController(KillButton())
+            } else if(!isTimerOn ) {
+              controllerRef.get ! ButtonOffController(KillButton())
+            }
+          case _ =>
+        }
+      case _ => controllerRef.get ! ButtonOffController(ReportButton())
+    }
     gamePlayers
   }
 
