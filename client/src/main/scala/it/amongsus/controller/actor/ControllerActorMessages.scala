@@ -17,7 +17,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the model has updated his character status
    */
-  case class UpdatedMyCharController(player: Player, deadBodys: Seq[DeadBody])
+  case class UpdatedMyCharController(player: Player, gamePLayers: Seq[Player], deadBodys: Seq[DeadBody])
   /**
    * Tells to the controller that the model has updated a player status
    */

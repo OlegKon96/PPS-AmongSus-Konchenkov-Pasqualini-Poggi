@@ -19,6 +19,10 @@ trait ModelActorInfo {
    */
   var gameCollectionables: Seq[Collectionable]
   /**
+   * Sequence of a players' DeadBody
+   */
+  var deadBodys: Seq[DeadBody]
+  /**
    * The ID of the Client
    */
   def clientId: String
@@ -71,9 +75,9 @@ trait ModelActorInfo {
    */
   def useVent(): Unit
   /**
-   * Sequence of a players' DeadBody
+   * Method of the Impostor to kill a player
    */
-  var deadBodys: Seq[DeadBody]
+  def kill(): Unit
 }
 
 object ModelActorInfo {
@@ -194,5 +198,22 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     updatePlayer(player)
     controllerRef.get ! UpdatedMyCharController(myCharacter, deadBodys)
     controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+  }
+
+  override def kill(): Unit = {
+    myCharacter match {
+      case i: ImpostorAlive =>
+        i.kill(i.position, gamePlayers) match {
+          case Some(player) =>
+            val dead = CrewmateGhost(player.clientId, player.username, player.asInstanceOf[CrewmateAlive].numCoins,
+              player.position)
+            deadBodys = deadBodys :+ DeadBody(dead.position)
+            updatePlayer(dead)
+            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodys)
+            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+          case None =>
+        }
+      case _ =>
+    }
   }
 }
