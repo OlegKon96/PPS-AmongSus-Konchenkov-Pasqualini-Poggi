@@ -6,7 +6,7 @@ import akka.actor.ActorRef
 import it.amongsus.controller.ActionTimer.{ActionTimerImpl, TimerEnded, TimerStarted}
 import it.amongsus.controller.{ActionTimer, TimerListener, TimerStatus}
 import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.core.entities.util.ButtonType.{KillButton, SabotageButton}
+import it.amongsus.core.entities.util.ButtonType.KillButton
 import it.amongsus.model.actor.ModelActorMessages.KillTimerStatusModel
 import it.amongsus.view.actor.UiActorGameMessages.KillTimerUpdateUi
 
