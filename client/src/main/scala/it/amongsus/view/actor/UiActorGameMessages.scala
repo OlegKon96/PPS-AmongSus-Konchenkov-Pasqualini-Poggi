@@ -39,11 +39,7 @@ object UiActorGameMessages {
    */
   case class PlayerLeftUi()
   /**
-   * Tells the UI actor that his action is illegal in the game
+   * Tells to the Ui actor that timer updated
    */
-  case class InvalidPlayerActionUi()
-  /**
-   * Tells the UI actor that the Client has updated his state
-   */
-  case class GameStateUpdatedUi()
+  case class KillTimerUpdateUi(minutes: Long, seconds: Long)
 }

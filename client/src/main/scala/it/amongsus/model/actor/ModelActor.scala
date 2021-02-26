@@ -1,9 +1,11 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages.{_}
+import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
+import it.amongsus.controller.TimerStatus
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, _}
 import it.amongsus.core.entities.util.ButtonType.{KillButton, VentButton}
-import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
+import it.amongsus.model.actor.ModelActorMessages.{InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -33,6 +35,14 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       case b : VentButton => state.useVent()
       case k : KillButton => state.kill()
     }
+    case KillTimerStatusModel(status: TimerStatus) => status match {
+      case TimerStarted => {
+        state.controllerRef.get ! ButtonOffController(KillButton())
+        state.isTimerOn = true
+      }
+      case TimerEnded => state.isTimerOn = false
+    }
+      state.updatePlayer(state.myCharacter)
 
     case _ => println("error model game")
   }

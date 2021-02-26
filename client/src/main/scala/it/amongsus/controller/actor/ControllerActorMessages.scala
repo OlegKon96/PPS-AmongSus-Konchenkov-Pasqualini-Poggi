@@ -32,4 +32,14 @@ object ControllerActorMessages {
    * @param button that is pressed
    */
   case class UiButtonPressedController(button: ButtonType)
+  /**
+   * Tells to the controller that the button can be clicked
+   * @param button that can be clicked
+   */
+  case class ButtonOnController(button: ButtonType)
+  /**
+   * Tells to the controller that the button can't be clicked
+   * @param button that can be clicked
+   */
+  case class ButtonOffController(button: ButtonType)
 }
