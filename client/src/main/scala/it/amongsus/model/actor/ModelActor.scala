@@ -1,8 +1,10 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.ActorSystemManager
+import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, _}
 import it.amongsus.core.entities.util.ButtonType
+import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
 import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
 
 object ModelActor {
@@ -29,7 +31,10 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.deadBodys = deadBodys
       state.updatePlayer(player)
 
-    case  UiButtonPressedModel(button) => state.useVent()
+    case  UiButtonPressedModel(button) => button match {
+      case b : VentButton => state.useVent()
+      case k : KillButton => state.kill()
+    }
 
     case _ => println("error model game")
   }

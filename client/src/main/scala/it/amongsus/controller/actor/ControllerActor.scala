@@ -89,7 +89,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
-    case UpdatedMyCharController(player, deadBodys) => state.gameServerRef.get ! PlayerMovedServer(player, deadBodys)
+    case UpdatedMyCharController(player, gamePLayers, deadBodys) =>
+      state.gameServerRef.get ! PlayerMovedServer(player, deadBodys)
 
     case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)

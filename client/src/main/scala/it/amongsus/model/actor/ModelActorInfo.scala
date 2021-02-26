@@ -196,7 +196,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   private def playerUpdated(player: Player): Unit = {
     updatePlayer(player)
-    controllerRef.get ! UpdatedMyCharController(myCharacter, deadBodys)
+    controllerRef.get ! UpdatedMyCharController(myCharacter, gamePlayers, deadBodys)
     controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
   }
 
