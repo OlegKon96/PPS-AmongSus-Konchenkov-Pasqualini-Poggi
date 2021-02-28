@@ -91,12 +91,6 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
 
-    case GameWonUi() => ???
-
-    case GameLostUi() => ???
-
-    case PlayerLeftUi() => ???
-
     case _ => println("ERROR")
   }
 }
