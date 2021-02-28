@@ -256,8 +256,8 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       case i: ImpostorAlive =>
         i.kill(i.position, gamePlayers) match {
           case Some(player) =>
-            val dead = CrewmateGhost(player.clientId, player.username, player.asInstanceOf[CrewmateAlive].numCoins,
-              player.position)
+            val dead = CrewmateGhost(player.color, player.clientId, player.username,
+              player.asInstanceOf[CrewmateAlive].numCoins, player.position)
             deadBodys = deadBodys :+ DeadBody(dead.position)
             updatePlayer(dead)
             controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodys)
