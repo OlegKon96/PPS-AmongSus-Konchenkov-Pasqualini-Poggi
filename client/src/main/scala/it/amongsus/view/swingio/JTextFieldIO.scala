@@ -12,6 +12,7 @@ import javax.swing.JTextField
 class JTextFieldIO(override val component: JTextField) extends ComponentIO(component){
   def text: IO[String] = IO {component.getText()}
   def addFocusListener(l:FocusListener) : IO[Unit] = IO {component.addFocusListener(l)}
+  def clearText(): IO[Unit] = IO { component.setText("") }
 }
 
 /**
