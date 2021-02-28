@@ -79,6 +79,10 @@ trait ModelActorInfo {
    */
   def useVent(): Unit
   /**
+   * Method of an Alive player that allows him one time per game to call an emergency
+   */
+  def callEmergency(): Unit
+  /**
    * Method of the Impostor to kill a player
    */
   def kill(): Unit
@@ -102,6 +106,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override var isTimerOn: Boolean) extends ModelActorInfo {
 
   val ventList: Seq[(Vent, Vent)] = generateVentLinks()
+  val emergencyButtons: Seq[Emergency] = generateEmergencyButtons()
   override var deadBodys: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Tile]] = {
@@ -200,6 +205,13 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     }
   }
 
+  override def callEmergency(): Unit = {
+    myCharacter match {
+      case alive: AlivePlayer => updatePlayer(alive.callEmergency(alive))
+      case _ =>
+    }
+  }
+
   private def generateVentLinks(): Seq[(Vent, Vent)] = {
     var vents: Seq[Vent] = Seq()
     gameMap match {
@@ -217,6 +229,20 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       v = v :+ (vents(i), vents(vents.length - i - 1))
     }
     v
+  }
+
+  private def generateEmergencyButtons(): Seq[Emergency] = {
+    var emergencyButtons: Seq[Emergency] = Seq()
+    gameMap match {
+      case Some(map) => map.foreach(t => {
+        t.foreach {
+          case e: Emergency => emergencyButtons = emergencyButtons :+ e
+          case _ =>
+        }
+      })
+      case None =>
+    }
+    emergencyButtons
   }
 
   private def playerUpdated(player: Player): Unit = {
