@@ -14,22 +14,18 @@ object UiActorGameMessages {
    */
   case class LeaveGameUi()
   /**
-   * Tells to UI actor that the game is ended with a win
+   * Tells to UI actor that a Button is pressed
    */
-  case class GameWonUi()
+  case class UiButtonPressedUi(button: ButtonType)
   /**
-   * Tells to UI actor that the game is ended with a lose
-   */
-  case class GameLostUi()
-  /**
-   * Tells to the UI actor that his character moved
+   * Tells to the controller that his character moved
    */
   case class MyCharMovedUi(direction: Movement)
   /**
    * Tells to the ui actor that a player was updated
    */
-  case class PlayerUpdatedUi(myChar: Player, player: Seq[Player], collectionables: Seq[Collectionable],
-                             deadBodies: Seq[DeadBody])
+  case class PlayerUpdatedUi(myChar: Player, player: Seq[Player],
+                             collectionables: Seq[Collectionable], deadBodies: Seq[DeadBody])
   /**
    * Tells to UI actor that a Button can be pressed
    */
@@ -39,13 +35,25 @@ object UiActorGameMessages {
    */
   case class ButtonOffUi(button: ButtonType)
   /**
-   * Tells to UI actor that a Button is pressed
-   */
-  case class UiButtonPressedUi(button: ButtonType)
-  /**
    * Tells to UI actor that the player has left the game
    */
-  case class PlayerLeftUi()
+  case class PlayerLeftUi(clientId: String)
+  /**
+   * Tells to UI actor that a player wants to skip vote
+   */
+  case class SkipVoteUi()
+  /**
+   * Tells to UI actor that a player wants to vote another player
+   */
+  case class VoteUi(username: String)
+  /**
+   * Tells to UI actor to restart the game
+   */
+  case class RestartGameUi()
+  /**
+   * Tells to the Ui actor that the voting fase is beginning
+   */
+  case class BeginVotingUi(players: Seq[Player])
   /**
    * Tells to the Ui actor that timer updated
    */
