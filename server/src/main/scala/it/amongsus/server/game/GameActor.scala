@@ -140,7 +140,7 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
     log.debug(s"updated players $players")
 
     // watch the players with the new actor ref
-    val playersRole = defineRoles(players)
+    val playersRole = defineRoles()
     this.players.foreach(p => {
       p.actorRef ! GamePlayersClient(playersRole)
       context.watch(p.actorRef)
@@ -148,17 +148,20 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
     context.become(inGame() orElse terminationAfterGameStarted())
   }
 
-  private def defineRoles(players: Seq[GamePlayer]): Seq[Player] = {
+  private def defineRoles(): Seq[Player] = {
     var playersRole: Seq[Player] = Seq()
     val rand1 = Random.nextInt(players.length)
-    //val rand2 = Random.nextInt(players.length)
+    val colors = Random.shuffle(Seq("green", "red", "cyan", "yellow", "blue", "pink", "orange"))
+    val rand2 = if(players.length > 5) Random.nextInt(players.length) else rand1
+    val mapCentre = Point2D(35,35)
 
     for (n <- players.indices) {
       n match {
-        case n if n == rand1 /*|| n == rand2*/ =>
-          playersRole = playersRole :+ ImpostorAlive(players(n).id, players(n).username, Point2D(35,35))
-        case _ => playersRole = playersRole :+ CrewmateAlive(players(n).id, players(n).username,
-          Constants.Crewmate.NUM_COINS, Point2D(35,35))
+        case n if n == rand1 || n == rand2 =>
+          playersRole = playersRole :+ ImpostorAlive(colors(n), emergencyCalled = false, players(n).id,
+            players(n).username, mapCentre)
+        case _ => playersRole = playersRole :+ CrewmateAlive(colors(n), emergencyCalled = false, players(n).id,
+          players(n).username, Constants.Crewmate.NUM_COINS, mapCentre)
       }
     }
     playersRole

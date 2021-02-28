@@ -1,7 +1,7 @@
 package it.amongsus.core.entities.player
 
 import it.amongsus.core.entities.map.{Tile, Vent}
-import it.amongsus.core.entities.util.Movement.{Down, Left, Right, Up}
+import it.amongsus.core.entities.util.Movement._
 import it.amongsus.core.entities.util.{Movement, Point2D}
 
 /**
@@ -9,26 +9,44 @@ import it.amongsus.core.entities.util.{Movement, Point2D}
  */
 trait ImpostorAlive extends AlivePlayer with Impostor {
   /**
-   * Manages the Impostar that killed a Crewmate
+   * Method that manages the Impostor that killed a Crewmate
+   *
+   * @param position of the player
+   * @param players sequence of the players of the game
+   * @return boolean
    */
   def canKill(position: Point2D, players: Seq[Player]): Boolean
-
-  def kill(position: Point2D, players: Seq[Player]): Option[Player]
-
   /**
-   * Manages the use of the vent
+   * Method that manages the kill of the game
+   *
+   * @param position of the player
+   * @param players sequence of the players of the game
+   * @return boolean
+   */
+  def kill(position: Point2D, players: Seq[Player]): Option[Player]
+  /**
+   * Method that manages the use of the vent
+   *
+   * @param vent sequence of the vent couple of the game
+   * @return
    */
   def useVent(vent: Seq[(Vent, Vent)]): Option[Player]
-
+  /**
+   * Method that manages id player can use vent or not
+   *
+   * @param vent sequence of the vent couple of the game
+   * @return
+   */
   def canVent(vent: Seq[(Vent, Vent)]): Option[Point2D]
-
 }
 
 object ImpostorAlive {
-  def apply(clientId: String, username: String, position: Point2D): ImpostorAlive =
-    ImpostorAliveImpl("green", clientId, username, Constants.Impostor.FIELD_OF_VIEW, position)
+  def apply(color: String, emergencyCalled: Boolean, clientId: String, username: String, position: Point2D):
+  ImpostorAlive = ImpostorAliveImpl(color, emergencyCalled, clientId, username,
+    Constants.Impostor.FIELD_OF_VIEW, position)
 
   private case class ImpostorAliveImpl(override val color: String,
+                                       override val emergencyCalled: Boolean,
                                        override val clientId: String,
                                        override val username: String,
                                        override val fieldOfView: Int,
@@ -36,10 +54,10 @@ object ImpostorAlive {
 
     override def move(direction: Movement, map: Array[Array[Tile]]): Option[Player] = {
       val newPlayer = direction match {
-        case Up() => ImpostorAlive(clientId, username, Point2D(position.x - 1, position.y))
-        case Down() => ImpostorAlive(clientId, username, Point2D(position.x + 1, position.y))
-        case Left() => ImpostorAlive(clientId, username, Point2D(position.x, position.y - 1))
-        case Right() => ImpostorAlive(clientId, username, Point2D(position.x, position.y + 1))
+        case Up() => ImpostorAlive(color, emergencyCalled, clientId, username, Point2D(position.x - 1, position.y))
+        case Down() => ImpostorAlive(color, emergencyCalled, clientId, username, Point2D(position.x + 1, position.y))
+        case Left() => ImpostorAlive(color, emergencyCalled, clientId, username, Point2D(position.x, position.y - 1))
+        case Right() => ImpostorAlive(color, emergencyCalled, clientId, username, Point2D(position.x, position.y + 1))
       }
       if (checkCollision(newPlayer.position, map)) None else Option(newPlayer)
     }
@@ -58,12 +76,9 @@ object ImpostorAlive {
       }
     }
 
-    /**
-     * Manages the use of the vent
-     */
     override def useVent(vent: Seq[(Vent, Vent)]): Option[Player] = {
       canVent(vent) match {
-        case Some(pos) => Option(ImpostorAlive(clientId, username, pos))
+        case Some(pos) => Option(ImpostorAlive(color, emergencyCalled, clientId, username, pos))
         case None => None
       }
     }
@@ -81,5 +96,4 @@ object ImpostorAlive {
       pos
     }
   }
-
 }
