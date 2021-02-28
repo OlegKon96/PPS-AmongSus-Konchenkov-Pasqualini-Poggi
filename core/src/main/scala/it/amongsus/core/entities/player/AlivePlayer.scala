@@ -11,10 +11,10 @@ trait AlivePlayer extends Player {
 
   def callEmergency(player: Player): Player = {
     player match {
-      case crewmateAlive: CrewmateAlive => CrewmateAlive(crewmateAlive.color, emergencyCalled = true, crewmateAlive.clientId, crewmateAlive.username,
-        crewmateAlive.numCoins, crewmateAlive.position)
-      case impostorAlive: ImpostorAlive => ImpostorAlive(impostorAlive.color, emergencyCalled = true, impostorAlive.clientId, impostorAlive.username,
-        impostorAlive.position)
+      case crewmateAlive: CrewmateAlive => CrewmateAlive(crewmateAlive.color, emergencyCalled = true,
+        crewmateAlive.clientId, crewmateAlive.username,crewmateAlive.numCoins, crewmateAlive.position)
+      case impostorAlive: ImpostorAlive => ImpostorAlive(impostorAlive.color, emergencyCalled = true,
+        impostorAlive.clientId, impostorAlive.username, impostorAlive.position)
     }
   }
 
@@ -50,7 +50,7 @@ trait AlivePlayer extends Player {
    */
   def checkCollision(pos: Point2D, map: Array[Array[Tile]]): Boolean = {
     map(pos.x)(pos.y) match {
-      case tile: Floor => false
+      case _: Floor => false
       case _ => true
     }
   }
