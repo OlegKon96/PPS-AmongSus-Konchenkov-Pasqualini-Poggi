@@ -1,7 +1,8 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
-import javax.swing.JLabel
+import javax.swing.border.Border
+import javax.swing.{JLabel, SwingConstants}
 
 /**
  * A class that provides a monadic description of the operations supplied by Swing's [[JLabel]] in the form
@@ -11,8 +12,9 @@ import javax.swing.JLabel
 class JLabelIO(override val component: JLabel) extends ComponentIO[JLabel](component) {
   def setText(text: String): IO[Unit] = IO {component.setText(text)}
   def text: IO[String] = IO {component.getText}
-
   def setTextInvokingAndWaiting(text: String): IO[Unit] = invokeAndWaitIO(component.setText(text))
+  def setBorder(border: Border): IO[Unit] = IO {component.setBorder(border)}
+  def setVisible(boolean: Boolean) : IO[Unit] = IO {component.setVisible(boolean)}
 }
 
 /**
