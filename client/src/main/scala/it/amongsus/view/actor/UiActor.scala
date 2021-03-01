@@ -66,7 +66,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case GameFoundUi(map, myChar, players, collectionables) =>
       state.currentFrame.get.dispose().unsafeRunSync()
-      val game = GameFrame(Option(self),map,players,collectionables)
+      val game = GameFrame(Option(self),map,myChar,players,collectionables)
       game.start().unsafeRunSync()
       context become gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
 
@@ -84,9 +84,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) => state.updatePlayer(players,collectionables)
 
-    case ButtonOnUi(button) => //TODO implement view change
+    case ButtonOnUi(button) => state.enableButton(button,true)
 
-    case ButtonOffUi(button) => //TODO implement view change
+    case ButtonOffUi(button) => state.enableButton(button,false)
 
     case KillTimerUpdateUi(minutes: Long, seconds: Long) => //TODO implement view change
 
