@@ -62,7 +62,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
   private def voteBehaviour(state: ModelActorInfo): Receive = {
     case RestartGameModel() => state.checkTimer(TimerStarted)
       context become gameBehaviour(state)
-      
+
     case _ => println("error model vote")
   }
 }
