@@ -36,4 +36,12 @@ object ModelActorMessages {
    * Tells to the Ui actor that timer ended
    */
   case class KillTimerStatusModel(status: TimerStatus)
+  /**
+   * Tells to the controller that the voting fase is beginning
+   */
+  case class BeginVotingModel()
+  /**
+   * Tells to the model to restart the game
+   */
+  case class RestartGameModel()
 }

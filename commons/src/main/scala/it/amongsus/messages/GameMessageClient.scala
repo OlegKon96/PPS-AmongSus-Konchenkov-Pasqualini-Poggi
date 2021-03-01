@@ -13,6 +13,10 @@ object GameMessageClient {
    */
   case class GamePlayersClient(asd : Seq[Player])
   /**
+   * Tells the controller actor that a button is pressed
+   */
+  case class StartVotingClient(players: Seq[Player])
+  /**
    * Tells the controller actor that player moved to another position
    *
    * @param player of the game

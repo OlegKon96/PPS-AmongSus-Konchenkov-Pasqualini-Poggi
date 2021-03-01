@@ -26,12 +26,6 @@ object GameMessageServer {
    */
   case class LeaveGameServer(playerId: String)
   /**
-   * Message of the error occurred sent by the server to the client
-   *
-   * @param errorType the type of the error occurred
-   */
-  case class MatchErrorOccurredServer(errorType: MatchError)
-  /**
    * Tells the client that the game ended with his victory
    */
   case object GameWonServer
@@ -45,6 +39,10 @@ object GameMessageServer {
    * Tells the Client that a player has left the game
    */
   case object PlayerLeftServer
+  /**
+   * Tells the client to start the session of vote
+   */
+  case class StartVoting(players: Seq[Player])
   /**
    * Error occurred during the game
    */

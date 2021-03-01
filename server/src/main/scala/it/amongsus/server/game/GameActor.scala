@@ -2,9 +2,9 @@ package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
 import it.amongsus.core.entities.player.{Constants, CrewmateAlive, ImpostorAlive, Player}
-import it.amongsus.core.entities.util.Point2D
-import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient}
-import it.amongsus.messages.GameMessageServer._
+import it.amongsus.core.entities.util.{Point2D}
+import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient, StartVotingClient}
+import it.amongsus.messages.GameMessageServer.{_}
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameMatchActor.GamePlayers
@@ -77,6 +77,15 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
   private def inGame(): Receive = {
     case PlayerMovedServer(player, deadBodys) =>
       players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
+
+    case StartVoting(gamePlayers: Seq[Player]) =>
+      //this.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
+      players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
+      context become voting(gamePlayers)
+  }
+
+  private def voting(gamePlayers: Seq[Player]): Receive = {
+    case _ => log.info("voting error...")
   }
 
   /**

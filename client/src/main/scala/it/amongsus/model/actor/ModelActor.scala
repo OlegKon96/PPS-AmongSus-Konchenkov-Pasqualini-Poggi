@@ -5,7 +5,7 @@ import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ModelReadyCotroller, UpdatedPlayersController}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
-import it.amongsus.model.actor.ModelActorMessages.{InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -52,10 +52,17 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     }
       state.updatePlayer(state.myCharacter)
 
+
+    case BeginVotingModel() => state.checkTimer(TimerEnded)
+      context become voteBehaviour(state)
+
     case _ => println("error model game")
   }
 
   private def voteBehaviour(state: ModelActorInfo): Receive = {
+    case RestartGameModel() => state.checkTimer(TimerStarted)
+      context become gameBehaviour(state)
+
     case _ => println("error model vote")
   }
 }

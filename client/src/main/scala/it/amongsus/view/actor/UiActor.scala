@@ -1,13 +1,14 @@
 package it.amongsus.view.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
-import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, UiButtonPressedController}
+import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, RestartGameController, UiButtonPressedController}
+import it.amongsus.core.entities.player.{AlivePlayer, Player}
 import it.amongsus.core.entities.util.ButtonType
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame}
+import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
 
 object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))
@@ -65,7 +66,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case GameFoundUi(map, myChar, players, collectionables) =>
       state.currentFrame.get.dispose().unsafeRunSync()
-      val game = GameFrame(Option(self),map,players,collectionables)
+      val game = GameFrame(Option(self),map,myChar,players,collectionables)
       game.start().unsafeRunSync()
       context become gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
 
@@ -83,14 +84,23 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) => state.updatePlayer(players,collectionables)
 
-    case ButtonOnUi(button) => //TODO implement view change
+    case ButtonOnUi(button) => state.enableButton(button,true)
 
-    case ButtonOffUi(button) => //TODO implement view change
+    case ButtonOffUi(button) => state.enableButton(button,false)
 
     case KillTimerUpdateUi(minutes: Long, seconds: Long) => //TODO implement view change
 
     case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
 
+    case BeginVotingUi(gamePlayers: Seq[Player]) =>  //TODO VoteFrame startUp
+      context become voteBehaviour(state)
+
     case _ => println("ERROR")
+  }
+
+  private def voteBehaviour(state: UiGameActorInfo): Receive = {
+    case RestartGameUi() =>
+      state.clientRef.get ! RestartGameController()
+      context become gameBehaviour(state)
   }
 }

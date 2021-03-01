@@ -2,16 +2,16 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, KillTimerController, ModelReadyCotroller, MyCharMovedCotroller, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayersController}
-import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.messages.GameMessageClient.{PlayerMovedClient, _}
-import it.amongsus.messages.GameMessageServer._
+import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.core.entities.player.Player
+import it.amongsus.messages.GameMessageClient._
+import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
-import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, _}
-import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
+import it.amongsus.model.actor.ModelActorMessages._
+import it.amongsus.view.actor.UiActorGameMessages._
+import it.amongsus.view.actor.UiActorLobbyMessages._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
@@ -104,7 +104,21 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case UiButtonPressedController(button) => state.modelRef.get ! UiButtonPressedModel(button)
       state.checkButton(button)
 
+    case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
+      state.guiRef.get ! BeginVotingUi(gamePlayers)
+      context become voteBehaviour(state)
+
+    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
+      state.guiRef.get ! BeginVotingUi(gamePlayers)
+      context become voteBehaviour(state)
 
     case _ => println("error")
   }
+
+  private def voteBehaviour(state: GameActorInfo): Receive = {
+    case RestartGameController() =>
+      state.modelRef.get ! RestartGameModel()
+      context become gameBehaviour(state)
+  }
+
 }
