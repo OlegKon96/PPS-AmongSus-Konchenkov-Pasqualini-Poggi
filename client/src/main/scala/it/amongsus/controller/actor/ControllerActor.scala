@@ -117,7 +117,9 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
   }
 
   private def voteBehaviour(state: GameActorInfo): Receive = {
-    case _ =>
+    case RestartGameController() =>
+      state.modelRef.get ! RestartGameModel()
+      context become gameBehaviour(state)
   }
 
 }
