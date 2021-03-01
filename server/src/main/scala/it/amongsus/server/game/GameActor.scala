@@ -1,10 +1,10 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
-import it.amongsus.core.entities.player.{AlivePlayer, Constants, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
-import it.amongsus.core.entities.util.{Message, Point2D}
-import it.amongsus.messages.GameMessageClient.{GamePlayersClient, NoOneEliminatedController, PlayerMovedClient, SendTextChatClient, SendTextChatGhostClient, SkipVoteClient, StartVotingClient, VoteClient}
-import it.amongsus.messages.GameMessageServer.{SendTextChatGhostServer, SendTextChatServer, _}
+import it.amongsus.core.entities.player.{Constants, CrewmateAlive, ImpostorAlive, Player}
+import it.amongsus.core.entities.util.{Point2D}
+import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient, StartVotingClient}
+import it.amongsus.messages.GameMessageServer.{_}
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameMatchActor.GamePlayers
