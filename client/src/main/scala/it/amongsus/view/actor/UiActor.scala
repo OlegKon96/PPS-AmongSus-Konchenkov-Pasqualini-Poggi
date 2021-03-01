@@ -65,7 +65,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case GameFoundUi(map, myChar, players, collectionables) =>
       state.currentFrame.get.dispose().unsafeRunSync()
-      val game = GameFrame(Option(self),map,players,collectionables)
+      val game = GameFrame(Option(self),map,myChar,players,collectionables)
       game.start().unsafeRunSync()
       context become gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
 

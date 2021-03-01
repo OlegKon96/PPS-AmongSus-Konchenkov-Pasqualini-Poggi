@@ -50,12 +50,11 @@ object GamePanel {
         case tile: Floor => g.drawImage(floor, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, null)
         case tile: Other => g.drawImage(space, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
       })
-
-
     }
+
     private def drawPlayers(g : Graphics) : Unit = {
-      gamePlayers.foreach(player => g.drawImage(playerPic, player.position.y * 15 + 1, player.position.x * 15 + 1, 15, 15, null))
       gameCollectionables.foreach(collectionable => g.drawImage(coin, collectionable.position.y * 15 + 1, collectionable.position.x * 15 + 1, 15, 15, null))
+      gamePlayers.foreach(player => g.drawImage(playerPic, player.position.y * 15 + 1, player.position.x * 15 + 1, 15, 15, null))
     }
 
 
