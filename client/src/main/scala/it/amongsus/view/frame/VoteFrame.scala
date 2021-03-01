@@ -4,6 +4,8 @@ import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.Player
 import it.amongsus.view.frame.VoteFrame.VoteFrameImpl
+import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
+import javax.swing.JFrame
 
 /**
  * Trait of the Vote Frame that manages the voting of the players
@@ -71,11 +73,27 @@ object VoteFrame {
    */
   private class VoteFrameImpl(guiRef: Option[ActorRef], myPlayer: Player,
                               override val listUser: Seq[Player]) extends VoteFrame() {
-    /**
-     * Open the Vote Frame to allow players to vote the impostor
-     *
-     * @return
-     */
+
+    final val spaceDimension10: Int = 10
+    final val spaceDimension20: Int = 10
+    final val spaceDimension50: Int = 50
+    final val spaceDimension60: Int = 60
+    final val spaceDimension65: Int = -65
+    final val spaceDimension180: Int = 200
+    final val spaceDimension230: Int = 230
+    final val gridRow4: Int = 4
+    val frame = new JFrameIO(new JFrame("Among Sus - Voting"))
+    val buttonVote: Array[JButtonIO] = new Array[JButtonIO](listUser.length)
+    val votePanel: JPanelIO = JPanelIO().unsafeRunSync()
+    val boxChat: JTextAreaIO = JTextAreaIO(spaceDimension20, spaceDimension20).unsafeRunSync()
+    boxChat.focus()
+    val scrollPane: JScrollPaneIO = JScrollPaneIO(boxChat).unsafeRunSync()
+    val boxChatGhost: JTextAreaIO = JTextAreaIO(spaceDimension20, spaceDimension20).unsafeRunSync()
+    boxChatGhost.focus()
+    val scrollPaneGhost: JScrollPaneIO = JScrollPaneIO(boxChatGhost).unsafeRunSync()
+    val WIDTH: Int = 1000
+    val HEIGHT: Int = 800
+
     override def start(): IO[Unit] = ???
 
     /**
