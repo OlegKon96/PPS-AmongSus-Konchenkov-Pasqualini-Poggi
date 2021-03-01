@@ -2,15 +2,16 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ButtonOnController, KillTimerController, ModelReadyCotroller, MyCharMovedCotroller, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, ButtonOnController, GameEndController, KillTimerController, ModelReadyCotroller, MyCharMovedCotroller, PlayerLeftController, RestartGameController, SendTextChatController, SendTextChatGhostController, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.messages.GameMessageClient.{PlayerMovedClient, _}
-import it.amongsus.messages.GameMessageServer._
+import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, GameEndClient, NoOneEliminatedController, PlayerMovedClient, SendTextChatClient, SendTextChatGhostClient, SkipVoteClient, StartVotingClient, VoteClient, _}
+import it.amongsus.messages.GameMessageServer.{SendTextChatGhostServer, SendTextChatServer, StartVoting, _}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
-import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, _}
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel, MyCharMovedModel, PlayerLeftModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
+import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, GameEndUi, NoOneEliminatedUi, ReceiveTextChatGhostUi, ReceiveTextChatUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -104,7 +105,19 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case UiButtonPressedController(button) => state.modelRef.get ! UiButtonPressedModel(button)
       state.checkButton(button)
 
+    case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
+      state.guiRef.get ! BeginVotingUi(gamePlayers)
+      context become voteBehaviour(state)
+
+    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
+      state.guiRef.get ! BeginVotingUi(gamePlayers)
+      context become voteBehaviour(state)
 
     case _ => println("error")
   }
+
+  private def voteBehaviour(state: GameActorInfo): Receive = {
+    case _ =>
+  }
+
 }
