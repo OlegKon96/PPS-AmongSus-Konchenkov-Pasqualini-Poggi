@@ -2,17 +2,16 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, ButtonOnController, GameEndController, KillTimerController, ModelReadyCotroller, MyCharMovedCotroller, PlayerLeftController, RestartGameController, SendTextChatController, SendTextChatGhostController, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, GameEndClient, NoOneEliminatedController, PlayerMovedClient, SendTextChatClient, SendTextChatGhostClient, SkipVoteClient, StartVotingClient, VoteClient, _}
-import it.amongsus.messages.GameMessageServer.{SendTextChatGhostServer, SendTextChatServer, StartVoting, _}
+import it.amongsus.messages.GameMessageClient._
+import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel, MyCharMovedModel, PlayerLeftModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
-import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, GameEndUi, NoOneEliminatedUi, ReceiveTextChatGhostUi, ReceiveTextChatUi, _}
-import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
+import it.amongsus.model.actor.ModelActorMessages._
+import it.amongsus.view.actor.UiActorGameMessages._
+import it.amongsus.view.actor.UiActorLobbyMessages._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
