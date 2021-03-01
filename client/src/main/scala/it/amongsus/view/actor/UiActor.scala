@@ -83,9 +83,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) => state.updatePlayer(players,collectionables)
 
-    case ButtonOnUi(button) => //TODO implement view change
+    case ButtonOnUi(button) => state.enableButton(button,true)
 
-    case ButtonOffUi(button) => //TODO implement view change
+    case ButtonOffUi(button) => state.enableButton(button,false)
 
     case KillTimerUpdateUi(minutes: Long, seconds: Long) => //TODO implement view change
 

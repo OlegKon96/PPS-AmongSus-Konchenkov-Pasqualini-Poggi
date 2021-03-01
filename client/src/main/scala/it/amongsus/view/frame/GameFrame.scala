@@ -5,7 +5,7 @@ import cats.effect.IO
 import it.amongsus.core.entities.map.{Collectionable, Tile}
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
-import it.amongsus.core.entities.util.Movement
+import it.amongsus.core.entities.util.{ButtonType, Movement}
 import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiButtonPressedUi}
 import it.amongsus.view.controller.Keyboard
 import it.amongsus.view.panel.GamePanel
@@ -35,6 +35,8 @@ trait GameFrame extends Frame {
   def movePlayer(direction: Movement): Unit
 
   def updatePlayers(players: Seq[Player],collectionables: Seq[Collectionable]) :Unit
+
+  def enableButton(button: ButtonType, boolean: Boolean) : IO[Unit]
 }
 
 object GameFrame {
@@ -52,7 +54,7 @@ object GameFrame {
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
     val WIDTH: Int = 1230
     val HEIGHT: Int = 775
-    val gamePanel: GamePanel = GamePanel(map,players,collectionables)
+    val gamePanel: GamePanel = GamePanel(map,myChar,players,collectionables,Seq.empty)
     val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
     val killButton: JButtonIO = JButtonIO("Kill").unsafeRunSync()
     val emergencyButton: JButtonIO = JButtonIO("Call Emergency").unsafeRunSync()
@@ -141,6 +143,22 @@ object GameFrame {
 
     override def updatePlayers(players: Seq[Player],collectionables: Seq[Collectionable]): Unit =
       gamePanel.updateGame(players,collectionables)
+
+    override def enableButton(button: ButtonType, boolean: Boolean): IO[Unit] = {
+      myChar match {
+        case _: Impostor => button match {
+          case _: KillButton => killButton.setEnabled(boolean)
+          case _: ReportButton => reportButton.setEnabled(boolean)
+          case _: EmergencyButton => emergencyButton.setEnabled(boolean)
+          case _: VentButton => ventButton.setEnabled(boolean)
+          case _: SabotageButton => sabotageButton.setEnabled(boolean)
+        }
+        case _: Crewmate => button match {
+          case _: ReportButton => reportButton.setEnabled(boolean)
+          case _: EmergencyButton => emergencyButton.setEnabled(boolean)
+        }
+      }
+    }
   }
 
 }

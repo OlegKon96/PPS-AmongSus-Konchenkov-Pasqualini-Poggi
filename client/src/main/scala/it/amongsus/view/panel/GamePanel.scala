@@ -1,6 +1,6 @@
 package it.amongsus.view.panel
 
-import it.amongsus.core.entities.map.{Boundary, Collectionable, Emergency, Floor, Other, Tile, Vent, Wall}
+import it.amongsus.core.entities.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.entities.player.Player
 
 import java.awt.Graphics
@@ -16,12 +16,16 @@ trait GamePanel extends JPanel{
 
 object GamePanel {
   def apply(map : Array[Array[Tile]],
+            myChar : Player,
             players : Seq[Player],
-            collectionables : Seq[Collectionable]) : GamePanel = new GamePanelImpl(map, players,collectionables)
+            collectionables : Seq[Collectionable],
+            deadBodies : Seq[DeadBody]) : GamePanel = new GamePanelImpl(map, myChar, players,collectionables, deadBodies)
 
   private class GamePanelImpl(map : Array[Array[Tile]],
+                              myChar : Player,
                               players : Seq[Player],
-                              collectionables : Seq[Collectionable]) extends GamePanel {
+                              collectionables : Seq[Collectionable],
+                              deadBodies : Seq[DeadBody]) extends GamePanel {
 
     private val gameMap = map
     private var gamePlayers = players
@@ -56,8 +60,6 @@ object GamePanel {
       gameCollectionables.foreach(collectionable => g.drawImage(coin, collectionable.position.y * 15 + 1, collectionable.position.x * 15 + 1, 15, 15, null))
       gamePlayers.foreach(player => g.drawImage(playerPic, player.position.y * 15 + 1, player.position.x * 15 + 1, 15, 15, null))
     }
-
-
 
     override def updateGame(players: Seq[Player],collectionables: Seq[Collectionable]): Unit = {
       this.gamePlayers = players

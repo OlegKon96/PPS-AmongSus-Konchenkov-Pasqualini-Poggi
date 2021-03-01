@@ -3,6 +3,7 @@ package it.amongsus.view.actor
 import akka.actor.ActorRef
 import it.amongsus.core.entities.map.Collectionable
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.ButtonType
 import it.amongsus.view.frame.{GameFrame, MenuFrame}
 
 /**
@@ -17,11 +18,18 @@ trait UiGameActorInfo {
   def clientRef: Option[ActorRef]
 
   /**
-   *
+   * The frame of the game
    *
    * @return
    */
   def gameFrame: Option[GameFrame]
+  /**
+   *  Method to manage enable of buttons
+   *
+   * @param button to enable or disable
+   * @param boolean that tell is the button is to turn on or off
+   */
+  def enableButton(button : ButtonType, boolean: Boolean): Unit
 
   def updatePlayer(players: Seq[Player], collectionables: Seq[Collectionable]): Unit
 }
@@ -37,4 +45,8 @@ case class UiGameActorData(override val clientRef: Option[ActorRef],
 
   override def updatePlayer(players: Seq[Player],collectionables: Seq[Collectionable]): Unit =
     gameFrame.get.updatePlayers(players,collectionables)
+
+
+  override def enableButton(button: ButtonType, boolean: Boolean): Unit =
+    gameFrame.get.enableButton(button, boolean).unsafeRunSync()
 }
