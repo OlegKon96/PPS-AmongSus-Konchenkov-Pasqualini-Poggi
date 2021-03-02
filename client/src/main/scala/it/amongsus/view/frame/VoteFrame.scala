@@ -219,5 +219,9 @@ object VoteFrame {
       case "" => false
       case _ => true
     }
+
+    override def appendTextToChat(text: String, username: String): IO[Unit] = for {
+      _ <- boxChat.appendText(s"$username said: $text\n")
+    } yield()
   }
 }
