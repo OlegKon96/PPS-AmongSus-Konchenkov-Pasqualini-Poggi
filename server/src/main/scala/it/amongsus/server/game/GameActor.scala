@@ -84,6 +84,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       }else{
         players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
       }
+
     case StartVoting(gamePlayers: Seq[Player]) =>
       //this.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
       players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))

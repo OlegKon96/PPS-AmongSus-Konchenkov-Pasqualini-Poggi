@@ -3,7 +3,7 @@ package it.amongsus.controller.actor
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, Movement}
+import it.amongsus.core.entities.util.{ButtonType, GameEnd, Movement}
 
 object ControllerActorMessages {
   /**
@@ -43,6 +43,10 @@ object ControllerActorMessages {
    * Tells to the controller that it's time to vote
    */
   case class InitVote()
+  /**
+   * Tells to the controller that the game is ended
+   */
+  case class GameEndController(end: GameEnd)
   /**
    * Tells to the controller that the game needs to be restarted
    */

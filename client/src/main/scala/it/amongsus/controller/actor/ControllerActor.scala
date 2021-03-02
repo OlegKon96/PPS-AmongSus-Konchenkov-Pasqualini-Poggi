@@ -2,15 +2,15 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, _}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages._
-import it.amongsus.view.actor.UiActorGameMessages._
+import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
+import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -92,7 +92,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
     case UpdatedMyCharController(player, gamePLayers, deadBodys) =>
-      state.gameServerRef.get ! PlayerMovedServer(player, deadBodys)
+      state.gameServerRef.get ! PlayerMovedServer(player, gamePLayers, deadBodys)
 
     case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
@@ -111,6 +111,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
       state.guiRef.get ! BeginVotingUi(gamePlayers)
       context become voteBehaviour(state)
+
+    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
+      context become defaultBehaviour(LobbyActorInfo(state.guiRef))
+
+    case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
     case _ => println("error")
   }
