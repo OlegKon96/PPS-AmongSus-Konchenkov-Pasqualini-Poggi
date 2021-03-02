@@ -8,7 +8,7 @@ import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.Message
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, SkipVoteUi, VoteUi}
 import it.amongsus.view.frame.VoteFrame.VoteFrameImpl
-import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
+import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO, JTextFieldIO}
 import javax.swing.JFrame
 
 /**
@@ -138,6 +138,38 @@ object VoteFrame {
         _ <- chooseVote.add(buttonSkipVote)
 
         _ <- votePanel.add(chooseVote)
+
+        chatPanel <- JPanelIO()
+        _ <- chatPanel.setLayout(new GridLayout(gridRow4, 1))
+        titleChat <- JLabelIO()
+        _ <- titleChat.setText("Chat")
+        borderTitleChat <- BorderFactoryIO.emptyBorderCreated(spaceDimension65, spaceDimension230, 0, 0)
+        _ <- titleChat.setBorder(borderTitleChat)
+        _ <- chatPanel.add(titleChat)
+        _ <- boxChat.appendText("Start Chatting!\n")
+        _ <- chatPanel.add(scrollPane)
+        chatField <- JTextFieldIO()
+        _ <- chatPanel.add(chatField)
+        sendText <- JButtonIO("Send Text")
+        _ <- sendText.addActionListener(for {
+          checkChatText <- chatField.text
+          _ <- IO(if (checkText(chatField)) {
+            boxChat.appendText(s"${myPlayer.username} said: $checkChatText\n").unsafeRunSync()
+            guiRef.get ! SendTextChatUi(Message(myPlayer.username, checkChatText))
+            chatField.clearText().unsafeRunSync()
+          })
+        } yield ())
+        _ <- chatPanel.add(sendText)
+
+        _ <- votePanel.add(chatPanel)
+
+        cp <- frame.contentPane()
+        _ <- cp.add(votePanel)
+        _ <- frame.setResizable(false)
+        _ <- frame.setTitle("Among Sus - Voting")
+        _ <- frame.setSize(WIDTH, HEIGHT)
+        _ <- frame.setVisible(true)
+      } yield ()
 
     /**
      * Display the eliminated player
