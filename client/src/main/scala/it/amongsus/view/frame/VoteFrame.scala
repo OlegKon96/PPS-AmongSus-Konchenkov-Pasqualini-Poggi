@@ -1,10 +1,12 @@
 package it.amongsus.view.frame
 
+import java.awt.GridLayout
+
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.Player
 import it.amongsus.view.frame.VoteFrame.VoteFrameImpl
-import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
+import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
 import javax.swing.JFrame
 
 /**
@@ -67,7 +69,7 @@ object VoteFrame {
   /**
    * The Frame that manages the phase of voting
    *
-   * @param guiRef   ActorRef that is responsible to receiving and send all the messages about voting
+   * @param guiRef ActorRef that is responsible to receiving and send all the messages about voting
    * @param myPlayer reference to player that should vote
    * @param listUser list of the user of the game
    */
@@ -94,7 +96,21 @@ object VoteFrame {
     val WIDTH: Int = 1000
     val HEIGHT: Int = 800
 
-    override def start(): IO[Unit] = ???
+    override def start(): IO[Unit] =
+      for {
+        menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
+          spaceDimension10, spaceDimension10, spaceDimension10)
+        _ <- votePanel.setBorder(menuBorder)
+        _ <- votePanel.setLayout(new GridLayout(1, 2))
+
+        chooseVote <- JPanelIO()
+        _ <- chooseVote.setLayout(new GridLayout(listUser.length + 2, 1))
+
+        title <- JLabelIO()
+        _ <- title.setText("Vote Player to Eliminate")
+        borderTitle <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension180, 0, 0)
+        _ <- title.setBorder(borderTitle)
+        _ <- chooseVote.add(title)
 
     /**
      * Display the eliminated player
