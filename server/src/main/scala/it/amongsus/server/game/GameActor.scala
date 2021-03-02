@@ -1,9 +1,9 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
-import it.amongsus.core.entities.player.{AlivePlayer, Constants, Crewmate, CrewmateAlive, ImpostorAlive, Player}
-import it.amongsus.core.entities.util.Point2D
-import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient, StartVotingClient}
+import it.amongsus.core.entities.player.{AlivePlayer, Constants, Crewmate, CrewmateAlive, Impostor, ImpostorAlive, Player}
+import it.amongsus.core.entities.util.{Point2D, WinnerCrew}
+import it.amongsus.messages.GameMessageClient.{GameEndClient, GamePlayersClient, PlayerMovedClient, StartVotingClient}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
@@ -77,9 +77,9 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   private def inGame(): Receive = {
     case PlayerMovedServer(player, gamePlayers, deadBodys) =>
       if(checkWinCrewmate(gamePlayers)){
-        sendWinMessage(gamePlayers, CrewmateCrew())
+        sendGameEndMessage(gamePlayers, CrewmateCrew())
       } else if(checkWinImpostor(gamePlayers)){
-        sendWinMessage(gamePlayers, ImpostorCrew())
+        sendGameEndMessage(gamePlayers, ImpostorCrew())
       }else{
         players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
       }
@@ -223,6 +223,23 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   private def checkWinImpostor(gamePlayers: Seq[Player]): Boolean = {
     gamePlayers.count(player =>
       player.isInstanceOf[AlivePlayer]) <= gamePlayers.count(player => player.isInstanceOf[ImpostorAlive]) * 2
+  }
+
+  private def sendGameEndMessage(gamePlayers: Seq[Player], crew: WinnerCrew): Unit = {
+    gamePlayers.foreach{
+      case c : Crewmate =>
+        crew match {
+          case ImpostorCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Lost())
+          case CrewmateCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Win())
+        }
+      case i : Impostor =>
+        crew match {
+          case ImpostorCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Win())
+          case CrewmateCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Lost())
+        }
+    }
+    log.info("Game ended...")
+    self ! PoisonPill
   }
 
 }
