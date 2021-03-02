@@ -1,7 +1,7 @@
 package it.amongsus.view.actor
 
 import akka.actor.ActorRef
-import it.amongsus.core.entities.map.Collectionable
+import it.amongsus.core.entities.map.{Collectionable, DeadBody}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.ButtonType
 import it.amongsus.view.frame.{GameFrame, MenuFrame}
@@ -31,7 +31,8 @@ trait UiGameActorInfo {
    */
   def enableButton(button : ButtonType, boolean: Boolean): Unit
 
-  def updatePlayer(players: Seq[Player], collectionables: Seq[Collectionable]): Unit
+  def updatePlayer(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
+                   deadBodies : Seq[DeadBody]): Unit
 }
 
 object UiGameActorInfo {
@@ -43,8 +44,9 @@ object UiGameActorInfo {
 case class UiGameActorData(override val clientRef: Option[ActorRef],
                            override val gameFrame: Option[GameFrame]) extends UiGameActorInfo {
 
-  override def updatePlayer(players: Seq[Player],collectionables: Seq[Collectionable]): Unit =
-    gameFrame.get.updatePlayers(players,collectionables)
+  override def updatePlayer(myChar: Player,players: Seq[Player], collectionables : Seq[Collectionable],
+                            deadBodies : Seq[DeadBody]): Unit =
+    gameFrame.get.updatePlayers(myChar, players, collectionables, deadBodies)
 
 
   override def enableButton(button: ButtonType, boolean: Boolean): Unit =

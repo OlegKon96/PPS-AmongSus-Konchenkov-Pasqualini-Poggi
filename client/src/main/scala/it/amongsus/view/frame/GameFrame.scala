@@ -2,7 +2,7 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.core.entities.map.{Collectionable, Tile}
+import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
 import it.amongsus.core.entities.util.{ButtonType, Movement}
@@ -34,7 +34,8 @@ trait GameFrame extends Frame {
 
   def movePlayer(direction: Movement): Unit
 
-  def updatePlayers(players: Seq[Player],collectionables: Seq[Collectionable]) :Unit
+  def updatePlayers(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
+                    deadBodies : Seq[DeadBody]) :Unit
 
   def enableButton(button: ButtonType, boolean: Boolean) : IO[Unit]
 }
@@ -141,8 +142,11 @@ object GameFrame {
 
     override def movePlayer(direction: Movement): Unit = guiRef.get ! MyCharMovedUi(direction)
 
-    override def updatePlayers(players: Seq[Player],collectionables: Seq[Collectionable]): Unit =
-      gamePanel.updateGame(players,collectionables)
+    override def updatePlayers(myChar: Player,
+                               players: Seq[Player],
+                               collectionables : Seq[Collectionable],
+                               deadBodies : Seq[DeadBody]): Unit =
+      gamePanel.updateGame(myChar,players,collectionables,deadBodies)
 
     override def enableButton(button: ButtonType, boolean: Boolean): IO[Unit] = {
       myChar match {
