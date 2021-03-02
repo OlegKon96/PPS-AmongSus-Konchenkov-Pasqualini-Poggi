@@ -3,14 +3,12 @@ package it.amongsus.view.actor
 import akka.actor.{Actor, ActorLogging, Props}
 import it.amongsus.Constants
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, RestartGameController, UiButtonPressedController}
-import it.amongsus.core.entities.player.{AlivePlayer, Crewmate, Impostor, Player}
-import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.core.entities.util.GameEnd.{Lost, Win}
+import it.amongsus.core.entities.player.{Player}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame, WinFrame}
+import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame}
 
 object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))
