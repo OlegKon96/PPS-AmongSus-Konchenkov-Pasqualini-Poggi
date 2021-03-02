@@ -1,20 +1,20 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
-import it.amongsus.core.entities.player.{Constants, CrewmateAlive, ImpostorAlive, Player}
-import it.amongsus.core.entities.util.{Point2D}
+import it.amongsus.core.entities.player.{AlivePlayer, Constants, Crewmate, CrewmateAlive, ImpostorAlive, Player}
+import it.amongsus.core.entities.util.Point2D
 import it.amongsus.messages.GameMessageClient.{GamePlayersClient, PlayerMovedClient, StartVotingClient}
-import it.amongsus.messages.GameMessageServer.{_}
+import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
-import it.amongsus.server.game.GameMatchActor.GamePlayers
+import it.amongsus.server.game.GameActor.GamePlayers
 
 import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
 
-object GameMatchActor {
-  def props(numberOfPlayers: Int): Props = Props(new GameMatchActor(numberOfPlayers))
+object GameActor {
+  def props(numberOfPlayers: Int): Props = Props(new GameActor(numberOfPlayers))
 
   /**
    * Sent to the gameactor to specify the players to add to the match
@@ -29,7 +29,7 @@ object GameMatchActor {
  * Responsible for a game match
  *
  */
-class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash {
+class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash {
 
   private var players: Seq[GamePlayer] = _
 
@@ -75,9 +75,14 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
    *
    */
   private def inGame(): Receive = {
-    case PlayerMovedServer(player, deadBodys) =>
-      players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
-
+    case PlayerMovedServer(player, gamePlayers, deadBodys) =>
+      if(checkWinCrewmate(gamePlayers)){
+        sendWinMessage(gamePlayers, CrewmateCrew())
+      } else if(checkWinImpostor(gamePlayers)){
+        sendWinMessage(gamePlayers, ImpostorCrew())
+      }else{
+        players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
+      }
     case StartVoting(gamePlayers: Seq[Player]) =>
       //this.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
       players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
@@ -199,6 +204,25 @@ class GameMatchActor(numberOfPlayers: Int) extends Actor with ActorLogging with 
       case Some(p) => f(p)
       case None => log.info(s"Player id $playerId not found")
     }
+  }
+
+  private def checkWinCrewmate(gamePlayers: Seq[Player]): Boolean = {
+    gamePlayers.count(player => player.isInstanceOf[ImpostorAlive]) == 0 || checkAllCoinsCollected(gamePlayers)
+  }
+
+  private def checkAllCoinsCollected(gamePlayers: Seq[Player]): Boolean = {
+    var count = 0
+    gamePlayers.foreach {
+      case p: Crewmate =>
+        if (p.numCoins == 10) count += 1
+      case _ =>
+    }
+    if (count == gamePlayers.count(player => player.isInstanceOf[Crewmate])) true else false
+  }
+
+  private def checkWinImpostor(gamePlayers: Seq[Player]): Boolean = {
+    gamePlayers.count(player =>
+      player.isInstanceOf[AlivePlayer]) <= gamePlayers.count(player => player.isInstanceOf[ImpostorAlive]) * 2
   }
 
 }

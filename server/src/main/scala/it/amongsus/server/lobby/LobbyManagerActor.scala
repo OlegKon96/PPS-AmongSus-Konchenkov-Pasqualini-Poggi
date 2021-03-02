@@ -5,8 +5,8 @@ import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer.LobbyError.PrivateLobbyIdNotValid
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
-import it.amongsus.server.game.GameMatchActor
-import it.amongsus.server.game.GameMatchActor.GamePlayers
+import it.amongsus.server.game.GameActor
+import it.amongsus.server.game.GameActor.GamePlayers
 
 object LobbyManagerActor {
   def props() = Props(new LobbyManagerActor())
@@ -89,7 +89,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
   }
 
   private def generateAndStartGameActor(lobbyType: LobbyType)(players: Seq[GamePlayer]): Unit = {
-    val gameActor = context.actorOf(GameMatchActor.props(lobbyType.numberOfPlayers))
+    val gameActor = context.actorOf(GameActor.props(lobbyType.numberOfPlayers))
     players.foreach(p => {
       context.unwatch(p.actorRef)
       // remove player form lobby

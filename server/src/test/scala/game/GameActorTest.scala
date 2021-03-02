@@ -7,8 +7,8 @@ import it.amongsus.messages.GameMessageClient.GamePlayersClient
 import it.amongsus.messages.GameMessageServer.PlayerReadyServer
 import it.amongsus.messages.LobbyMessagesServer.MatchFound
 import it.amongsus.server.common.GamePlayer
-import it.amongsus.server.game.GameMatchActor
-import it.amongsus.server.game.GameMatchActor.GamePlayers
+import it.amongsus.server.game.GameActor
+import it.amongsus.server.game.GameActor.GamePlayers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -26,7 +26,7 @@ class GameActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test
   "The game actor" should {
 
     "accept a specific numbers of players and notify that the game is started with an initial state" in {
-      val gameActor = TestActorRef[GameMatchActor](GameMatchActor.props(NUMBER_OF_PLAYERS))
+      val gameActor = TestActorRef[GameActor](GameActor.props(NUMBER_OF_PLAYERS))
       val player1 = TestProbe()
       val player2 = TestProbe()
 
