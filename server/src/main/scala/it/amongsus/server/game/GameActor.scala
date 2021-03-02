@@ -2,6 +2,7 @@ package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
 import it.amongsus.core.entities.player.{AlivePlayer, Constants, Crewmate, CrewmateAlive, Impostor, ImpostorAlive, Player}
+import it.amongsus.core.entities.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.core.entities.util.{Point2D, WinnerCrew}
 import it.amongsus.messages.GameMessageClient.{GameEndClient, GamePlayersClient, PlayerMovedClient, StartVotingClient}
 import it.amongsus.messages.GameMessageServer._

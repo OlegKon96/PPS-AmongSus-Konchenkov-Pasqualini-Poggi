@@ -18,7 +18,7 @@ object GameMessageServer {
    * @param player of the game
    * @param deadBodys of the game
    */
-  case class PlayerMovedServer(player: Player, deadBodys: Seq[DeadBody])
+  case class PlayerMovedServer(player: Player, gamePlayers: Seq[Player], deadBodys: Seq[DeadBody])
   /**
    * Message sent by the client to leave the game
    *
