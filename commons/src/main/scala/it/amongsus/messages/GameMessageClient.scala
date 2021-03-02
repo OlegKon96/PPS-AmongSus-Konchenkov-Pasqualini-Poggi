@@ -2,6 +2,7 @@ package it.amongsus.messages
 
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.GameEnd
 
 object GameMessageClient {
   /**
@@ -30,21 +31,9 @@ object GameMessageClient {
   /**
    * Tells the controller actor that the game is ended with a win
    */
-  case class GameWonClient()
-  /**
-   * Tells the controller actor that the game is ended with a lose
-   */
-  case class GameLostClient()
+  case class GameEndClient(end: GameEnd)
   /**
    * Tells the controller actor that the player left the game
    */
   case class PlayerLeftClient()
-  /**
-   * Tells the controller actor that player actions is illegal
-   */
-  case class InvalidPlayerActionClient()
-  /**
-   * Tells the controller actor that the Client updated his state
-   */
-  case class GameStateUpdatedClient()
 }
