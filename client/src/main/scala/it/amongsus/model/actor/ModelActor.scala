@@ -1,11 +1,11 @@
 package it.amongsus.model.actor
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, ModelReadyCotroller, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, GameEndController, ModelReadyCotroller, UpdatedPlayersController}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -55,6 +55,10 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
     case BeginVotingModel() => state.checkTimer(TimerEnded)
       context become voteBehaviour(state)
+
+    case GameEndModel(end) => state.checkTimer(TimerEnded)
+      state.controllerRef.get ! GameEndController(end)
+      self ! PoisonPill
 
     case _ => println("error model game")
   }

@@ -3,7 +3,7 @@ package it.amongsus.model.actor
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, Movement}
+import it.amongsus.core.entities.util.{ButtonType, GameEnd, Movement}
 
 object ModelActorMessages {
   /**
@@ -44,4 +44,8 @@ object ModelActorMessages {
    * Tells to the model to restart the game
    */
   case class RestartGameModel()
+  /**
+   * Tells to the model that the game ended
+   */
+  case class GameEndModel(end: GameEnd)
 }
