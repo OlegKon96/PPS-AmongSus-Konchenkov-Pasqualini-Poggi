@@ -214,5 +214,10 @@ object VoteFrame {
     override def dispose(): IO[Unit] = for {
       _ <- frame.dispose()
     } yield ()
+
+    private def checkText(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
+      case "" => false
+      case _ => true
+    }
   }
 }
