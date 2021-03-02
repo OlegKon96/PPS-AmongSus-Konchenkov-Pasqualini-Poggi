@@ -113,7 +113,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       context become voteBehaviour(state)
 
     case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become defaultBehaviour(LobbyActorInfo(state.guiRef))
+      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
     case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 

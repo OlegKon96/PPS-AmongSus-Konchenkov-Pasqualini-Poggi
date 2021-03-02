@@ -1,14 +1,16 @@
 package it.amongsus.view.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
+import it.amongsus.Constants
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, RestartGameController, UiButtonPressedController}
-import it.amongsus.core.entities.player.{AlivePlayer, Player}
+import it.amongsus.core.entities.player.{AlivePlayer, Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.ButtonType
+import it.amongsus.core.entities.util.GameEnd.{Lost, Win}
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
+import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame, WinFrame}
 
 object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))
@@ -94,6 +96,11 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case BeginVotingUi(gamePlayers: Seq[Player]) =>  //TODO VoteFrame startUp
       context become voteBehaviour(state)
+
+    case GameEndUi(end) => //win message(end)
+      state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
+      state.gameFrame.get.dispose().unsafeRunSync()
+      context become defaultBehaviour(UiActorInfo())
 
     case _ => println("ERROR")
   }
