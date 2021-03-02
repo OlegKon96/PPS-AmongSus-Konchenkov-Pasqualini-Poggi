@@ -211,6 +211,8 @@ object VoteFrame {
      */
     override def noOneEliminated(): IO[Unit] = ???
 
-    override def dispose(): IO[Unit] = ???
+    override def dispose(): IO[Unit] = for {
+      _ <- frame.dispose()
+    } yield ()
   }
 }
