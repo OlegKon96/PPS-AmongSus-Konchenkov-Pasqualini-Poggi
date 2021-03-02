@@ -1,5 +1,8 @@
 package it.amongsus.core.entities.util
 
+/**
+ * Trait that manages the messages of the Chat in the Game
+ */
 trait Message{
   def username: String
   def text: String

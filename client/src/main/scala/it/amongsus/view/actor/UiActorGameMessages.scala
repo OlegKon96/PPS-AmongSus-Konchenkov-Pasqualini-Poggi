@@ -2,7 +2,7 @@ package it.amongsus.view.actor
 
 import it.amongsus.core.entities.map.{Collectionable, DeadBody}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, GameEnd, Movement}
+import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement}
 
 object UiActorGameMessages {
   /**
@@ -62,4 +62,24 @@ object UiActorGameMessages {
    * Tells to the Ui actor that timer updated
    */
   case class KillTimerUpdateUi(minutes: Long, seconds: Long)
+  /**
+   * Tells to the Ui Actor to send a text messages
+   */
+  case class SendTextChatUi(message: Message)
+  /**
+   * Tells to the Ui Actor to send a text messages in Ghost Chat
+   */
+  case class SendTextGhostChatUi(message: Message)
+  /**
+   * Tells to the Ui Actor to send a text messages
+   */
+  case class ReceiveTextChatUi(message: Message)
+  /**
+   * Tells to the Ui Actor to send a text messages in the Ghost Chat
+   */
+  case class ReceiveTextChatGhostUi(message: Message)
+  /**
+   * Tells to the Ui Actor that no one was ejected from vote session
+   */
+  case class NoOneEliminatedUi()
 }
