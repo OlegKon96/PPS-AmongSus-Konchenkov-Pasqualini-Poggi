@@ -186,7 +186,9 @@ object VoteFrame {
      * @param username of the user that wrote a message in the chat
      * @return
      */
-    override def appendTextToChat(text: String, username: String): IO[Unit] = ???
+    override def appendTextToChat(text: String, username: String): IO[Unit] = for {
+      _ <- boxChat.appendText(s"$username said: $text\n")
+    } yield()
 
     /**
      * Method to append text in the Ghost Chat
@@ -219,9 +221,5 @@ object VoteFrame {
       case "" => false
       case _ => true
     }
-
-    override def appendTextToChat(text: String, username: String): IO[Unit] = for {
-      _ <- boxChat.appendText(s"$username said: $text\n")
-    } yield()
   }
 }
