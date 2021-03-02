@@ -5,6 +5,8 @@ import java.awt.GridLayout
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.Message
+import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, SkipVoteUi, VoteUi}
 import it.amongsus.view.frame.VoteFrame.VoteFrameImpl
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
 import javax.swing.JFrame
@@ -111,6 +113,31 @@ object VoteFrame {
         borderTitle <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension180, 0, 0)
         _ <- title.setBorder(borderTitle)
         _ <- chooseVote.add(title)
+
+        buttonSkipVote <- JButtonIO("Skip Vote")
+
+        _ <- IO(for (user <- listUser.indices) {
+          buttonVote(user) = JButtonIO(listUser(user).username).unsafeRunSync()
+          buttonVote(user).addActionListener(for {
+            _ <- IO(guiRef.get ! VoteUi(listUser(user).username))
+            _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, listUser(user).username)))
+            _ <- boxChat.appendText(s"${myPlayer.username} vote ${listUser(user).username}\n")
+            _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
+            _ <- buttonSkipVote.setEnabled(false)
+          } yield()).unsafeRunSync()
+          chooseVote.add(buttonVote(user)).unsafeRunSync()
+        })
+
+        _ <- buttonSkipVote.addActionListener(for {
+          _ <- IO(guiRef.get ! SkipVoteUi())
+          _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, "Skip Vote")))
+          _ <- boxChat.appendText(s"${myPlayer.username} Skip Vote\n")
+          _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
+          _ <- buttonSkipVote.setEnabled(false)
+        } yield ())
+        _ <- chooseVote.add(buttonSkipVote)
+
+        _ <- votePanel.add(chooseVote)
 
     /**
      * Display the eliminated player
