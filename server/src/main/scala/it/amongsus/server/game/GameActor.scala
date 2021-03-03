@@ -33,6 +33,8 @@ object GameActor {
 class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash {
 
   private var players: Seq[GamePlayer] = _
+  private var totalVotes: Int = this.numberOfPlayers
+  private var playersToLobby: Map[String, Int] = Map.empty
 
   import context.dispatcher
 
@@ -86,7 +88,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       }
 
     case StartVoting(gamePlayers: Seq[Player]) =>
-      //this.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
+      this.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
       players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
       context become voting(gamePlayers)
   }
