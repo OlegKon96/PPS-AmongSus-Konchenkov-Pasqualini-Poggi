@@ -1,11 +1,11 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
-import it.amongsus.core.entities.player.{AlivePlayer, Constants, Crewmate, CrewmateAlive, Impostor, ImpostorAlive, Player}
+import it.amongsus.core.entities.player.{AlivePlayer, Constants, Crewmate, CrewmateAlive, DeadPlayer, Impostor, ImpostorAlive, Player}
 import it.amongsus.core.entities.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
-import it.amongsus.core.entities.util.{Point2D, WinnerCrew}
-import it.amongsus.messages.GameMessageClient.{GameEndClient, GamePlayersClient, PlayerMovedClient, StartVotingClient}
-import it.amongsus.messages.GameMessageServer._
+import it.amongsus.core.entities.util.{Message, Point2D, WinnerCrew}
+import it.amongsus.messages.GameMessageClient.{GameEndClient, GamePlayersClient, PlayerMovedClient, SendTextChatClient, StartVotingClient, VoteClient}
+import it.amongsus.messages.GameMessageServer.{SendTextChatServer, _}
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameActor.GamePlayers
@@ -94,6 +94,19 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   }
 
   private def voting(gamePlayers: Seq[Player]): Receive = {
+    case VoteClient(username: String) => manageVote(username, gamePlayers)
+
+    case SendTextChatServer(message: Message, character: Player) => character match {
+      case _: DeadPlayer => gamePlayers.filter(p => p.isInstanceOf[DeadPlayer]).foreach(player => {
+        players.filter(p =>
+          player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))
+      })
+      case _: AlivePlayer => gamePlayers.filter(p => p.isInstanceOf[AlivePlayer]).foreach(player => {
+        players.filter(p =>
+          player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))
+      })
+    }
+
     case _ => log.info("voting error...")
   }
 
