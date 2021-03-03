@@ -1,10 +1,10 @@
 package it.amongsus.view.frame
 
-import java.awt.GridLayout
+import java.awt.{BorderLayout, GridLayout}
 
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.Message
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, SkipVoteUi, VoteUi}
 import it.amongsus.view.frame.VoteFrame.VoteFrameImpl
@@ -177,7 +177,28 @@ object VoteFrame {
      * @param username of the player eliminated
      * @return
      */
-    override def eliminated(username: String): IO[Unit] = ???
+    override def eliminated(username: String): IO[Unit] = {
+      val role = listUser.find(p => p.username == username).get match {
+        case _: Crewmate => "Crewmate"
+        case _: Impostor => "Impostor"
+      }
+      for {
+        cp <- frame.contentPane()
+        _ <- cp.remove(votePanel)
+        eliminationPanel <- JPanelIO()
+        _ <- eliminationPanel.setLayout(new BorderLayout())
+        text <- JLabelIO()
+        borderText <- BorderFactoryIO.emptyBorderCreated(spaceDimension60, spaceDimension60, 0, 0)
+        _ <- text.setBorder(borderText)
+        _ <- text.setText(s"The Eliminated Player is: $username and is an: $role")
+        _ <- eliminationPanel.add(text, BorderLayout.NORTH)
+        _ <- cp.add(eliminationPanel)
+        _ <- frame.setResizable(false)
+        _ <- frame.setTitle("Among Sus - Eliminated Player")
+        _ <- frame.setSize(WIDTH/2, HEIGHT/4)
+        _ <- frame.setVisible(true)
+      } yield ()
+    }
 
     /**
      * Method to append text in the chat
