@@ -216,6 +216,10 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
 
   }
 
+  private def manageVote(username: String, gamePlayer: Seq[Player]): Unit = {
+
+  }
+
   private def withPlayer(playerId: String)(f: GamePlayer => Unit): Unit = {
     this.players.find(_.id == playerId) match {
       case Some(p) => f(p)
