@@ -3,6 +3,7 @@ package it.amongsus.messages
 import akka.actor.ActorRef
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.Message
 
 object GameMessageServer {
   /**
@@ -43,6 +44,10 @@ object GameMessageServer {
    * Tells the client to start the session of vote
    */
   case class StartVoting(players: Seq[Player])
+  /**
+   * Tells to the Ui Actor to send a text messages
+   */
+  case class SendTextChatServer(message: Message, char: Player)
   /**
    * Error occurred during the game
    */
