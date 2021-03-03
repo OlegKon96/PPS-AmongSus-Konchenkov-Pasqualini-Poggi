@@ -120,7 +120,8 @@ object VoteFrame {
           buttonVote(user) = JButtonIO(listUser(user).username).unsafeRunSync()
           buttonVote(user).addActionListener(for {
             _ <- IO(guiRef.get ! VoteUi(listUser(user).username))
-            _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, listUser(user).username)))
+            _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, listUser(user).username),
+              listUser.find(p => p.username == myPlayer.username).get))
             _ <- boxChat.appendText(s"${myPlayer.username} vote ${listUser(user).username}\n")
             _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
             _ <- buttonSkipVote.setEnabled(false)
@@ -129,8 +130,9 @@ object VoteFrame {
         })
 
         _ <- buttonSkipVote.addActionListener(for {
-          _ <- IO(guiRef.get ! SkipVoteUi())
-          _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, "Skip Vote")))
+          _ <- IO(guiRef.get ! VoteUi(""))
+          _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, "Skip Vote"),
+            listUser.find(p => p.username == myPlayer.username).get))
           _ <- boxChat.appendText(s"${myPlayer.username} Skip Vote\n")
           _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
           _ <- buttonSkipVote.setEnabled(false)
@@ -155,7 +157,8 @@ object VoteFrame {
           checkChatText <- chatField.text
           _ <- IO(if (checkText(chatField)) {
             boxChat.appendText(s"${myPlayer.username} said: $checkChatText\n").unsafeRunSync()
-            guiRef.get ! SendTextChatUi(Message(myPlayer.username, checkChatText))
+            guiRef.get ! SendTextChatUi(Message(myPlayer.username, checkChatText),
+              listUser.find(p => p.username == myPlayer.username).get)
             chatField.clearText().unsafeRunSync()
           })
         } yield ())
