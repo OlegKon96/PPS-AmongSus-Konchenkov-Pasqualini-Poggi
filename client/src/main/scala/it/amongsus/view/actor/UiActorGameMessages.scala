@@ -65,19 +65,11 @@ object UiActorGameMessages {
   /**
    * Tells to the Ui Actor to send a text messages
    */
-  case class SendTextChatUi(message: Message)
-  /**
-   * Tells to the Ui Actor to send a text messages in Ghost Chat
-   */
-  case class SendTextGhostChatUi(message: Message)
+  case class SendTextChatUi(message: Message, char: Player)
   /**
    * Tells to the Ui Actor to send a text messages
    */
   case class ReceiveTextChatUi(message: Message)
-  /**
-   * Tells to the Ui Actor to send a text messages in the Ghost Chat
-   */
-  case class ReceiveTextChatGhostUi(message: Message)
   /**
    * Tells to the Ui Actor that no one was ejected from vote session
    */
