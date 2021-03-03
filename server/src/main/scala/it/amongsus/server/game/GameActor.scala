@@ -220,6 +220,8 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
 
   }
 
+  private def isEmpty(x: String) = Option(x).forall(_.isEmpty)
+
   private def withPlayer(playerId: String)(f: GamePlayer => Unit): Unit = {
     this.players.find(_.id == playerId) match {
       case Some(p) => f(p)
