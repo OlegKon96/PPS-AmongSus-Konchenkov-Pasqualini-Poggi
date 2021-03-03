@@ -225,7 +225,58 @@ object VoteFrame {
      *
      * @return
      */
-    override def waitVote(): IO[Unit] = ???
+    override def waitVote(): IO[Unit] = for {
+      menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
+        spaceDimension10, spaceDimension10, spaceDimension10)
+      _ <- votePanel.setBorder(menuBorder)
+      _ <- votePanel.setLayout(new GridLayout(1, 2))
+
+      chooseVote <- JPanelIO()
+      _ <- chooseVote.setLayout(new GridLayout(1, 1))
+
+      waitGhostPanel <- JPanelIO()
+      _ <- waitGhostPanel.setLayout(new BorderLayout())
+      text <- JLabelIO()
+      borderText <- BorderFactoryIO.emptyBorderCreated(spaceDimension60, spaceDimension60, 0, 0)
+      _ <- text.setBorder(borderText)
+      _ <- text.setText("Wait Vote from Other Players...")
+      _ <- waitGhostPanel.add(text, BorderLayout.NORTH)
+      _ <- chooseVote.add(waitGhostPanel)
+
+      _ <- votePanel.add(chooseVote)
+
+      chatPanel <- JPanelIO()
+      _ <- chatPanel.setLayout(new GridLayout(gridRow4, 1))
+      titleChat <- JLabelIO()
+      _ <- titleChat.setText("Chat")
+      borderTitleChat <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension230, 0, 0)
+      _ <- titleChat.setBorder(borderTitleChat)
+      _ <- chatPanel.add(titleChat)
+      _ <- boxChatGhost.appendText("Start Chatting!\n")
+      _ <- chatPanel.add(scrollPaneGhost)
+      chatField <- JTextFieldIO()
+      _ <- chatPanel.add(chatField)
+      sendText <- JButtonIO("Send Text")
+      _ <- sendText.addActionListener(for {
+        checkChatText <- chatField.text
+        _ <- IO(if (checkText(chatField)) {
+          boxChatGhost.appendText(s"${myPlayer.username} said: $checkChatText\n").unsafeRunSync()
+          guiRef.get ! SendTextChatUi(Message(myPlayer.username, checkChatText),
+            listUser.find(p => p.username == myPlayer.username).get)
+          chatField.clearText().unsafeRunSync()
+        })
+      } yield ())
+      _ <- chatPanel.add(sendText)
+
+      _ <- votePanel.add(chatPanel)
+
+      cp <- frame.contentPane()
+      _ <- cp.add(votePanel)
+      _ <- frame.setResizable(false)
+      _ <- frame.setTitle("Among Sus - Voting")
+      _ <- frame.setSize(WIDTH, HEIGHT)
+      _ <- frame.setVisible(true)
+    } yield ()
 
     /**
      * Method that notify no one players is eliminated during vote session
