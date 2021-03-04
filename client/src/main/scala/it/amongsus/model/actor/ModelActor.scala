@@ -44,10 +44,9 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       }
 
     case KillTimerStatusModel(status: TimerStatus) => status match {
-      case TimerStarted => {
+      case TimerStarted =>
         state.controllerRef.get ! ButtonOffController(KillButton())
         state.isTimerOn = true
-      }
       case TimerEnded => state.isTimerOn = false
     }
       state.updatePlayer(state.myCharacter)
@@ -67,6 +66,6 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case RestartGameModel() => state.checkTimer(TimerStarted)
       context become gameBehaviour(state)
 
-    case _ => println("error model vote")
+    case _ => println("ERROR VOTE")
   }
 }
