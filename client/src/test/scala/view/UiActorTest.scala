@@ -3,6 +3,7 @@ package view
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
+import it.amongsus.messages.GameMessageClient.PlayerReadyClient
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
@@ -31,8 +32,7 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
 
     "Accept into a private lobby connection with code" in {
       val client = TestProbe()
-      val uiActor =
-        system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), None)))
+      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), None)))
       uiActor ! PrivateGameSubmitUi("asdasdasd", "qwerty")
       client.expectMsgType[JoinPrivateLobbyClient]
     }
@@ -44,11 +44,19 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
       client.expectMsgType[CreatePrivateLobbyClient]
     }
 
-    /*"Leave a Lobby" in {
+    "Leave a Lobby" in {
       val client = TestProbe()
-      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), None)))
+      val menuFrame = MenuFrame.apply(Option(client.ref))
+      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
       uiActor ! LeaveLobbyUi()
       client.expectMsgType[LeaveLobbyClient]
-    }*/
+    }
+
+    "Match Found" in {
+      val client = TestProbe()
+      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), None)))
+      uiActor ! MatchFoundUi()
+      client.expectMsgType[PlayerReadyClient]
+    }
   }
 }
