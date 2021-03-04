@@ -88,6 +88,16 @@ trait ModelActorInfo {
   def kill(): Unit
 
   def checkTimer(status: TimerStatus): Unit
+
+  /**
+   * Method of the impostor that allows him to reduce crewmate field of view
+   */
+  def sabotage(): Unit
+
+  /**
+   * Method of the impostor that allows him to reduce crewmate field of view
+   */
+  def sabotageOff(): Unit
 }
 
 object ModelActorInfo {
@@ -212,6 +222,28 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     }
   }
 
+  override def kill(): Unit = {
+    myCharacter match {
+      case i: ImpostorAlive =>
+        i.kill(i.position, gamePlayers) match {
+          case Some(player) =>
+            val dead = CrewmateGhost(player.color, player.clientId, player.username,
+              player.asInstanceOf[CrewmateAlive].numCoins, player.position)
+            deadBodys = deadBodys :+ DeadBody(dead.position)
+            updatePlayer(dead)
+            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodys)
+            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+          case None =>
+        }
+      case _ =>
+    }
+  }
+
+  override def checkTimer(status: TimerStatus): Unit = myCharacter match {
+    case i : ImpostorAlive => controllerRef.get ! KillTimerController(status)
+    case _ =>
+  }
+
   private def generateVentLinks(): Seq[(Vent, Vent)] = {
     var vents: Seq[Vent] = Seq()
     gameMap match {
@@ -251,25 +283,26 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
   }
 
-  override def kill(): Unit = {
-    myCharacter match {
-      case i: ImpostorAlive =>
-        i.kill(i.position, gamePlayers) match {
-          case Some(player) =>
-            val dead = CrewmateGhost(player.color, player.clientId, player.username,
-              player.asInstanceOf[CrewmateAlive].numCoins, player.position)
-            deadBodys = deadBodys :+ DeadBody(dead.position)
-            updatePlayer(dead)
-            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodys)
-            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
-          case None =>
-        }
-      case _ =>
+  /**
+   * Method of the impostor that allows him to reduce crewmate field of view
+   */
+  override def sabotage(): Unit = gamePlayers.foreach {
+    case aliveCrewmate : CrewmateAlive => {
+      val newPlayer = CrewmateAlive(aliveCrewmate.color,
+        aliveCrewmate.emergencyCalled, Constants.Crewmate.FIELD_OF_VIEW_SABOTAGE,
+        aliveCrewmate.clientId, aliveCrewmate.username, aliveCrewmate.numCoins, aliveCrewmate.position)
+      controllerRef.get ! UpdatedMyCharController(newPlayer, gamePlayers, deadBodys)
     }
+    case _ =>
   }
 
-  override def checkTimer(status: TimerStatus): Unit = myCharacter match {
-    case i : ImpostorAlive => controllerRef.get ! KillTimerController(status)
+  override def sabotageOff(): Unit = gamePlayers.foreach {
+    case aliveCrewmate : CrewmateAlive => {
+      val newPlayer = CrewmateAlive(aliveCrewmate.color,
+        aliveCrewmate.emergencyCalled, Constants.Crewmate.FIELD_OF_VIEW,
+        aliveCrewmate.clientId, aliveCrewmate.username, aliveCrewmate.numCoins, aliveCrewmate.position)
+      controllerRef.get ! UpdatedMyCharController(newPlayer, gamePlayers, deadBodys)
+    }
     case _ =>
   }
 }
