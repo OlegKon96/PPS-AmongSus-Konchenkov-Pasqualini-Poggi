@@ -39,7 +39,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
     "Add a User to a Lobby Client" in {
       val client = TestProbe()
       val controllerActor = system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
-      controllerActor ! UserAddedToLobbyClient(NUM_PLAYERS)
+      controllerActor ! UserAddedToLobbyClient(NUM_PLAYERS, NUM_PLAYERS)
       client.expectMsgType[UserAddedToLobbyUi]
     }
 
@@ -53,7 +53,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
     "Create a Private Lobby Client" in {
       val client = TestProbe()
       val controllerActor = system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
-      controllerActor ! PrivateLobbyCreatedClient("asdasdasd")
+      controllerActor ! PrivateLobbyCreatedClient("asdasdasd", NUM_PLAYERS)
       client.expectMsgType[PrivateLobbyCreatedUi]
     }
 
