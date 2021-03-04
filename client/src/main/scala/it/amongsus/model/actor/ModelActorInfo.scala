@@ -90,6 +90,11 @@ trait ModelActorInfo {
   def checkTimer(status: TimerStatus): Unit
 
   /**
+   * Method that kills a player during a vote session
+   */
+  def killAfterVote(username: String): Unit
+
+  /**
    * Method of the impostor that allows him to reduce crewmate field of view
    */
   def sabotage(): Unit
@@ -239,10 +244,20 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     }
   }
 
+  override def killAfterVote(username: String): Unit = {
+    val player = gamePlayers.find(p => p.username == username).get
+    gamePlayers = gamePlayers.updated(gamePlayers.indexOf(player), player match {
+      case i: ImpostorAlive => ImpostorGhost(i.color, i.clientId, i.username, i.position)
+      case c: CrewmateAlive => CrewmateGhost(c.color, c.clientId, c.username, c.numCoins, c.position)
+      case _ => player
+    })
+  }
+
   override def checkTimer(status: TimerStatus): Unit = myCharacter match {
     case i : ImpostorAlive => controllerRef.get ! KillTimerController(status)
     case _ =>
   }
+
 
   private def generateVentLinks(): Seq[(Vent, Vent)] = {
     var vents: Seq[Vent] = Seq()

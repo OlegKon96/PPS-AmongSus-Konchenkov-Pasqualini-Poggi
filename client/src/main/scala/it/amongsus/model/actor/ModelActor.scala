@@ -79,7 +79,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.deadBodys = Seq()
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
         state.gameCollectionables, state.deadBodys)
-      
+
     case RestartGameModel() => state.checkTimer(TimerStarted)
       context become gameBehaviour(state)
 
