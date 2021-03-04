@@ -33,10 +33,6 @@ class ServerStartFlowTest extends TestKit(ActorSystem("test", ConfigFactory.load
       actorOfLobby ! JoinPublicLobbyServer(clientTwo, "me2", NUM_PLAYERS)
 
       firstClient.expectMsgType[UserAddedToLobbyClient]
-      firstClient.expectMsgType[UpdateLobbyClient]
-      //secondClient.expectMsgType[UserAddedToLobbyClient]
-      //firstClient.expectMsgType[UpdateLobbyClient]
-      //secondClient.expectMsgType[UpdateLobbyClient]
       firstClient.expectMsgType[MatchFound]
       secondClient.expectMsgType[MatchFound]
     }
