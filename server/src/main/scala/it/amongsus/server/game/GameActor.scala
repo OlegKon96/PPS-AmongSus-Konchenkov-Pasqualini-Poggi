@@ -11,7 +11,6 @@ import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameActor.GamePlayers
-
 import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
@@ -90,6 +89,23 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       context become voting(gamePlayers)
   }
 
+  private def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew): Unit = {
+    gamePlayers.foreach{
+      case c : Crewmate =>
+        crew match {
+          case ImpostorCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Lost())
+          case CrewmateCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Win())
+        }
+      case i : Impostor =>
+        crew match {
+          case ImpostorCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Win())
+          case CrewmateCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Lost())
+        }
+    }
+    log.info("Game ended...")
+    self ! PoisonPill
+  }
+
   private def voting(gamePlayers: Seq[Player]): Receive = {
     case VoteClient(username: String) => manageVote(username, gamePlayers)
 
@@ -106,6 +122,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
 
     case _ => log.info("voting error...")
   }
+
   /**
    * Listen for termination messages before the match start: before all the players sent the Ready message
    */
@@ -212,6 +229,37 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   }
 
   private def manageVote(username: String, gamePlayer: Seq[Player]): Unit = {
+    totalVotes = totalVotes - 1
+    println("Tot Vote:" + totalVotes)
+    if(!isEmpty(username)) {
+      this.playersToLobby = this.playersToLobby.updated(username, this.playersToLobby.find(_._1 == username).get._2 + 1)
+    }
+    if (totalVotes <= 0) {
+      if (playersToLobby.valuesIterator.max == 0) {
+        this.players.foreach(p => p.actorRef ! NoOneEliminatedController())
+        context become inGame()
+      } else {
+        val playerToEliminate = playersToLobby.maxBy(_._2)._1
+        this.players.foreach(p => p.actorRef ! EliminatedPlayer(playerToEliminate))
+        this.playersToLobby = Map.empty
+        gamePlayer.filter(p => p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]).
+          groupBy(_.username).foreach {
+          case (username, _) => this.playersToLobby = this.playersToLobby + (username -> 0)
+        }
+        totalVotes = this.playersToLobby.size
+        println("Update Vote Var: " + totalVotes)
+
+        if (checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
+          sendWinMessage(gamePlayer, CrewmateCrew())
+          self ! PoisonPill
+        } else if (checkWinImpostor(gamePlayer.filter(p => p.username != playerToEliminate))) {
+          sendWinMessage(gamePlayer, ImpostorCrew())
+          self ! PoisonPill
+        } else {
+          context become inGame()
+        }
+      }
+    }
   }
 
   private def isEmpty(x: String) = Option(x).forall(_.isEmpty)
@@ -233,22 +281,5 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   private def checkWinImpostor(gamePlayers: Seq[Player]): Boolean = {
     gamePlayers.count(player =>
       player.isInstanceOf[AlivePlayer]) <= gamePlayers.count(player => player.isInstanceOf[ImpostorAlive]) * 2
-  }
-
-  private def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew): Unit = {
-    gamePlayers.foreach{
-      case c : Crewmate =>
-        crew match {
-          case ImpostorCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Lost())
-          case CrewmateCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Win())
-        }
-      case i : Impostor =>
-        crew match {
-          case ImpostorCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Win())
-          case CrewmateCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Lost())
-        }
-    }
-    log.info("Game ended...")
-    self ! PoisonPill
   }
 }
