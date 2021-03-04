@@ -6,7 +6,7 @@ import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, GameEndController, ModelReadyCotroller, UpdatedPlayersController}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -74,6 +74,12 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
   }
 
   private def voteBehaviour(state: ModelActorInfo): Receive = {
+    case KillPlayerModel(username) =>
+      state.killAfterVote(username)
+      state.deadBodys = Seq()
+      state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
+        state.gameCollectionables, state.deadBodys)
+      
     case RestartGameModel() => state.checkTimer(TimerStarted)
       context become gameBehaviour(state)
 

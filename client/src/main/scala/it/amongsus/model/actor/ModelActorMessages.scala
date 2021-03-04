@@ -41,6 +41,12 @@ object ModelActorMessages {
    */
   case class BeginVotingModel()
   /**
+   * Tells to the model that a player is killed
+   *
+   * @param username of the player
+   */
+  case class KillPlayerModel(username: String)
+  /**
    * Tells to the model to restart the game
    */
   case class RestartGameModel()
