@@ -34,7 +34,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case Init() =>
       val frame = MenuFrame(Option(self))
       frame.start().unsafeRunSync()
-      context become defaultBehaviour(UiActorData(Option(sender), Option(frame)))
+      context become defaultBehaviour(UiActorInfo(Option(sender), Option(frame)))
 
     case PublicGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! JoinPublicLobbyClient(username, playersNumber)
@@ -45,31 +45,36 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case CreatePrivateGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! CreatePrivateLobbyClient(username, playersNumber)
 
+    case UserAddedToLobbyUi(numPlayers,roomSize) =>
+      state.currentFrame.get.dispose().unsafeRunSync()
+      val lobby = LobbyFrame(self) //TODO add room size
+      lobby.start(numPlayers, state.getCode).unsafeRunSync()
+      context become defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
+
+    case UpdateLobbyClient(numPlayers) => state.updateLobby(numPlayers)
+
+    case RetryServerConnectionUi() => ???
+
+    case PrivateLobbyCreatedUi(lobbyCode, roomSize) =>
+      state.currentFrame.get.dispose().unsafeRunSync()
+      val lobby = LobbyFrame(self) //TODO add room size
+      lobby.start(1, lobbyCode).unsafeRunSync()
+      context become defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
+      state.saveCode(lobbyCode)
+
     case LeaveLobbyUi() =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val frame = MenuFrame(Option(self))
       frame.start().unsafeRunSync()
-      context become defaultBehaviour(UiActorData(state.clientRef, Option(frame)))
+      context become defaultBehaviour(UiActorInfo(state.clientRef, Option(frame)))
       state.clientRef.get ! LeaveLobbyClient()
 
-    case RetryServerConnectionUi() => ???
+    case MatchFoundUi() => // TODO -> state.showStartButton()
 
-    case UserAddedToLobbyUi(numPlayers) =>
-      state.currentFrame.get.dispose().unsafeRunSync()
-      val lobby = LobbyFrame(self)
-      lobby.start(numPlayers, state.getCode()).unsafeRunSync()
-      context become defaultBehaviour(UiActorData(state.clientRef, Option(lobby)))
+    case PlayerCloseUi() => state.clientRef.get ! PlayerLeftController()
+      self ! PoisonPill
 
-    case UpdateLobbyClient(numPlayers) => state.updateLobby(numPlayers)
-
-    case PrivateLobbyCreatedUi(lobbyCode) =>
-      state.currentFrame.get.dispose().unsafeRunSync()
-      val lobby = LobbyFrame(self)
-      lobby.start(1, lobbyCode).unsafeRunSync()
-      context become defaultBehaviour(UiActorData(state.clientRef, Option(lobby)))
-      state.saveCode(lobbyCode)
-
-    case MatchFoundUi() => state.clientRef.get ! PlayerReadyClient()
+    case PlayerReadyUi() => state.clientRef.get ! PlayerReadyClient()
 
     case GameFoundUi(map, myChar, players, collectionables) =>
       state.currentFrame.get.dispose().unsafeRunSync()
