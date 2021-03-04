@@ -1,11 +1,15 @@
 package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
+import it.amongsus.ActorSystemManager
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
-import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, GameEndController, ModelReadyCotroller, UpdatedPlayersController}
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
+import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, GameEndController, ModelReadyCotroller, UpdatedPlayersController}
+import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillTimerStatusModel, MyCharMovedModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
+
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object ModelActor {
   def props(state: ModelActorInfo): Props =
@@ -34,14 +38,21 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
         state.gameCollectionables, state.deadBodys)
 
-    case UiButtonPressedModel(button) =>
-      button match {
-        case b : VentButton => state.useVent()
-        case e : EmergencyButton => state.checkTimer(TimerEnded)
-          state.callEmergency()
-        case k : KillButton => state.kill()
-        case r : ReportButton => state.checkTimer(TimerEnded)
-      }
+    case UiButtonPressedModel(button) => button match {
+      case _: VentButton => state.useVent()
+      case _: EmergencyButton => state.checkTimer(TimerEnded)
+        state.callEmergency()
+        state.controllerRef.get ! BeginVotingController(state.gamePlayers)
+        context become voteBehaviour(state)
+      case _: KillButton => state.kill()
+      case _: ReportButton => state.checkTimer(TimerEnded)
+        state.controllerRef.get ! BeginVotingController(state.gamePlayers)
+        context become voteBehaviour(state)
+      case _: SabotageButton => state.sabotage()
+        ActorSystemManager.actorSystem.scheduler.scheduleOnce(5 seconds){
+          state.sabotageOff()
+        }
+    }
 
     case KillTimerStatusModel(status: TimerStatus) => status match {
       case TimerStarted =>
