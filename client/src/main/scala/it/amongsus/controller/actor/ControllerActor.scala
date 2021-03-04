@@ -5,7 +5,7 @@ import it.amongsus.ActorSystemManager
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController, SendTextChatController, _}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.messages.GameMessageClient._
-import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
+import it.amongsus.messages.GameMessageServer.{PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
@@ -114,7 +114,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       context become voteBehaviour(state)
 
     case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become defaultBehaviour(LobbyActorInfo(state.guiRef))
+      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
     case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
