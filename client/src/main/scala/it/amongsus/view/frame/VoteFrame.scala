@@ -221,7 +221,9 @@ object VoteFrame {
      * @param username of the user that wrote a message in the chat
      * @return
      */
-    override def appendTextToChatGhost(text: String, username: String): IO[Unit] = ???
+    override def appendTextToChatGhost(text: String, username: String): IO[Unit] = for {
+      _ <- boxChatGhost.appendText(s"$username said: $text\n")
+    } yield()
 
     /**
      * Method that opens the panel to wait the vote of other players to Ghost Players
@@ -286,7 +288,24 @@ object VoteFrame {
      *
      * @return
      */
-    override def noOneEliminated(): IO[Unit] = ???
+    override def noOneEliminated(): IO[Unit] = {
+      for {
+        cp <- frame.contentPane()
+        _ <- cp.remove(votePanel)
+        waitGhostPanel <- JPanelIO()
+        _ <- waitGhostPanel.setLayout(new BorderLayout())
+        text <- JLabelIO()
+        borderText <- BorderFactoryIO.emptyBorderCreated(spaceDimension50, spaceDimension50, 0, 0)
+        _ <- text.setBorder(borderText)
+        _ <- text.setText("No One Was Ejected, Parity of Votes...")
+        _ <- waitGhostPanel.add(text, BorderLayout.NORTH)
+        _ <- cp.add(waitGhostPanel)
+        _ <- frame.setResizable(false)
+        _ <- frame.setTitle("Among Sus - Exit Pool")
+        _ <- frame.setSize(WIDTH/3, HEIGHT/4)
+        _ <- frame.setVisible(true)
+      } yield ()
+    }
 
     override def dispose(): IO[Unit] = for {
       _ <- frame.dispose()
