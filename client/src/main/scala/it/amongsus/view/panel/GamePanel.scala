@@ -36,16 +36,16 @@ object GamePanel {
     private var gameDeadBodies = deadBodies
     private var gameMyChar = myChar
 
-    val block: BufferedImage = ImageIO.read(new File("images/block.png"))
-    val blockOff: BufferedImage = ImageIO.read(new File("images/blockOff.png"))
-    val space: BufferedImage = ImageIO.read(new File("images/space.png"))
-    val floor: BufferedImage = ImageIO.read(new File("images/floor.png"))
-    val floorOff: BufferedImage = ImageIO.read(new File("images/floorOff.png"))
-    val vent: BufferedImage = ImageIO.read(new File("images/vent.png"))
-    val ventOff : BufferedImage = ImageIO.read(new File("images/ventOff.png"))
-    val emergency: BufferedImage = ImageIO.read(new File("images/emergencyButton.png"))
-    val emergencyOff : BufferedImage = ImageIO.read(new File("images/emergencyButtonOff.png"))
-    val coin: BufferedImage = ImageIO.read(new File("images/coin.png"))
+    val block: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/block.png"))
+    val blockOff: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/blockOff.png"))
+    val space: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/space.png"))
+    val floor: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/floor.png"))
+    val floorOff: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/floorOff.png"))
+    val vent : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/vent.png"))
+    val ventOff : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/ventOff.png"))
+    val emergency : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/emergencyButton.png"))
+    val emergencyOff : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/emergencyButtonOff.png"))
+    val coin : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/coin.png"))
     val SCALEFACTOR: Int = 15
     val ONE : Int = 1
     val ZERO : Int = 0
@@ -200,16 +200,16 @@ object GamePanel {
       }
     }
 
-    private def getImageAlive(color: String): BufferedImage = {
-      ImageIO.read(new File(s"res/playerAlive$color.png"))
+    private def getImageAlive(color : String) : BufferedImage =  {
+      ImageIO.read(getClass.getResourceAsStream(s"/images/playerAlive${color}.png"))
     }
 
-    private def getImageGhost(color: String): BufferedImage = {
-      ImageIO.read(new File(s"res/playerGhost$color.png"))
+    private def getImageGhost(color : String) : BufferedImage =  {
+      ImageIO.read(getClass.getResourceAsStream(s"/images/playerGhost${color}.png"))
     }
 
-    private def getImageDead(color: String): BufferedImage = {
-      ImageIO.read(new File(s"res/playerDead$color.png"))
+    private def getImageDead(color : String) : BufferedImage =  {
+      ImageIO.read(getClass.getResourceAsStream(s"/images/playerDead${color}.png"))
     }
 
     private def drawImpostor(g: Graphics, player: Player, image: BufferedImage): Unit = {
