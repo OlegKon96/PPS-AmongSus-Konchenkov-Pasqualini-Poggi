@@ -36,16 +36,16 @@ object GamePanel {
     private var gameDeadBodies = deadBodies
     private var gameMyChar = myChar
 
-    val block: BufferedImage = ImageIO.read(new File("res/block.png"))
-    val blockOff: BufferedImage = ImageIO.read(new File("res/blockOff.png"))
-    val space: BufferedImage = ImageIO.read(new File("res/space.png"))
-    val floor: BufferedImage = ImageIO.read(new File("res/floor.png"))
-    val floorOff: BufferedImage = ImageIO.read(new File("res/floorOff.png"))
-    val vent: BufferedImage = ImageIO.read(new File("res/vent.png"))
-    val ventOff : BufferedImage = ImageIO.read(new File("res/ventOff.png"))
-    val emergency: BufferedImage = ImageIO.read(new File("res/emergencyButton.png"))
-    val emergencyOff : BufferedImage = ImageIO.read(new File("res/emergencyButtonOff.png"))
-    val coin: BufferedImage = ImageIO.read(new File("res/coin.png"))
+    val block: BufferedImage = ImageIO.read(new File("images/block.png"))
+    val blockOff: BufferedImage = ImageIO.read(new File("images/blockOff.png"))
+    val space: BufferedImage = ImageIO.read(new File("images/space.png"))
+    val floor: BufferedImage = ImageIO.read(new File("images/floor.png"))
+    val floorOff: BufferedImage = ImageIO.read(new File("images/floorOff.png"))
+    val vent: BufferedImage = ImageIO.read(new File("images/vent.png"))
+    val ventOff : BufferedImage = ImageIO.read(new File("images/ventOff.png"))
+    val emergency: BufferedImage = ImageIO.read(new File("images/emergencyButton.png"))
+    val emergencyOff : BufferedImage = ImageIO.read(new File("images/emergencyButtonOff.png"))
+    val coin: BufferedImage = ImageIO.read(new File("images/coin.png"))
     val SCALEFACTOR: Int = 15
     val ONE : Int = 1
     val ZERO : Int = 0

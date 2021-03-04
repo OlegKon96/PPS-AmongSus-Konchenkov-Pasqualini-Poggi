@@ -60,7 +60,7 @@ class CoreTest extends AnyWordSpecLike with BeforeAndAfterAll {
   }
 
   def loadMap(): Iterator[String] = {
-    val bufferedSource = scala.io.Source.fromFile("images/gameMap.csv")
+    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/images/gameMap.csv"))
     bufferedSource.getLines
   }
 }
