@@ -38,11 +38,6 @@ class GameActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test
 
       player1.expectMsgType[GamePlayersClient]
       player2.expectMsgType[GamePlayersClient]
-
-      //player2.expectMsgType[GamePlayersClient] shouldBe Seq[Player]
-
-      //assertResult(1)(GamePlayersClient.)
     }
   }
 }
-
