@@ -54,4 +54,8 @@ object ModelActorMessages {
    * Tells to the model that the game ended
    */
   case class GameEndModel(end: GameEnd)
+  /**
+   * Tells to the Ui Actor that a player left
+   */
+  case class PlayerLeftModel()
 }
