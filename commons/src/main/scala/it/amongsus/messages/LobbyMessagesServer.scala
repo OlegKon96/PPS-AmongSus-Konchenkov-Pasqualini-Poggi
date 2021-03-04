@@ -12,6 +12,7 @@ object LobbyMessagesServer {
   /**
    * Message sent by the client to join a public lobby for a match with the given number of players
    *
+   * @param clientId of the player
    * @param username the username chosen by the user
    * @param numberOfPlayers the number of players required to start a match
    */
@@ -19,6 +20,7 @@ object LobbyMessagesServer {
   /**
    * Message sent by the client to join a private lobby
    *
+   * @param clientId of the player
    * @param username username chosen by the user
    * @param privateLobbyCode required to start a match
    */
