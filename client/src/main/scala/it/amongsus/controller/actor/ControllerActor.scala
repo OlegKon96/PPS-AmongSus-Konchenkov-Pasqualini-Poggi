@@ -80,8 +80,6 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
   private def gameBehaviour(state: GameActorInfo): Receive = {
     case PlayerReadyClient() => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
 
-    case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
-
     case GamePlayersClient(players) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
@@ -94,8 +92,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
-    case UpdatedMyCharController(player, gamePLayers, deadBodys) =>
-      state.gameServerRef.get ! PlayerMovedServer(player, gamePLayers, deadBodys)
+    case UpdatedMyCharController(player, gamePlayers, deadBodys) =>
+      state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodys)
 
     case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
@@ -116,15 +114,24 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       context become voteBehaviour(state)
 
     case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+      context become defaultBehaviour(LobbyActorInfo(state.guiRef))
 
     case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
-    case _ => println("error")
+    case PlayerLeftController() => state.modelRef.get ! PlayerLeftModel()
+      self ! PoisonPill
+
+    //case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
+
+    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
   }
 
   private def voteBehaviour(state: GameActorInfo): Receive = {
     case VoteClient(username) => state.gameServerRef.get ! VoteClient(username)
+
+    case EliminatedPlayer(username) =>
+      state.modelRef.get ! KillPlayerModel(username)
+      state.guiRef.get ! EliminatedPlayer(username)
 
     case NoOneEliminatedController() => state.guiRef.get ! NoOneEliminatedUi()
 
@@ -132,10 +139,27 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
     case SendTextChatController(message, myChar) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
+      println("Controller Actor: "+myChar.username)
 
     case SendTextChatClient(message) => state.guiRef.get ! ReceiveTextChatUi(message)
 
+    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
+      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+
+    case GameEndClient(end) =>
+      ActorSystemManager.actorSystem.scheduler.scheduleOnce(3.1 seconds){
+        state.modelRef.get ! GameEndModel(end)
+      }
+
+    case RestartGameController() =>
+      state.modelRef.get ! RestartGameModel()
+      context become gameBehaviour(state)
+
+    case PlayerLeftController() => state.modelRef.get ! PlayerLeftModel()
+      self ! PoisonPill
+
+    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
+
     case _ => println("Error Controller Vote")
   }
-
 }
