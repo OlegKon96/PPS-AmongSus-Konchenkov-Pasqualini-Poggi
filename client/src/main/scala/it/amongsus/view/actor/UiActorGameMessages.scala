@@ -43,10 +43,6 @@ object UiActorGameMessages {
    */
   case class PlayerLeftUi(clientId: String)
   /**
-   * Tells to UI actor that a player wants to skip vote
-   */
-  case class SkipVoteUi()
-  /**
    * Tells to UI actor that a player wants to vote another player
    */
   case class VoteUi(username: String)
@@ -63,6 +59,10 @@ object UiActorGameMessages {
    */
   case class KillTimerUpdateUi(minutes: Long, seconds: Long)
   /**
+   * Tells to the Ui actor that timer updated
+   */
+  case class SabotageTimerUpdateUi(minutes: Long, seconds: Long)
+  /**
    * Tells to the Ui Actor to send a text messages
    */
   case class SendTextChatUi(message: Message, char: Player)
@@ -70,6 +70,10 @@ object UiActorGameMessages {
    * Tells to the Ui Actor to send a text messages
    */
   case class ReceiveTextChatUi(message: Message)
+  /**
+   * Tells to the Ui Actor to send a text messages in the Ghost Chat
+   */
+  case class ReceiveTextChatGhostUi(message: Message)
   /**
    * Tells to the Ui Actor that no one was ejected from vote session
    */
