@@ -2,7 +2,7 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, SendTextChatController, _}
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController, SendTextChatController, _}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
@@ -53,11 +53,13 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case LeaveLobbyClient() => state.serverRef.get ! LeaveLobbyServer(state.clientId)
 
-    case UserAddedToLobbyClient(numPlayers) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers)
+    case UserAddedToLobbyClient(numPlayers, roomSize) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
 
     case UpdateLobbyClient(numPlayers) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
 
-    case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
+    case PrivateLobbyCreatedClient(lobbyCode,roomSize) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
+
+    case PlayerLeftController() => self ! PoisonPill
 
     case MatchFound(gameRoom) =>
       state.guiRef.get ! MatchFoundUi()
@@ -72,7 +74,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       case _ =>
     }
 
-    case m: String => log.debug(m)
+    case _ => println("lobby error" + _)
   }
 
   private def gameBehaviour(state: GameActorInfo): Receive = {

@@ -69,7 +69,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case GameEndModel(end) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
-      
+
     case PlayerLeftModel() => self ! PoisonPill
 
     case _ => println("error model game")
