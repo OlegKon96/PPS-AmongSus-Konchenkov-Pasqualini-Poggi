@@ -47,7 +47,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case UserAddedToLobbyUi(numPlayers,roomSize) =>
       state.currentFrame.get.dispose().unsafeRunSync()
-      val lobby = LobbyFrame(self) //TODO add room size
+      val lobby = LobbyFrame(self,roomSize)
       lobby.start(numPlayers, state.getCode).unsafeRunSync()
       context become defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
 
@@ -57,7 +57,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case PrivateLobbyCreatedUi(lobbyCode, roomSize) =>
       state.currentFrame.get.dispose().unsafeRunSync()
-      val lobby = LobbyFrame(self) //TODO add room size
+      val lobby = LobbyFrame(self,roomSize)
       lobby.start(1, lobbyCode).unsafeRunSync()
       context become defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
       state.saveCode(lobbyCode)
@@ -69,7 +69,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       context become defaultBehaviour(UiActorInfo(state.clientRef, Option(frame)))
       state.clientRef.get ! LeaveLobbyClient()
 
-    case MatchFoundUi() => // TODO -> state.showStartButton()
+    case MatchFoundUi() => state.showStartButton()
 
     case PlayerCloseUi() => state.clientRef.get ! PlayerLeftController()
       self ! PoisonPill

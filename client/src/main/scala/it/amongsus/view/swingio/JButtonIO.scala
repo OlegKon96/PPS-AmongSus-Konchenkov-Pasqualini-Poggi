@@ -27,6 +27,7 @@ class JButtonIO(override val component: JButton) extends ComponentIO(component){
   def setSize(width : Int, height : Int) : IO[Unit] = IO {component.setSize(width,height)}
   def setText(text: String): IO[Unit] = IO {component.setText(text)}
   def setEnabled(b: Boolean): IO[Unit] = IO { component.setEnabled(b) }
+  def setVisible(b : Boolean) : IO[Unit] = IO {component.setVisible(b)}
   def setTextInvokingAndWaiting(text: String): IO[Unit] = invokeAndWaitIO(component.setText(text))
   def setEnabledInvokingAndWaiting(b: Boolean): IO[Unit] = invokeAndWaitIO(component.setEnabled(b))
 }
