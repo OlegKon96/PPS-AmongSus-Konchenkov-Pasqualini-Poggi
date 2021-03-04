@@ -2,14 +2,14 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController, SendTextChatController, _}
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, SendTextChatController, _}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillPlayerModel, PlayerLeftModel, _}
+import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
 import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
 

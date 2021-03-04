@@ -3,7 +3,7 @@ package it.amongsus.controller.actor
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, GameEnd, Movement}
+import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement}
 
 object ControllerActorMessages {
   /**
@@ -61,4 +61,8 @@ object ControllerActorMessages {
    * @param status of the timer
    */
   case class KillTimerController(status: TimerStatus)
+  /**
+   * Tells to the Ui Actor to send a text messages
+   */
+  case class SendTextChatController(message: Message, char: Player)
 }
