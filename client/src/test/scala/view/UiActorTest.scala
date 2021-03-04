@@ -45,9 +45,9 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
     }
 
     "Leave a Lobby" in {
-      val client = TestProbe()
-      val menuFrame = MenuFrame.apply(Option(client.ref))
-      val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
+      //val client = TestProbe()
+      //val menuFrame = MenuFrame.apply(Option(client.ref))
+      //val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
       //uiActor ! LeaveLobbyUi()
       //client.expectMsgType[LeaveLobbyClient]
     }
