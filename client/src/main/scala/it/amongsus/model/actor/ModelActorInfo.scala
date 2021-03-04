@@ -188,8 +188,19 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   override def updatePlayer(player: Player): Seq[Player] = {
     val index = gamePlayers.indexOf(gamePlayers.find(p => p.clientId == player.clientId).get)
     gamePlayers = gamePlayers.updated(index, player)
+
     myCharacter match {
       case p: AlivePlayer =>
+        if (p.canCallEmergency(p, emergencyButtons)) {
+          controllerRef.get ! ButtonOnController(EmergencyButton())
+        } else {
+          controllerRef.get ! ButtonOffController(EmergencyButton())
+        }
+        if (p.canReport(myCharacter.position, deadBodys)) {
+          controllerRef.get ! ButtonOnController(ReportButton())
+        } else {
+          controllerRef.get ! ButtonOffController(ReportButton())
+        }
         p match {
           case i: ImpostorAlive =>
             i.canVent(ventList) match {
