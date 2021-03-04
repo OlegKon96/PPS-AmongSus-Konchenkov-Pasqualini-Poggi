@@ -33,6 +33,10 @@ trait UiGameActorInfo {
 
   def updatePlayer(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
                    deadBodies : Seq[DeadBody]): Unit
+
+  def updateKillButton(seconds : Long) : Unit
+
+  def updateSabotageButton(seconds : Long) : Unit
 }
 
 object UiGameActorInfo {
@@ -51,4 +55,8 @@ case class UiGameActorData(override val clientRef: Option[ActorRef],
 
   override def enableButton(button: ButtonType, boolean: Boolean): Unit =
     gameFrame.get.enableButton(button, boolean).unsafeRunSync()
+
+  override def updateKillButton(seconds: Long): Unit = gameFrame.get.updateKillButton(seconds).unsafeRunSync()
+
+  override def updateSabotageButton(seconds: Long): Unit = gameFrame.get.updateSabotageButton(seconds).unsafeRunSync()
 }

@@ -38,6 +38,10 @@ trait GameFrame extends Frame {
                     deadBodies : Seq[DeadBody]) :Unit
 
   def enableButton(button: ButtonType, boolean: Boolean) : IO[Unit]
+
+  def updateKillButton(seconds : Long) : IO[Unit]
+
+  def updateSabotageButton(seconds : Long) : IO[Unit]
 }
 
 object GameFrame {
@@ -151,11 +155,17 @@ object GameFrame {
     override def enableButton(button: ButtonType, boolean: Boolean): IO[Unit] = {
       myChar match {
         case _: Impostor => button match {
-          case _: KillButton => killButton.setEnabled(boolean)
+          case _: KillButton => for {
+            _ <- killButton.setText("Kill")
+            _ <- killButton.setEnabled(boolean)
+          } yield()
           case _: ReportButton => reportButton.setEnabled(boolean)
           case _: EmergencyButton => emergencyButton.setEnabled(boolean)
           case _: VentButton => ventButton.setEnabled(boolean)
-          case _: SabotageButton => sabotageButton.setEnabled(boolean)
+          case _: SabotageButton => for {
+            _ <- sabotageButton.setText("Sabotage")
+            _ <- sabotageButton.setEnabled(boolean)
+          } yield()
         }
         case _: Crewmate => button match {
           case _: ReportButton => reportButton.setEnabled(boolean)
@@ -163,6 +173,14 @@ object GameFrame {
         }
       }
     }
+
+    override def updateKillButton(seconds: Long): IO[Unit] = for {
+      _ <- killButton.setText("Countdown: " + seconds.toString)
+    } yield()
+
+    override def updateSabotageButton(seconds: Long): IO[Unit] = for {
+      _ <- sabotageButton.setText("Countdown: " + seconds.toString)
+    } yield()
   }
 
 }

@@ -103,9 +103,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case ButtonOffUi(button) => state.enableButton(button, boolean = false)
 
-    case KillTimerUpdateUi(minutes: Long, seconds: Long) => //state.updateKillButton(seconds)
+    case KillTimerUpdateUi(minutes: Long, seconds: Long) => state.updateKillButton(seconds)
 
-    case SabotageTimerUpdateUi(minutes: Long, seconds: Long) => //state.updateSabotageButton(seconds)
+    case SabotageTimerUpdateUi(minutes: Long, seconds: Long) => state.updateSabotageButton(seconds)
 
     case GameEndUi(end) => //win message(end)
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
