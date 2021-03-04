@@ -1,14 +1,21 @@
 package it.amongsus.view.actor
 
-import akka.actor.{Actor, ActorLogging, Props}
+import it.amongsus.ActorSystemManager
+import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.Constants
-import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, RestartGameController, UiButtonPressedController}
-import it.amongsus.core.entities.player.{Player}
-import it.amongsus.messages.GameMessageClient._
+import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedCotroller, RestartGameController, SendTextChatController, UiButtonPressedController}
+import it.amongsus.core.entities.player.{AlivePlayer, Crewmate, Impostor, Player}
+import it.amongsus.core.entities.util.GameEnd.{Lost, Win}
+import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient}
+import it.amongsus.messages.GameMessageClient.VoteClient
 import it.amongsus.messages.LobbyMessagesClient._
+import it.amongsus.view.actor.UiActorGameMessages.KillTimerUpdateUi
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame}
+import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame, WinFrame}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 object UiActor {
   def props(serverResponsesListener: UiActorInfo): Props = Props(new UiActor(serverResponsesListener))
@@ -85,16 +92,21 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
       state.updatePlayer(myChar,players,collectionables, deadBodies)
 
-    case ButtonOnUi(button) => state.enableButton(button,true)
+    case ButtonOnUi(button) => state.enableButton(button,boolean = true)
 
-    case ButtonOffUi(button) => state.enableButton(button,false)
+    case ButtonOffUi(button) => state.enableButton(button,boolean = false)
 
     case KillTimerUpdateUi(minutes: Long, seconds: Long) => //TODO implement view change
 
     case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
 
-    case BeginVotingUi(gamePlayers: Seq[Player]) =>  //TODO VoteFrame startUp
-      context become voteBehaviour(state)
+    case BeginVotingUi(gamePlayers: Seq[Player]) =>  val voteFrame = VoteFrame(Option(self), state.gameFrame.get.myChar,
+      gamePlayers.filter(p => p.isInstanceOf[AlivePlayer]))
+      gamePlayers.find(p => p.clientId==state.gameFrame.get.myChar.clientId).get match {
+        case _: AlivePlayer => voteFrame.start().unsafeRunSync()
+        case _ => voteFrame.waitVote().unsafeRunSync()
+      }
+      context become voteBehaviour(state, voteFrame)
 
     case GameEndUi(end) => //win message(end)
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
@@ -104,9 +116,35 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case _ => println("ERROR")
   }
 
-  private def voteBehaviour(state: UiGameActorInfo): Receive = {
+  private def voteBehaviour(state: UiGameActorInfo, voteFrame : VoteFrame): Receive = {
+    case VoteUi(username) => state.clientRef.get ! VoteClient(username)
+
+    case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
+      state.updatePlayer(myChar,players,collectionables, deadBodies)
+
     case RestartGameUi() =>
+      voteFrame.dispose().unsafeRunSync()
       state.clientRef.get ! RestartGameController()
       context become gameBehaviour(state)
+
+    case GameEndUi(end) => //win message(end)
+      state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
+      state.gameFrame.get.dispose().unsafeRunSync()
+      end match {
+        case Win() => WinFrame(Option(self), state.gameFrame.get.myChar).start().unsafeRunSync()
+        case Lost() => state.gameFrame.get.myChar match {
+          case _: Crewmate => WinFrame(Option(self),
+            state.gameFrame.get.players.find(p => !p.isInstanceOf[Impostor]).get).start().unsafeRunSync()
+          case _: Impostor => WinFrame(Option(self),
+            state.gameFrame.get.players.find(p => !p.isInstanceOf[Crewmate]).get).start().unsafeRunSync()
+        }
+      }
+      context become defaultBehaviour(UiActorInfo())
+
+    case SendTextChatUi(message, myChar) => state.clientRef.get ! SendTextChatController(message, myChar)
+
+    case ReceiveTextChatUi(message) => voteFrame.appendTextToChat(message.text, message.username).unsafeRunSync()
+
+    case _ => println("Error vote behaviour")
   }
 }
