@@ -26,12 +26,6 @@ trait GameActorInfo {
    *
    * @return
    */
-  def lobbyServerRef: Option[ActorRef]
-  /**
-   * The reference of the Game Server
-   *
-   * @return
-   */
   def gameServerRef: Option[ActorRef]
   /**
    * The reference of the Actor's GUI
@@ -58,13 +52,12 @@ trait GameActorInfo {
 }
 
 object GameActorInfo {
-  def apply(gameServerRef: Option[ActorRef], lobbyServerRef: Option[ActorRef], guiRef: Option[ActorRef],
+  def apply(gameServerRef: Option[ActorRef], guiRef: Option[ActorRef],
             modelRef: Option[ActorRef], clientId: String): GameActorInfo =
-    GameActorInfoData(gameServerRef, lobbyServerRef, guiRef,modelRef, clientId)
+    GameActorInfoData(gameServerRef, guiRef,modelRef, clientId)
 }
 
 case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
-                             override val lobbyServerRef: Option[ActorRef],
                              override val guiRef: Option[ActorRef],
                              override val modelRef: Option[ActorRef],
                              override val clientId: String) extends GameActorInfo {

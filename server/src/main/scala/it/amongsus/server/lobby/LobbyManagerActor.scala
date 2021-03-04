@@ -33,7 +33,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       log.info(s"client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
-        this.addUserToLobby(clientId, username, ref, lobbyType)
+        this.addUserToLobby(clientId, username, ref, lobbyType, numberOfPlayers)
       }
     }
 
@@ -41,7 +41,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
         this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId)
+        ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId, numberOfPlayers)
       }
     }
 
@@ -49,7 +49,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
           case Some(lobbyType) => {
-            this.addUserToLobby(clientId, username, ref, lobbyType)
+            this.addUserToLobby(clientId, username, ref, lobbyType, lobbyType.numberOfPlayers)
           }
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
@@ -69,10 +69,11 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
     }
   }
 
-  private def addUserToLobby(clientId: String, username: String, ref: ActorRef, lobbyType: LobbyType): Unit = {
+  private def addUserToLobby(clientId: String, username: String, ref: ActorRef, lobbyType: LobbyType,
+                             numberOfPlayers: Int): Unit = {
     this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
     if (this.lobbyManger.getLobby(lobbyType).get.players.length != lobbyType.numberOfPlayers) {
-      ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
+      ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length, numberOfPlayers)
       this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
         player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
       })
