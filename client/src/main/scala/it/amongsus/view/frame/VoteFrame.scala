@@ -1,14 +1,13 @@
 package it.amongsus.view.frame
 
 import java.awt.{BorderLayout, GridLayout}
-
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.Message
-import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, SkipVoteUi, VoteUi}
-import it.amongsus.view.frame.VoteFrame.VoteFrameImpl
-import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO, JTextFieldIO}
+import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, VoteUi}
+import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
+import it.amongsus.view.swingio.JTextFieldIO
 import javax.swing.JFrame
 
 /**
