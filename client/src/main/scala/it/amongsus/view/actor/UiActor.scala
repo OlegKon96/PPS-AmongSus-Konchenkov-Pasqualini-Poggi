@@ -119,6 +119,18 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
   private def voteBehaviour(state: UiGameActorInfo, voteFrame : VoteFrame): Receive = {
     case VoteUi(username) => state.clientRef.get ! VoteClient(username)
 
+    case EliminatedPlayer(username) =>
+      voteFrame.eliminated(username).unsafeRunSync()
+      ActorSystemManager.actorSystem.scheduler.scheduleOnce(3 seconds){
+        self ! RestartGameUi()
+      }
+
+    case NoOneEliminatedUi() =>
+      voteFrame.noOneEliminated().unsafeRunSync()
+      ActorSystemManager.actorSystem.scheduler.scheduleOnce(3 seconds){
+        self ! RestartGameUi()
+      }
+
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
       state.updatePlayer(myChar,players,collectionables, deadBodies)
 
@@ -142,8 +154,12 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       context become defaultBehaviour(UiActorInfo())
 
     case SendTextChatUi(message, myChar) => state.clientRef.get ! SendTextChatController(message, myChar)
+      println("UiActor: "+myChar.username)
 
     case ReceiveTextChatUi(message) => voteFrame.appendTextToChat(message.text, message.username).unsafeRunSync()
+
+    case ReceiveTextChatGhostUi(message) =>
+      voteFrame.appendTextToChatGhost(message.text, message.username).unsafeRunSync()
 
     case _ => println("Error vote behaviour")
   }
