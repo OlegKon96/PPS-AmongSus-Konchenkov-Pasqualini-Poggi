@@ -4,10 +4,14 @@ import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, GameEndController, ModelReadyCotroller, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController}
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
+import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
-
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel}
+import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
+import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
+import it.amongsus.model.actor.ModelActorMessages.UiButtonPressedModel
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,7 +28,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.gamePlayers = players
       val gameMap = state.generateMap(map)
       state.generateCollectionables(gameMap)
-      state.controllerRef.get ! ModelReadyCotroller(gameMap, state.myCharacter, state.gamePlayers,
+      state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, state.gamePlayers,
         state.gameCollectionables)
       state.checkTimer(TimerStarted)
       context become gameBehaviour(ModelActorInfo(state.controllerRef,
@@ -62,7 +66,6 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     }
       state.updatePlayer(state.myCharacter)
 
-
     case BeginVotingModel() => state.checkTimer(TimerEnded)
       context become voteBehaviour(state)
 
@@ -92,8 +95,6 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       self ! PoisonPill
 
     case MyPlayerLeftModel() => self ! PoisonPill
-
-    case PlayerLeftModel(clientId) => state.removePlayer(clientId)
 
     case _ => println("ERROR VOTE")
   }
