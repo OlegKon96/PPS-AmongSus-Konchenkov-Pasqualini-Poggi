@@ -3,18 +3,18 @@ package it.amongsus.controller.actor
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement, WinnerCrew}
+import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement}
 
 object ControllerActorMessages {
   /**
    * Tells to the controller that the model is ready
    */
-  case class ModelReadyCotroller(map: Array[Array[Tile]], myChar: Player, players: Seq[Player],
-                                 collectionables: Seq[Collectionable])
+  case class ModelReadyController(map: Array[Array[Tile]], myChar: Player, players: Seq[Player],
+                                  collectionables: Seq[Collectionable])
   /**
    * Tells to the controller that his character is moved
    */
-  case class MyCharMovedCotroller(direction: Movement)
+  case class MyCharMovedController(direction: Movement)
   /**
    * Tells to the controller that the model has updated his character status
    */
@@ -26,16 +26,19 @@ object ControllerActorMessages {
                                       deadBodies: Seq[DeadBody])
   /**
    * Tells to the controller that the Ui Button is pressed
+   *
    * @param button that is pressed
    */
   case class UiButtonPressedController(button: ButtonType)
   /**
    * Tells to the controller that the button can be clicked
+   *
    * @param button that can be clicked
    */
   case class ButtonOnController(button: ButtonType)
   /**
    * Tells to the controller that the button can't be clicked
+   *
    * @param button that can be clicked
    */
   case class ButtonOffController(button: ButtonType)
@@ -63,6 +66,9 @@ object ControllerActorMessages {
   case class KillTimerController(status: TimerStatus)
   /**
    * Tells to the Ui Actor to send a text messages
+   *
+   * @param message to send to the chat
+   * @param char that sent the message
    */
   case class SendTextChatController(message: Message, char: Player)
   /**
