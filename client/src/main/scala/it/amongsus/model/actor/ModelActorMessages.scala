@@ -57,5 +57,9 @@ object ModelActorMessages {
   /**
    * Tells to the Ui Actor that a player left
    */
-  case class PlayerLeftModel()
+  case class MyPlayerLeftModel()
+  /**
+   * Tells to the Ui Actor that a player left
+   */
+  case class PlayerLeftModel(clientId)
 }

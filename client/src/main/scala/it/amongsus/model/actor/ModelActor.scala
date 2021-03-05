@@ -6,7 +6,7 @@ import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, GameEndController, ModelReadyCotroller, UpdatedPlayersController}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel, KillTimerStatusModel, MyCharMovedModel, PlayerLeftModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, PlayerMovedModel, RestartGameModel, UiButtonPressedModel}
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -70,7 +70,9 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
-    case PlayerLeftModel() => self ! PoisonPill
+    case MyPlayerLeftModel() => self ! PoisonPill
+
+    case PlayerLeftModel(clientId) => state.removePlayer(clientId)
 
     case _ => println("error model game")
   }
@@ -89,7 +91,9 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
-    case PlayerLeftModel() => self ! PoisonPill
+    case MyPlayerLeftModel() => self ! PoisonPill
+
+    case PlayerLeftModel(clientId) => state.removePlayer(clientId)
 
     case _ => println("ERROR VOTE")
   }

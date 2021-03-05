@@ -118,12 +118,13 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
-    case PlayerLeftController() => state.modelRef.get ! PlayerLeftModel()
+    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
       self ! PoisonPill
 
     //case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
 
-    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
+    case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
+      state.guiRef.get ! PlayerLeftUi(clientId)
   }
 
   private def voteBehaviour(state: GameActorInfo): Receive = {
@@ -155,10 +156,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.modelRef.get ! RestartGameModel()
       context become gameBehaviour(state)
 
-    case PlayerLeftController() => state.modelRef.get ! PlayerLeftModel()
+    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
       self ! PoisonPill
 
-    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
+    case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
+      state.guiRef.get ! PlayerLeftUi(clientId)
 
     case _ => println("Error Controller Vote")
   }

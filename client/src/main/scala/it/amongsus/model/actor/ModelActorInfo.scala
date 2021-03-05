@@ -105,6 +105,8 @@ trait ModelActorInfo {
    */
   def killAfterVote(username: String): Unit
 
+  def removePlayer(clientId: String): Unit
+
   /**
    * Method of the impostor that allows him to reduce crewmate field of view
    */
@@ -341,4 +343,10 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     }
     emergencyButtons
   }
+
+  override def removePlayer(clientId: String): Unit = {
+    gamePlayers = gamePlayers.filter(player => player.clientId != myCharacter.clientId)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+  }
+
 }
