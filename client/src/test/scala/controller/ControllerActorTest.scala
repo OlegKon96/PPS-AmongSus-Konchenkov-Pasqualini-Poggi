@@ -1,13 +1,21 @@
 package controller
 
-import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.actor.{ActorRef, ActorSystem}
+import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
+import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
+import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo, LobbyActorInfoData}
+import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive}
+import it.amongsus.core.entities.util.GameEnd.Win
+import it.amongsus.core.entities.util.Point2D
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerReadyServer}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
+import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, KillPlayerModel}
+import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
+import it.amongsus.view.actor.{UiActor, UiActorInfo}
+import it.amongsus.view.actor.UiActorGameMessages.{BeginVotingUi, GameEndUi}
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -31,10 +39,40 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! PlayerReadyClient()
       client.expectMsgType[PlayerReadyServer]
       controllerActor ! GameEndClient(Win())
-      client.expectMsgType[GameWonUi]
+      client.expectMsgType[GameEndUi]
       controllerActor ! LeaveGameClient()
       client.expectMsgType[LeaveGameServer]
     }*/
+
+    "Get Ready, Win a Match and then Leave the Client" in {
+      /*val client = TestProbe()
+
+      val uiActor = system.actorOf(UiActor.props(UiActorInfo()))
+
+      uiActor ! Init()
+
+      val controllerActor =
+        TestActorRef[ControllerActor](ControllerActor.props(LobbyActorInfoData(Option(client.ref), Option(uiActor), "dasds")))
+
+      val players = Seq(ImpostorAlive("green", false, "dasds", "asdasdsd", Point2D(0,0)))
+      //val modelActor =
+       // TestActorRef[ModelActor](ModelActor.props(ModelActorInfo(Option(controllerActor), None, players, Seq(), "dasds")))
+
+      controllerActor ! MatchFound(ActorRef.noSender)
+      controllerActor ! GamePlayersClient(players)
+      controllerActor ! StartVotingClient(Seq())
+      /*modelActor ! BeginVotingModel()
+      modelActor ! KillPlayerModel("asdasdsd")*/
+      //modelActor.
+      //controllerActor ! MatchFound(client.ref)
+      client.expectMsgType[MatchFoundUi]
+      //controllerActor ! StartVotingClient(Seq())
+      client.expectMsgType[BeginVotingUi]
+      //client.expectMsgType[UpdatedPlayersController]
+      //uiActor.expectMsgType[]*/
+
+
+    }
 
     "Add a User to a Lobby Client" in {
       val client = TestProbe()
