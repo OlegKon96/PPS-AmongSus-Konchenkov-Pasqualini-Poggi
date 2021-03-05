@@ -2,7 +2,6 @@ package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
 import it.amongsus.ActorSystemManager
-
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -26,7 +25,6 @@ trait LobbyActorInfo {
    * @return
    */
   def guiRef: Option[ActorRef]
-
   /**
    * Generates the Server Actor Path
    *
@@ -35,7 +33,6 @@ trait LobbyActorInfo {
    * @return
    */
   def generateServerActorPath(address: String, port: Int): String
-
   /**
    *
    * @param actorPath the path of the actor
