@@ -3,10 +3,11 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.actor.UiActorGameMessages.PlayerReadyUi
-import it.amongsus.view.actor.UiActorLobbyMessages.LeaveLobbyUi
+import it.amongsus.view.actor.UiActorLobbyMessages.{LeaveLobbyUi, PlayerCloseUi}
 import it.amongsus.view.swingio._
 
-import java.awt.{BorderLayout, GridLayout}
+import java.awt.event.{WindowAdapter, WindowEvent}
+import java.awt.{BorderLayout, Color, GridLayout}
 import javax.swing.JFrame
 
 /**
@@ -89,12 +90,21 @@ object LobbyFrame {
         _ <- lobbyPanel.add(mainPanel)
         _ <- lobbyPanel.add(startLabel)
         _ <- lobbyPanel.add(controlPanel)
+        _ <- lobbyPanel.background(Color.LIGHT_GRAY)
+        _ <- topPanel.background(Color.LIGHT_GRAY)
+        _ <- mainPanel.background(Color.LIGHT_GRAY)
+        _ <- controlPanel.background(Color.LIGHT_GRAY)
         cp <- lobbyFrame.contentPane()
         _ <- lobbyFrame.setSize(WIDTH, HEIGHT)
         _ <- cp.add(lobbyPanel)
         _ <- lobbyFrame.setVisible(true)
         _ <- lobbyFrame.setResizable(false)
-
+        _ <- lobbyFrame.addWindowListener(new WindowAdapter {
+          override def windowClosing(e: WindowEvent): Unit = {
+            guiRef ! PlayerCloseUi()
+          }
+        })
+        //_ <- lobbyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
     override def updatePlayers(numPlayers: Int): IO[Unit] = for {
