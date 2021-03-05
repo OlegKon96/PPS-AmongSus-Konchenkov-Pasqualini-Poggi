@@ -2,7 +2,8 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController, SendTextChatController, _}
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
+import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
@@ -12,7 +13,6 @@ import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
 import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationDouble
 import scala.util.{Failure, Success}
@@ -37,7 +37,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
           ref ! ConnectServer(context.self)
-        case Failure(t) =>
+        case Failure(_) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
     case Connected(id) => context become lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
@@ -83,12 +83,12 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case GamePlayersClient(players) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
-    case ModelReadyCotroller(map, myChar, players, collectionables) =>
+    case ModelReadyController(map, myChar, players, collectionables) =>
       state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
 
     case KillTimerController(status) => state.manageKillTimer(status)
 
-    case MyCharMovedCotroller(direction) => state.modelRef.get ! MyCharMovedModel(direction)
+    case MyCharMovedController(direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
@@ -140,7 +140,6 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
     case SendTextChatController(message, myChar) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
-      println("Controller Actor: "+myChar.username)
 
     case SendTextChatClient(message) => state.guiRef.get ! ReceiveTextChatUi(message)
 
@@ -159,8 +158,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
       self ! PoisonPill
 
-    case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
-      state.guiRef.get ! PlayerLeftUi(clientId)
+    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
 
     case _ => println("Error Controller Vote")
   }
