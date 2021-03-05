@@ -3,7 +3,6 @@ package it.amongsus.controller.actor
 sealed class ErrorEvent
 
 object ErrorEvent {
-
   /**
    * Generic Error Message that was Occurred
    *

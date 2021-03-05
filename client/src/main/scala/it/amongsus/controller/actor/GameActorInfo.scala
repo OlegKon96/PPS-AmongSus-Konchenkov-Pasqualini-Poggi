@@ -1,17 +1,13 @@
 package it.amongsus.controller.actor
 
-import java.io.File
 import java.util.concurrent.TimeUnit
-
 import akka.actor.ActorRef
-import it.amongsus.Constants
 import it.amongsus.controller.ActionTimer.{ActionTimerImpl, TimerEnded, TimerStarted}
 import it.amongsus.controller.{ActionTimer, TimerListener, TimerStatus}
 import it.amongsus.core.entities.util.ButtonType.{KillButton, SabotageButton}
 import it.amongsus.core.entities.util.ButtonType
 import it.amongsus.model.actor.ModelActorMessages.KillTimerStatusModel
 import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
-
 
 /**
  * Trait that contains all the callback functions of the messages to be sent to the server
@@ -45,9 +41,17 @@ trait GameActorInfo {
    * @return
    */
   def loadMap(): Iterator[String]
-
+  /**
+   * Method that check che button
+   *
+   * @param button to check
+   */
   def checkButton(button: ButtonType): Unit
-
+  /**
+   * Method that manages the Kill Timer
+   *
+   * @param status of the timer
+   */
   def manageKillTimer(status: TimerStatus): Unit
 }
 
@@ -79,6 +83,7 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
       if(time._2 == killDuration) killTimer.end()
     }
   })
+
   val sabotageDuration = 15
   val sabotageTimer: ActionTimer = new ActionTimerImpl(sabotageDuration, new TimerListener {
 
