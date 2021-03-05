@@ -1,9 +1,15 @@
 package it.amongsus.core.entities.util
 
+import it.amongsus.core.entities.player.Player
+
 /**
  * Trait that manages the End of the game
  */
-trait GameEnd
+trait GameEnd{
+  def players: Seq[Player]
+
+  def crew: WinnerCrew
+}
 
 /**
  * Trait that manages the Winning of a Crew
@@ -11,9 +17,9 @@ trait GameEnd
 trait WinnerCrew
 
 object GameEnd{
-  case class Win() extends GameEnd
+  case class Win(override val players: Seq[Player], override val crew:WinnerCrew) extends GameEnd
 
-  case class Lost() extends GameEnd
+  case class Lost(override val players: Seq[Player], override val crew:WinnerCrew) extends GameEnd
 
   case class ImpostorCrew() extends WinnerCrew
 

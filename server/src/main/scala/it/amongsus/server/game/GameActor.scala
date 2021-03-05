@@ -93,13 +93,17 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
     gamePlayers.foreach{
       case c : Crewmate =>
         crew match {
-          case ImpostorCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Lost())
-          case CrewmateCrew() => players.find(p => p.id == c.clientId).get.actorRef ! GameEndClient(Win())
+          case ImpostorCrew() => players.find(p => p.id == c.clientId).get.actorRef !
+            GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
+          case CrewmateCrew() => players.find(p => p.id == c.clientId).get.actorRef !
+            GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
         }
       case i : Impostor =>
         crew match {
-          case ImpostorCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Win())
-          case CrewmateCrew() => players.find(p => p.id == i.clientId).get.actorRef ! GameEndClient(Lost())
+          case ImpostorCrew() => players.find(p => p.id == i.clientId).get.actorRef !
+            GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
+          case CrewmateCrew() => players.find(p => p.id == i.clientId).get.actorRef !
+            GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
         }
     }
     log.info("Game ended...")
@@ -131,8 +135,6 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       this.players.find(_.actorRef == ref) match {
         case Some(player) =>
           log.info(s"player ${player.username} terminated before the game starts")
-          // become in behaviour in cui a ogni ready che mi arriva invio il messaggio di fine partita
-          // dopo x secondi mi uccido
           broadcastMessageToPlayers(PlayerLeftClient(player.id))
           context.become(gameEndedWithErrorBeforeStarts(player.id))
           context.system.scheduler.scheduleOnce(20.second) {
