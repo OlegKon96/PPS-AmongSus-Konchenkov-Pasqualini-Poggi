@@ -7,10 +7,12 @@ import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
 import it.amongsus.core.entities.util.{ButtonType, Movement}
 import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiButtonPressedUi}
+import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
 import it.amongsus.view.controller.Keyboard
 import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
 
+import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
 import javax.swing.JFrame
 
@@ -79,6 +81,13 @@ object GameFrame {
       _ <- gameFrame.setSize(WIDTH, HEIGHT)
       _ <- gameFrame.setResizable(false)
       _ <- gameFrame.setVisible(true)
+      _ <- gameFrame.requestFocusInWindow()
+      _ <- gameFrame.addWindowListener(new WindowAdapter {
+        override def windowClosing(e: WindowEvent): Unit = {
+          guiRef.get ! PlayerCloseUi()
+        }
+      })
+      //_ <- gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     } yield ()
 
     private def createCrewmateButton() : IO[JPanelIO] = for {
