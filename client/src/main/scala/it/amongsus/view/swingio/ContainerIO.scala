@@ -21,7 +21,6 @@ class ContainerIO[T<:Container](override val component: T) extends ComponentIO(c
     IO {component.remove(componentToBeAdded.component)}
   def removeAll(): IO[Unit] = IO {component.removeAll()}
   def setLayout(mgr : LayoutManager): IO[Unit] = IO {component.setLayout(mgr)}
-
   //versions with invokeAndWait for finer granularity in thread assignment
   def addInvokingAndWaiting(componentToBeAdded: ComponentIO[_<:Component]): IO[Unit] =
     invokeAndWaitIO(component.add(componentToBeAdded.component))

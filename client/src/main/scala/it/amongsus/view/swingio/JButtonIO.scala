@@ -17,7 +17,6 @@ class JButtonIO(override val component: JButton) extends ComponentIO(component){
   def removeActionListener(l:ActionListener): IO[Unit] = IO {component.removeActionListener(l)}
   def text(): IO[String] = IO {component.getText}
   def setFocusable(boolean: Boolean): IO[Unit] = IO {component.setFocusable(boolean)}
-
   //enabling event listener description by monad
   def addActionListener(l:ActionEvent => IO[Unit]): IO[Unit] =
     IO {component.addActionListener( e => l(e).unsafeRunSync() )}

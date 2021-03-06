@@ -1,47 +1,43 @@
 package it.amongsus.view.frame
 
+import java.awt.{BorderLayout, Color, GridLayout}
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.view.swingio._
-import java.awt.{BorderLayout, Color, GridLayout}
-
 import it.amongsus.view.actor.UiActorLobbyMessages._
+import it.amongsus.view.swingio._
 import java.awt.event.{WindowAdapter, WindowEvent}
-
-import javax.swing.{JFrame, WindowConstants}
+import javax.swing.JFrame
 
 /**
- *
+ * Trait the manages the Menu Frame of the game
  */
 trait MenuFrame extends Frame {
   /**
+   * Method that starts the Menu Frame
    *
    * @return
    */
   def start(): IO[Unit]
-
   /**
-   * Returns the lobby code if it exist
-   * @return lobby code
-   */
-  def code: String
-
-  /**
+   * Method that saves the code of the lobby
    *
    * @param lobbyCode the code of the lobby
    */
-  def saveCode(lobbyCode : String) : Unit
-
+  def saveCode(lobbyCode: String): Unit
   /**
+   * Returns the lobby code if it exist
    *
+   * @return
    */
-  def lobbyError() : Unit
+  def code: String
+  /**
+   * Method that manages the error in the lobby
+   */
+  def lobbyError(): Unit
 }
 
 object MenuFrame {
-
   def apply(guiRef: Option[ActorRef]): MenuFrame = new MenuFrameImpl(guiRef)
-
   /**
    * The Frame that starts the game
    *
@@ -49,11 +45,11 @@ object MenuFrame {
    */
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
-    val menuFrame = new JFrameIO(new JFrame("Among Sus"))
+    val gameFrame = new JFrameIO(new JFrame("Among Sus"))
     val values : Seq[Int] = Seq(4,5,6,7,8,9,10)
-    val WIDTH: Int = 500
-    val HEIGHT: Int = 250
-    var code : String = ""
+    val WIDTH: Int = 600
+    val HEIGHT: Int = 300
+    var code: String = ""
 
     override def start(): IO[Unit] =
       for {
@@ -108,21 +104,22 @@ object MenuFrame {
 
         _ <- menuPanel.add(inputPanel, BorderLayout.CENTER)
         _ <- menuPanel.add(joinPrivate, BorderLayout.SOUTH)
-        cp <- menuFrame.contentPane()
-        _ <- menuFrame.background(Color.LIGHT_GRAY)
-        _ <- menuPanel.background(Color.LIGHT_GRAY)
+        cp <- gameFrame.contentPane()
+        _ <- gameFrame.background(Color.LIGHT_GRAY)
+        _ <- menuPanel.background(Color.lightGray)
         _ <- inputPanel.background(Color.LIGHT_GRAY)
+        //_ <- titlePanel.background(Color.orange)
         _ <- cp.add(menuPanel)
-        _ <- menuFrame.setResizable(false)
-        _ <- menuFrame.setTitle("Among Sus")
-        _ <- menuFrame.setSize(WIDTH, HEIGHT)
-        _ <- menuFrame.setVisible(true)
-        _ <- menuFrame.addWindowListener(new WindowAdapter {
+        _ <- gameFrame.setResizable(false)
+        _ <- gameFrame.setTitle("Among Sus")
+        _ <- gameFrame.setSize(WIDTH, HEIGHT)
+        _ <- gameFrame.setVisible(true)
+        _ <- gameFrame.addWindowListener(new WindowAdapter {
           override def windowClosing(e: WindowEvent): Unit = {
             guiRef.get ! PlayerCloseUi()
           }
         })
-        _ <- menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+        _ <- gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
     private def checkName(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
@@ -130,7 +127,7 @@ object MenuFrame {
       case _ => true
     }
 
-    private def checkCode(codeField : JTextFieldIO) : Boolean =  codeField.text.unsafeRunSync() match {
+    private def checkCode(codeField: JTextFieldIO): Boolean = codeField.text.unsafeRunSync() match {
       case "" => false
       case _ => true
     }
@@ -144,7 +141,7 @@ object MenuFrame {
     }
 
     override def dispose(): IO[Unit] = for {
-      _ <- menuFrame.dispose()
+      _ <- gameFrame.dispose()
     } yield ()
   }
 }

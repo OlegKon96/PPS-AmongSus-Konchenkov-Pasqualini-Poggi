@@ -2,7 +2,7 @@ package it.amongsus.view.swingio
 
 import cats.effect.IO
 import javax.swing.border.Border
-import javax.swing.{JLabel, SwingConstants}
+import javax.swing.JLabel
 
 /**
  * A class that provides a monadic description of the operations supplied by Swing's [[JLabel]] in the form

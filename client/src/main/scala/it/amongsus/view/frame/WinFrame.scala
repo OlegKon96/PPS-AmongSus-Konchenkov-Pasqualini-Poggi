@@ -1,10 +1,7 @@
 package it.amongsus.view.frame
 
 import java.awt.BorderLayout
-
-import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.GameEnd
 import it.amongsus.core.entities.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.view.swingio.{BorderFactoryIO, JFrameIO, JLabelIO, JPanelIO}
@@ -24,10 +21,8 @@ trait WinFrame extends Frame {
 
 object WinFrame {
   def apply(gameEnd: GameEnd): WinFrame = new WinFrameImpl(gameEnd)
-
   /**
    * The Frame that manages the winning
-   *
    */
   private class WinFrameImpl(gameEnd: GameEnd) extends WinFrame() {
 

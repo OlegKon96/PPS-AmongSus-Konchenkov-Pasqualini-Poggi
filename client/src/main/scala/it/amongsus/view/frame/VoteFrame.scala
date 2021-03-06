@@ -2,7 +2,6 @@ package it.amongsus.view.frame
 
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
-
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
