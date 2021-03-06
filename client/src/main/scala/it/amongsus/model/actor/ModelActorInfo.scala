@@ -7,7 +7,6 @@ import it.amongsus.core.entities.map._
 import it.amongsus.core.entities.player._
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
 import it.amongsus.core.entities.util.{Movement, Point2D}
-
 import scala.Array.ofDim
 import scala.util.Random
 
@@ -230,7 +229,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
               case Some(_) => controllerRef.get ! ButtonOnController(VentButton())
               case None => controllerRef.get ! ButtonOffController(VentButton())
             }
-
             if (i.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
               controllerRef.get ! ButtonOnController(KillButton())
             } else if (!isTimerOn) {

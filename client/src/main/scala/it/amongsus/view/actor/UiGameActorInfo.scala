@@ -3,12 +3,11 @@ package it.amongsus.view.actor
 import akka.actor.ActorRef
 import it.amongsus.core.entities.map.{Collectionable, DeadBody}
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
-import it.amongsus.core.entities.util.GameEnd.{Lost, Win}
 import it.amongsus.core.entities.util.{ButtonType, GameEnd}
 import it.amongsus.view.frame.{GameFrame, WinFrame}
 
 /**
- * Trait that
+ * Trait that manages the Actor of the game
  */
 trait UiGameActorInfo {
   /**
@@ -27,11 +26,11 @@ trait UiGameActorInfo {
    *  Method to manage enable of buttons
    *
    * @param button to enable or disable
-   * @param boolean that tell is the button is to turn on or off
+   * @param boolean that tells is the button is to turn on or off
    */
   def enableButton(button : ButtonType, boolean: Boolean): Unit
   /**
-   * Method that update a character
+   * Method that updates a character
    *
    * @param myChar to update
    * @param players of the game
@@ -40,11 +39,24 @@ trait UiGameActorInfo {
    */
   def updatePlayer(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
                    deadBodies : Seq[DeadBody]): Unit
-
+  /**
+   * Method to updates the kill button of the GUI
+   *
+   * @param seconds to wait to allow click on the button
+   */
   def updateKillButton(seconds : Long) : Unit
-
+  /**
+   * Method to updates the sabotage button of the GUI
+   *
+   * @param seconds to wait to allow click on the button
+   */
   def updateSabotageButton(seconds : Long) : Unit
-
+  /**
+   * Method that manages the end of the game
+   *
+   * @param myChar in the game
+   * @param gameEnd the end info of the game
+   */
   def endGame(myChar: Player, gameEnd: GameEnd): Unit
 }
 

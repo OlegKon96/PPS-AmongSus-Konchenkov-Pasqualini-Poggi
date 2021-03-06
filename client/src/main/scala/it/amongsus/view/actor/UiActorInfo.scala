@@ -13,54 +13,52 @@ trait UiActorInfo {
    * @return
    */
   def clientRef: Option[ActorRef]
-
   /**
-   *
+   * The current frame
    *
    * @return
    */
   def currentFrame: Option[Frame]
-
   /**
    * Open the lobby panel
    *
    * @param numPlayers the numbers of the players
    */
   def updateLobby(numPlayers: Int): Unit
-
   /**
    * Saves the code of the lobby
    *
    * @param lobbyCode the code of the lobby
    */
   def saveCode(lobbyCode: String): Unit
-
   /**
    * Returns lobby code if it exist
+   *
    * @return lobby code
    */
-  def getCode(): String
-
+  def getCode: String
   /**
    * Notify an error occurred
    */
   def lobbyError(): Unit
-
+  /**
+   * Method to show start button in the GUI
+   */
   def showStartButton(): Unit
-
 }
+
 object UiActorInfo {
-  def apply() : UiActorData = UiActorData(None, None)
+  def apply(): UiActorData = UiActorData(None, None)
+
   def apply(clientRef: Option[ActorRef], currentFrame: Option[Frame]): UiActorData =
     UiActorData(clientRef, currentFrame)
 }
 
 case class UiActorData(override val clientRef: Option[ActorRef],
-                       override val currentFrame: Option[Frame]) extends UiActorInfo{
+                       override val currentFrame: Option[Frame]) extends UiActorInfo {
 
   override def updateLobby(numPlayers: Int): Unit =
     currentFrame.get.asInstanceOf[LobbyFrame].updatePlayers(numPlayers).unsafeRunSync()
-
 
   override def saveCode(lobbyCode: String): Unit = {
     currentFrame.get.asInstanceOf[MenuFrame].saveCode(lobbyCode)
@@ -70,8 +68,7 @@ case class UiActorData(override val clientRef: Option[ActorRef],
     currentFrame.get.asInstanceOf[MenuFrame].lobbyError()
   }
 
-  override def getCode(): String = currentFrame.get.asInstanceOf[MenuFrame].code
+  override def getCode: String = currentFrame.get.asInstanceOf[MenuFrame].code
 
-  override def showStartButton(): Unit =
-    currentFrame.get.asInstanceOf[LobbyFrame].showButton(true).unsafeRunSync()
+  override def showStartButton(): Unit = currentFrame.get.asInstanceOf[LobbyFrame].showButton(true).unsafeRunSync()
 }

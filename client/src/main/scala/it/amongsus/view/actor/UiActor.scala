@@ -6,15 +6,14 @@ import it.amongsus.Constants
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
 import it.amongsus.controller.actor.ControllerActorMessages.UiButtonPressedController
-import it.amongsus.core.entities.player.{AlivePlayer, Crewmate, Impostor, Player}
-import it.amongsus.core.entities.util.GameEnd.{Lost, Win}
+import it.amongsus.core.entities.player.{AlivePlayer, Player}
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient}
 import it.amongsus.messages.GameMessageClient.VoteClient
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorGameMessages.KillTimerUpdateUi
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
-import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame, WinFrame}
+import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
@@ -89,7 +88,6 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
   }
 
   private def gameBehaviour(state: UiGameActorInfo): Receive = {
-
     case LeaveGameUi() => state.clientRef.get ! LeaveGameClient()
 
     case PlayerCloseUi() => state.clientRef.get ! PlayerLeftController()
@@ -104,11 +102,11 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case ButtonOffUi(button) => state.enableButton(button, boolean = false)
 
-    case KillTimerUpdateUi(minutes: Long, seconds: Long) => state.updateKillButton(seconds)
+    case KillTimerUpdateUi(_: Long, seconds: Long) => state.updateKillButton(seconds)
 
-    case SabotageTimerUpdateUi(minutes: Long, seconds: Long) => state.updateSabotageButton(seconds)
+    case SabotageTimerUpdateUi(_: Long, seconds: Long) => state.updateSabotageButton(seconds)
 
-    case GameEndUi(end) => //win message(end)
+    case GameEndUi(end) =>
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
@@ -152,7 +150,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.clientRef.get ! RestartGameController()
       context become gameBehaviour(state)
 
-    case GameEndUi(end) => //win message(end)
+    case GameEndUi(end) =>
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)

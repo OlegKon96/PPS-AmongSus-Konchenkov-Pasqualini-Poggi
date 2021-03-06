@@ -1,6 +1,5 @@
 package it.amongsus.controller.actor
 
-import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
@@ -76,6 +75,4 @@ object ControllerActorMessages {
    * Tells to the Ui Actor that Players left the game
    */
   case class PlayerLeftController()
-
-  case class TestGameBehaviour(model: ActorRef, server: ActorRef)
 }

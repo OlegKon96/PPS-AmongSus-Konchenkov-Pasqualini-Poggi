@@ -11,21 +11,21 @@ object UiActorLobbyMessages {
   /**
    * Create a Public Lobby view event
    *
-   * @param username      the username of the player
+   * @param username the username of the player
    * @param playersNumber the number of players in the public lobby
    */
   case class PublicGameSubmitUi(username: String, playersNumber: Int)
   /**
    * Join in a Private Lobby view event
    *
-   * @param username    the username of the player
+   * @param username the username of the player
    * @param privateCode the private code of the lobby
    */
   case class PrivateGameSubmitUi(username: String, privateCode: String)
   /**
    * Create a Private Lobby view event
    *
-   * @param username      the username of the player
+   * @param username the username of the player
    * @param playersNumber the number of players in the private lobby
    */
   case class CreatePrivateGameSubmitUi(username: String, playersNumber: Int)
@@ -39,18 +39,28 @@ object UiActorLobbyMessages {
   case class RetryServerConnectionUi()
   /**
    * Notify User that he was added to a Lobby
+   *
+   * @param lobbyCode code of the lobby
+   * @param roomSize numbers of the lobby's player
    */
   case class PrivateLobbyCreatedUi(lobbyCode: String, roomSize : Int)
   /**
    * Server send a Message to the Ui that there was a successful lobby connection
+   *
+   * @param numPlayers number of the player of the game
+   * @param roomSize numbers of the lobby's player
    */
   case class UserAddedToLobbyUi(numPlayers: Int, roomSize : Int)
   /**
    * Notify the UI Actor that a game is starting
+   *
+   * @param map of the game
+   * @param myChar in the game
+   * @param players of the game
+   * @param collectionables of the game
    */
   case class GameFoundUi(map: Array[Array[Tile]], myChar: Player,
                          players: Seq[Player], collectionables: Seq[Collectionable])
-
   /**
    * Notify the User that there's a match to a Lobby
    */
@@ -59,6 +69,8 @@ object UiActorLobbyMessages {
    * Notify the User that there's an Error Occurred
    */
   case class LobbyErrorOccurredUi()
-
+  /**
+   * Notify the User that a player close the game
+   */
   case class PlayerCloseUi()
 }
