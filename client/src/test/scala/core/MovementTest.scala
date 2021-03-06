@@ -1,7 +1,7 @@
 package core
 
 import it.amongsus.core.entities.map.Tile
-import it.amongsus.core.entities.player._
+import it.amongsus.core.entities.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.entities.util.Movement.{Down, Up}
 import it.amongsus.core.entities.util.Point2D
 import it.amongsus.model.actor.ModelActorInfo
@@ -42,7 +42,7 @@ class MovementTest extends AnyWordSpecLike with BeforeAndAfterAll {
       this.crewmateAlive = crewmateAlive.move(Up(), map).get
       this.crewmateAlive = crewmateAlive.move(Up(), map).get
       assertThrows[NoSuchElementException] {
-          this.crewmateAlive = crewmateAlive.move(Up(), map).get
+        this.crewmateAlive = crewmateAlive.move(Up(), map).get
       }
       assert(crewmateAlive.position == Point2D(positionDefault31, positionDefault35))
       this.crewmateAlive = crewmateAlive.move(Down(), map).get

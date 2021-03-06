@@ -1,7 +1,7 @@
 package core
 
 import it.amongsus.core.entities.map.{Tile, Vent}
-import it.amongsus.core.entities.player._
+import it.amongsus.core.entities.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.entities.util.Movement.{Down, Up}
 import it.amongsus.core.entities.util.Point2D
 import it.amongsus.model.actor.ModelActorInfo
