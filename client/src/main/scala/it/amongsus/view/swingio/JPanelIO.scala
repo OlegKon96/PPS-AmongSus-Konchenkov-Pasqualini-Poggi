@@ -1,6 +1,8 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
+
+import java.awt.Color
 import java.awt.event.KeyListener
 import javax.swing.JPanel
 import javax.swing.border.Border
@@ -21,6 +23,7 @@ class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
   def addKeyListener(k : KeyListener) : IO[Unit] = IO(component.addKeyListener(k))
   def requestFocusInWindow() : IO[Unit] = IO(component.requestFocusInWindow())
   def setFocusable(boolean: Boolean): IO[Unit] = IO {component.setFocusable(boolean)}
+  def background(color : Color) :IO[Unit] = IO {component.setBackground(color)}
 }
 
 /**

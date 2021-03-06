@@ -16,7 +16,7 @@ trait DeadPlayer extends Player{
    */
   def checkCollision(pos: Point2D, map: Array[Array[Tile]]): Boolean = {
     map(pos.x)(pos.y) match {
-      case tile : Boundary => true
+      case _ : Boundary => true
       case _ => false
     }
   }

@@ -19,8 +19,9 @@ trait Crewmate extends Player {
    */
   def collect(player: Crewmate):  Player = {
     player match {
-      case alive: CrewmateAlive => CrewmateAlive(alive.clientId, alive.username, alive.numCoins + 1, alive.position)
-      case ghost: CrewmateGhost => CrewmateGhost(ghost.clientId, ghost.username, ghost.numCoins + 1, ghost.position)
+      case alive: CrewmateAlive => CrewmateAlive(alive.color, alive.emergencyCalled, alive.clientId, alive.username,
+        alive.numCoins + 1, alive.position)
+      case ghost: CrewmateGhost => CrewmateGhost(ghost.color, ghost.clientId, ghost.username, ghost.numCoins + 1, ghost.position)
     }
   }
 

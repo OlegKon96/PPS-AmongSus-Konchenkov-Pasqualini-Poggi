@@ -1,8 +1,9 @@
 package it.amongsus.view.swingio
 
 import cats.effect.IO
-import java.awt.event.KeyListener
-import java.awt.{Component, Container}
+
+import java.awt.event.{KeyListener, WindowListener}
+import java.awt.{Color, Component, Container}
 import javax.swing.JFrame
 
 /**
@@ -19,7 +20,9 @@ class JFrameIO(override val component: JFrame) extends ContainerIO(component) {
   def setVisible(b: Boolean): IO[Unit] = IO(component.setVisible(b))
   def setResizable(resizable: Boolean): IO[Unit] = IO(component.setResizable(resizable))
   def addKeyListener(k : KeyListener) : IO[Unit] = IO(component.addKeyListener(k))
+  def addWindowListener(w : WindowListener) : IO[Unit] = IO {component.addWindowListener(w)}
   def requestFocusInWindow() : IO[Unit] = IO(component.requestFocusInWindow())
+  def background(color : Color) :IO[Unit] = IO {component.setBackground(color)}
 
   //invoke and wait versions (for finer granularity for task assignment to EDT thread)
   def setResizableInvokingAndWaiting(resizable: Boolean): IO[Unit] = invokeAndWaitIO(component.setResizable(resizable))

@@ -3,13 +3,15 @@ package it.amongsus.messages
 import akka.actor.ActorRef
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.{Message, WinnerCrew}
 
 object GameMessageServer {
   /**
    * Client response to the game start message
    *
    * @param playerId           The ID of the player
-   * @param gameClientActorRef The Reference of the client actor responsible for the communication with the server during the game
+   * @param gameClientActorRef The Reference of the client actor responsible for the communication with the
+   *                           server during the game
    */
   case class PlayerReadyServer(playerId: String, gameClientActorRef: ActorRef)
   /**
@@ -18,7 +20,7 @@ object GameMessageServer {
    * @param player of the game
    * @param deadBodys of the game
    */
-  case class PlayerMovedServer(player: Player, deadBodys: Seq[DeadBody])
+  case class PlayerMovedServer(player: Player, gamePlayers: Seq[Player], deadBodys: Seq[DeadBody])
   /**
    * Message sent by the client to leave the game
    *
@@ -32,19 +34,13 @@ object GameMessageServer {
    */
   case class MatchErrorOccurredServer(errorType: MatchError)
   /**
-   * Tells the client that the game ended with his victory
+   * Tells the client to start the session of vote
    */
-  case object GameWonServer
+  case class StartVoting(players: Seq[Player])
   /**
-   * Tells the client that the game ended with a lose
-   *
-   * @param winnerPlayerName the name of the winner player
+   * Tells to the Ui Actor to send a text messages
    */
-  case class GameLostServer(winnerPlayerName: String)
-  /**
-   * Tells the Client that a player has left the game
-   */
-  case object PlayerLeftServer
+  case class SendTextChatServer(message: Message, char: Player)
   /**
    * Error occurred during the game
    */

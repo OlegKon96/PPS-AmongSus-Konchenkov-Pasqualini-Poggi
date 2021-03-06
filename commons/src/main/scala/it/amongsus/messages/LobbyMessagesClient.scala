@@ -40,7 +40,7 @@ object LobbyMessagesClient {
    *
    * @param lobbyCode the lobby code when player create a private lobby
    */
-  case class PrivateLobbyCreatedClient(lobbyCode: String)
+  case class PrivateLobbyCreatedClient(lobbyCode: String, roomSize : Int)
   /**
    * Message sent by the client to leave the current lobby
    */
@@ -48,10 +48,9 @@ object LobbyMessagesClient {
   /**
    * Message sent by the server after a successful lobby connection
    *
-   * @param numPlayers the number of the players currently in the lobby
+   * @param numPlayers the number of the players required to start the match
    */
-  case class UserAddedToLobbyClient(numPlayers: Int)
-
+  case class UserAddedToLobbyClient(numPlayers: Int, roomSize : Int)
   /**
    * Message sent by the server tu update current number of players in a lobby
    *

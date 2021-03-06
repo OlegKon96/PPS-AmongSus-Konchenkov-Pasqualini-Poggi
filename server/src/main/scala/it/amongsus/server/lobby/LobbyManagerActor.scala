@@ -5,8 +5,8 @@ import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer.LobbyError.PrivateLobbyIdNotValid
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
-import it.amongsus.server.game.GameMatchActor
-import it.amongsus.server.game.GameMatchActor.GamePlayers
+import it.amongsus.server.game.GameActor
+import it.amongsus.server.game.GameActor.GamePlayers
 
 object LobbyManagerActor {
   def props() = Props(new LobbyManagerActor())
@@ -29,28 +29,35 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       clientRef ! Connected(clientId)
     }
 
-    case JoinPublicLobbyServer(clientId, username, numberOfPlayers) => {
+    case JoinPublicLobbyServer(clientId, username, numberOfPlayers) =>
       log.info(s"client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
-        this.addUserToLobby(clientId, username, ref, lobbyType)
+        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length,numberOfPlayers)
+        this.lobbyManger.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
+          player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length))
+        this.checkAndCreateGame(lobbyType)
       }
-    }
 
     case CreatePrivateLobbyServer(clientId, username, numberOfPlayers) => {
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
         this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId)
+        ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId, numberOfPlayers)
       }
     }
 
     case JoinPrivateLobbyServer(clientId, username, lobbyCode) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
-          case Some(lobbyType) => {
-            this.addUserToLobby(clientId, username, ref, lobbyType)
-          }
+          case Some(lobbyType) =>
+            val player = GamePlayer(clientId, username, ref)
+            this.lobbyManger.addPlayer(player, lobbyType)
+            ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length,lobbyType.numberOfPlayers)
+            this.lobbyManger.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
+              player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length))
+            this.checkAndCreateGame(lobbyType)
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
       }
@@ -69,18 +76,6 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
     }
   }
 
-  private def addUserToLobby(clientId: String, username: String, ref: ActorRef, lobbyType: LobbyType): Unit = {
-    this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-    if (this.lobbyManger.getLobby(lobbyType).get.players.length != lobbyType.numberOfPlayers) {
-      ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-      this.lobbyManger.getLobby(lobbyType).get.players.foreach(player => {
-        player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length)
-      })
-    }
-
-    this.checkAndCreateGame(lobbyType)
-  }
-
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
     this.lobbyManger.attemptExtractPlayerForMatch(lobbyType) match {
       case Some(players) => this.generateAndStartGameActor(lobbyType)(players)
@@ -89,7 +84,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
   }
 
   private def generateAndStartGameActor(lobbyType: LobbyType)(players: Seq[GamePlayer]): Unit = {
-    val gameActor = context.actorOf(GameMatchActor.props(lobbyType.numberOfPlayers))
+    val gameActor = context.actorOf(GameActor.props(lobbyType.numberOfPlayers))
     players.foreach(p => {
       context.unwatch(p.actorRef)
       // remove player form lobby

@@ -3,7 +3,6 @@ package it.amongsus.view.actor
 import it.amongsus.core.entities.map.{Collectionable, Tile}
 import it.amongsus.core.entities.player.Player
 
-
 object UiActorLobbyMessages {
   /**
    * Initialize Actor
@@ -41,11 +40,11 @@ object UiActorLobbyMessages {
   /**
    * Notify User that he was added to a Lobby
    */
-  case class PrivateLobbyCreatedUi(lobbyCode: String)
+  case class PrivateLobbyCreatedUi(lobbyCode: String, roomSize : Int)
   /**
-   * Controller send a Message to the Ui that there was a successful lobby connection
+   * Server send a Message to the Ui that there was a successful lobby connection
    */
-  case class UserAddedToLobbyUi(numPlayers: Int)
+  case class UserAddedToLobbyUi(numPlayers: Int, roomSize : Int)
   /**
    * Notify the UI Actor that a game is starting
    */
@@ -60,4 +59,6 @@ object UiActorLobbyMessages {
    * Notify the User that there's an Error Occurred
    */
   case class LobbyErrorOccurredUi()
+
+  case class PlayerCloseUi()
 }

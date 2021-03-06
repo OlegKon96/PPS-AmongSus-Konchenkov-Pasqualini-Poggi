@@ -1,19 +1,20 @@
 package it.amongsus.controller.actor
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.controller.actor.ControllerActorMessages.{ModelReadyCotroller, MyCharMovedCotroller, UiButtonPressedController, UpdatedMyCharController, UpdatedPlayerController, UpdatedPlayersController}
-import it.amongsus.core.entities.util.ButtonType
-import it.amongsus.messages.GameMessageClient.{PlayerMovedClient, _}
-import it.amongsus.messages.GameMessageServer._
+import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
+import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
+import it.amongsus.core.entities.player.Player
+import it.amongsus.messages.GameMessageClient._
+import it.amongsus.messages.GameMessageServer.{PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.model.actor.ModelActorMessages.{InitModel, MyCharMovedModel, PlayerMovedModel, UiButtonPressedModel}
-import it.amongsus.view.actor.UiActorGameMessages._
-import it.amongsus.view.actor.UiActorLobbyMessages.{MatchFoundUi, _}
-
+import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
+import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
+import it.amongsus.view.actor.UiActorLobbyMessages._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationDouble
 import scala.util.{Failure, Success}
 
 object ControllerActor {
@@ -36,7 +37,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
           ref ! ConnectServer(context.self)
-        case Failure(t) =>
+        case Failure(_) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
     case Connected(id) => context become lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
@@ -52,11 +53,13 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case LeaveLobbyClient() => state.serverRef.get ! LeaveLobbyServer(state.clientId)
 
-    case UserAddedToLobbyClient(numPlayers) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers)
+    case UserAddedToLobbyClient(numPlayers, roomSize) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
 
     case UpdateLobbyClient(numPlayers) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
 
-    case PrivateLobbyCreatedClient(lobbyCode) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode)
+    case PrivateLobbyCreatedClient(lobbyCode,roomSize) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
+
+    case PlayerLeftController() => self ! PoisonPill
 
     case MatchFound(gameRoom) =>
       state.guiRef.get ! MatchFoundUi()
@@ -71,41 +74,92 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       case _ =>
     }
 
-    case m: String => log.debug(m)
+    case _ => println("lobby error" + _)
   }
 
   private def gameBehaviour(state: GameActorInfo): Receive = {
     case PlayerReadyClient() => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
 
-    case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
-
     case GamePlayersClient(players) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
-    case ModelReadyCotroller(map, myChar, players, collectionables) =>
+    case ModelReadyController(map, myChar, players, collectionables) =>
       state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
 
-    case MyCharMovedCotroller(direction) => state.modelRef.get ! MyCharMovedModel(direction)
+    case KillTimerController(status) => state.manageKillTimer(status)
+
+    case MyCharMovedController(direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
     case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
-    case UpdatedMyCharController(player, deadBodys) => state.gameServerRef.get ! PlayerMovedServer(player, deadBodys)
+    case UpdatedMyCharController(player, gamePlayers, deadBodys) =>
+      state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodys)
 
     case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
+    case ButtonOnController(button) => state.guiRef.get ! ButtonOnUi(button)
+
+    case ButtonOffController(button) => state.guiRef.get ! ButtonOffUi(button)
+
     case UiButtonPressedController(button) => state.modelRef.get ! UiButtonPressedModel(button)
+      state.checkButton(button)
 
-    case GameWonClient() => state.guiRef.get ! GameWonUi()
+    case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
+      state.guiRef.get ! BeginVotingUi(gamePlayers)
+      context become voteBehaviour(state)
 
-    case GameLostClient() => state.guiRef.get ! GameLostUi()
+    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
+      state.guiRef.get ! BeginVotingUi(gamePlayers)
+      context become voteBehaviour(state)
 
-    case PlayerLeftClient() => state.guiRef.get ! PlayerLeftUi()
+    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
+      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
-    case InvalidPlayerActionClient() => state.guiRef.get ! InvalidPlayerActionUi()
+    case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
-    case GameStateUpdatedClient() => GameStateUpdatedUi()
+    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
+      self ! PoisonPill
 
-    case _ => println("error")
+    //case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
+
+    case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
+      state.guiRef.get ! PlayerLeftUi(clientId)
+  }
+
+  private def voteBehaviour(state: GameActorInfo): Receive = {
+    case VoteClient(username) => state.gameServerRef.get ! VoteClient(username)
+
+    case EliminatedPlayer(username) =>
+      state.modelRef.get ! KillPlayerModel(username)
+      state.guiRef.get ! EliminatedPlayer(username)
+
+    case NoOneEliminatedController() => state.guiRef.get ! NoOneEliminatedUi()
+
+    case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
+      state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+
+    case SendTextChatController(message, myChar) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
+
+    case SendTextChatClient(message) => state.guiRef.get ! ReceiveTextChatUi(message)
+
+    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
+      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+
+    case GameEndClient(end) =>
+      ActorSystemManager.actorSystem.scheduler.scheduleOnce(3.1 seconds){
+        state.modelRef.get ! GameEndModel(end)
+      }
+
+    case RestartGameController() =>
+      state.modelRef.get ! RestartGameModel()
+      context become gameBehaviour(state)
+
+    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
+      self ! PoisonPill
+
+    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
+
+    case _ => println("Error Controller Vote")
   }
 }

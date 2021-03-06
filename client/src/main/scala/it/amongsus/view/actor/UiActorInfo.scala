@@ -46,6 +46,8 @@ trait UiActorInfo {
    */
   def lobbyError(): Unit
 
+  def showStartButton(): Unit
+
 }
 object UiActorInfo {
   def apply() : UiActorData = UiActorData(None, None)
@@ -69,4 +71,7 @@ case class UiActorData(override val clientRef: Option[ActorRef],
   }
 
   override def getCode(): String = currentFrame.get.asInstanceOf[MenuFrame].code
+
+  override def showStartButton(): Unit =
+    currentFrame.get.asInstanceOf[LobbyFrame].showButton(true).unsafeRunSync()
 }

@@ -2,6 +2,7 @@ package it.amongsus.messages
 
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
+import it.amongsus.core.entities.util.{GameEnd, Message}
 
 object GameMessageClient {
   /**
@@ -10,8 +11,10 @@ object GameMessageClient {
   case class PlayerReadyClient()
   /**
    * Tells the controller actor that the list of players of a game
+   *
+   * @param players of the game
    */
-  case class GamePlayersClient(asd : Seq[Player])
+  case class GamePlayersClient(players : Seq[Player])
   /**
    * Tells the controller actor that player moved to another position
    *
@@ -26,21 +29,43 @@ object GameMessageClient {
   /**
    * Tells the controller actor that the game is ended with a win
    */
-  case class GameWonClient()
+  case class GameEndClient(end: GameEnd)
   /**
-   * Tells the controller actor that the game is ended with a lose
+   * Tells the controller actor that a button is pressed
    */
-  case class GameLostClient()
+  case class StartVotingClient(players: Seq[Player])
   /**
    * Tells the controller actor that the player left the game
    */
-  case class PlayerLeftClient()
+  case class PlayerLeftClient(clientId: String)
   /**
-   * Tells the controller actor that player actions is illegal
+   * Tells the controller actor that Player skip the vote
    */
-  case class InvalidPlayerActionClient()
+  case class SkipVoteClient()
   /**
-   * Tells the controller actor that the Client updated his state
+   * Tells the controller actor that Player vote another player
+   *
+   * @param username of the player voted
    */
-  case class GameStateUpdatedClient()
+  case class VoteClient(username: String)
+  /**
+   * Tells the controller actor that a Player is eliminated
+   *
+   * @param username of the player eliminated
+   */
+  case class EliminatedPlayer(username: String)
+  /**
+   * Tells the controller actor to update the vote
+   *
+   * @param username of the player voted
+   */
+  case class UpdatedVoteServer(username: String)
+  /**
+   * Tells to the Client Actor to send a text messages
+   */
+  case class SendTextChatClient(message: Message)
+  /**
+   * Tells to the Client Actor that no one was ejected from the vote session
+   */
+  case class NoOneEliminatedController()
 }

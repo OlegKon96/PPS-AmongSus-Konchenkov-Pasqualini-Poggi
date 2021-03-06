@@ -1,8 +1,9 @@
 package it.amongsus.model.actor
 
+import it.amongsus.controller.TimerStatus
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, Movement}
+import it.amongsus.core.entities.util.{ButtonType, GameEnd, Movement}
 
 object ModelActorMessages {
   /**
@@ -31,4 +32,40 @@ object ModelActorMessages {
    * @param button of the GUI
    */
   case class UiButtonPressedModel(button: ButtonType)
+  /**
+   * Tells to the Ui actor that timer ended
+   *
+   * @param status of the timer
+   */
+  case class KillTimerStatusModel(status: TimerStatus)
+  /**
+   * Tells to the controller that the voting fase is beginning
+   */
+  case class BeginVotingModel()
+  /**
+   * Tells to the model that a player is killed
+   *
+   * @param username of the player
+   */
+  case class KillPlayerModel(username: String)
+  /**
+   * Tells to the model to restart the game
+   */
+  case class RestartGameModel()
+  /**
+   * Tells to the model that the game ended
+   *
+   * @param end of the game
+   */
+  case class GameEndModel(end: GameEnd)
+  /**
+   * Tells to the Ui Actor that a player left
+   */
+  case class MyPlayerLeftModel()
+  /**
+   * Tells to the Ui Actor that a player left
+   *
+   * @param clientId of the player
+   */
+  case class PlayerLeftModel(clientId: String)
 }

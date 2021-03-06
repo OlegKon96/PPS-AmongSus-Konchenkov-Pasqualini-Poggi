@@ -54,7 +54,7 @@ class ActorLobbyManagerTest extends TestKit(ActorSystem("test", ConfigFactory.lo
       val firstClientId = client.expectMsgPF() { case Connected(id) => id }
       lobbyActor ! CreatePrivateLobbyServer(firstClientId, "user", NUM_PLAYERS)
       val secondPlayer = TestProbe()
-      val lobbyCode = client.expectMsgPF() { case PrivateLobbyCreatedClient(lobbyCode) => lobbyCode }
+      val lobbyCode = client.expectMsgPF() { case PrivateLobbyCreatedClient(lobbyCode,NUM_PLAYERS) => lobbyCode }
       lobbyActor ! ConnectServer(secondPlayer.ref)
       val secondClientId = secondPlayer.expectMsgPF() { case Connected(secondId) => secondId }
       secondPlayer.send(lobbyActor, JoinPrivateLobbyServer(secondClientId, "secondPlayer", lobbyCode))
