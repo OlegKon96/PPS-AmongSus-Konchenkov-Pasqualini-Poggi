@@ -1,11 +1,14 @@
 package it.amongsus.view.frame
 
+import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
+
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.entities.util.Message
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, VoteUi}
+import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
 import it.amongsus.view.swingio.JTextFieldIO
 import javax.swing.JFrame
@@ -171,14 +174,18 @@ object VoteFrame {
         _ <- frame.setTitle("Among Sus - Voting")
         _ <- frame.setSize(WIDTH, HEIGHT)
         _ <- frame.setVisible(true)
+        _ <- frame.addWindowListener(new WindowAdapter {
+          override def windowClosing(e: WindowEvent): Unit = {
+            guiRef.get ! VoteUi("")
+          }
+        })
+        _ <- frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
-    /**
-     * Display the eliminated player
-     *
-     * @param username of the player eliminated
-     * @return
-     */
+    override def dispose(): IO[Unit] = for {
+      _ <- frame.dispose()
+    } yield ()
+
     override def eliminated(username: String): IO[Unit] = {
       val role = listUser.find(p => p.username == username).get match {
         case _: Crewmate => "Crewmate"
@@ -202,33 +209,15 @@ object VoteFrame {
       } yield ()
     }
 
-    /**
-     * Method to append text in the chat
-     *
-     * @param text     to append to the chat
-     * @param username of the user that wrote a message in the chat
-     * @return
-     */
+    private def checkText(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
+      case "" => false
+      case _ => true
+    }
+
     override def appendTextToChat(text: String, username: String): IO[Unit] = for {
       _ <- boxChat.appendText(s"$username said: $text\n")
     } yield()
 
-    /**
-     * Method to append text in the Ghost Chat
-     *
-     * @param text     to append to the chat
-     * @param username of the user that wrote a message in the chat
-     * @return
-     */
-    override def appendTextToChatGhost(text: String, username: String): IO[Unit] = for {
-      _ <- boxChatGhost.appendText(s"$username said: $text\n")
-    } yield()
-
-    /**
-     * Method that opens the panel to wait the vote of other players to Ghost Players
-     *
-     * @return
-     */
     override def waitVote(): IO[Unit] = for {
       menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
         spaceDimension10, spaceDimension10, spaceDimension10)
@@ -282,11 +271,10 @@ object VoteFrame {
       _ <- frame.setVisible(true)
     } yield ()
 
-    /**
-     * Method that notify no one players is eliminated during vote session
-     *
-     * @return
-     */
+    override def appendTextToChatGhost(text: String, username: String): IO[Unit] = for {
+      _ <- boxChatGhost.appendText(s"$username said: $text\n")
+    } yield()
+
     override def noOneEliminated(): IO[Unit] = {
       for {
         cp <- frame.contentPane()
@@ -304,15 +292,6 @@ object VoteFrame {
         _ <- frame.setSize(WIDTH/3, HEIGHT/4)
         _ <- frame.setVisible(true)
       } yield ()
-    }
-
-    override def dispose(): IO[Unit] = for {
-      _ <- frame.dispose()
-    } yield ()
-
-    private def checkText(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
-      case "" => false
-      case _ => true
     }
   }
 }

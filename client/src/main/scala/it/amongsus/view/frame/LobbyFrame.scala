@@ -104,7 +104,7 @@ object LobbyFrame {
             guiRef ! PlayerCloseUi()
           }
         })
-        //_ <- lobbyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+        _ <- lobbyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
     override def updatePlayers(numPlayers: Int): IO[Unit] = for {

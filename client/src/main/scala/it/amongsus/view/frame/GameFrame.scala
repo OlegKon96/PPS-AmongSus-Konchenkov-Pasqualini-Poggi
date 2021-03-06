@@ -87,7 +87,7 @@ object GameFrame {
           guiRef.get ! PlayerCloseUi()
         }
       })
-      //_ <- gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+      _ <- gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     } yield ()
 
     private def createCrewmateButton() : IO[JPanelIO] = for {

@@ -3,12 +3,12 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.swingio._
-
 import java.awt.{BorderLayout, Color, GridLayout}
-import it.amongsus.view.actor.UiActorLobbyMessages._
 
+import it.amongsus.view.actor.UiActorLobbyMessages._
 import java.awt.event.{WindowAdapter, WindowEvent}
-import javax.swing.JFrame
+
+import javax.swing.{JFrame, WindowConstants}
 
 /**
  *
