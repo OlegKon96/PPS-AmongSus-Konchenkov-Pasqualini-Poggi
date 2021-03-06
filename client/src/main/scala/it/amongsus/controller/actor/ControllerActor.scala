@@ -69,6 +69,10 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
         Option(model), state.clientId))
 
+    case TestGameBehaviour(model, server) =>
+      context become gameBehaviour(GameActorInfo(Option(server), state.guiRef,
+        Option(model), state.clientId))
+
     case LobbyErrorOccurred(error) => error match {
       case LobbyError.PrivateLobbyIdNotValid => ???
       case _ =>
