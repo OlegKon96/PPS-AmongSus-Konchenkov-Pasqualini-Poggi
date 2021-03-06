@@ -13,8 +13,6 @@ object LobbyManager {
  * @tparam T
  */
 trait LobbyManager[T <: Player] {
-
-
   /**
    * Add a player to the lobby system
    *
@@ -22,27 +20,26 @@ trait LobbyManager[T <: Player] {
    * @param lobbyType type of the lobby
    */
   def addPlayer(player: T, lobbyType: LobbyType): Unit
-
   /**
    * Remove a player from the lobby system
    *
    * @param playerId the id of the player to remove
    */
   def removePlayer(playerId: String): Unit
-
   /**
    * Return a the lobby of the given player id
+   *
    * @param playerId the id of the player in the lobby
    * @return the lobby
    */
   def getLobbyPlayer(playerId: String): Option[Lobby[T]]
   /**
+   * Method to get a lobby
    *
    * @param lobbyType type of the lobby to retrieve
    * @return the lobbing corresponding the the specified type, if present
    */
   def getLobby(lobbyType: LobbyType): Option[Lobby[T]]
-
   /**
    * Tries to extract player from the lobby manager to start a match
    *
@@ -50,15 +47,12 @@ trait LobbyManager[T <: Player] {
    * @return the list of player to be added to the game
    */
   def attemptExtractPlayerForMatch(lobbyType: LobbyType): Option[Seq[T]]
-
 }
-
 
 class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
 
   private var playersToLobby: Map[String, LobbyType] = Map.empty
   private var lobbies: Map[LobbyType, Lobby[T]] = Map.empty
-
   /**
    * @inheritdoc
    */
@@ -69,42 +63,35 @@ class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
     }
     playersToLobby = playersToLobby + (player.id -> lobbyType)
   }
-
   /**
    * @inheritdoc
    */
   override def removePlayer(playerId: String): Unit = {
     playersToLobby.get(playerId) match {
-      case Some(lobbyType) => {
+      case Some(lobbyType) =>
         lobbies.get(lobbyType) match {
-          case Some(lobby) => {
+          case Some(lobby) =>
             lobbies = lobbies + (lobbyType -> lobby.removePlayer(playerId))
-          }
           case _ => log(s"lobby of type $lobbyType corresponding to player $playerId  not found")
         }
         playersToLobby = playersToLobby - playerId
-      }
       case None => log(s"player $playerId to remove not found")
     }
   }
-
   /**
    * @inheritdoc
    */
   override def getLobbyPlayer(playerId: String): Option[Lobby[T]] = {
     playersToLobby.get(playerId) match {
-      case Some(lobbyType) => {
+      case Some(lobbyType) =>
         lobbies.get(lobbyType)
-      }
       case None => None
     }
   }
-
   /**
    * @inheritdoc
    */
   override def getLobby(lobbyType: LobbyType): Option[Lobby[T]] = lobbies.get(lobbyType)
-
   /**
    * @inheritdoc
    */
@@ -115,4 +102,3 @@ class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
       updatedLobby.second
     })
 }
-

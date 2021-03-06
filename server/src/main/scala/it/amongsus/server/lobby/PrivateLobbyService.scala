@@ -8,7 +8,6 @@ object PrivateLobbyService {
  * Manages the creation of private lobbies
  */
 trait PrivateLobbyService {
-
   /**
    * Create a new private lobby
    *
@@ -16,7 +15,6 @@ trait PrivateLobbyService {
    * @return the lobby
    */
   def generateNewPrivateLobby(numberOfPlayers: Int): PrivateLobby
-
   /**
    * Get a private lobby
    *
@@ -24,7 +22,6 @@ trait PrivateLobbyService {
    * @return the lobby id
    */
   def retrieveExistingLobby(lobbyId: String): Option[PrivateLobby]
-
   /**
    * Remove a private lobby
    *

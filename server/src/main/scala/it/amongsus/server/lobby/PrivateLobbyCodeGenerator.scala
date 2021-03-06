@@ -3,8 +3,10 @@ package it.amongsus.server.lobby
 import it.amongsus.server.common.IdGenerator
 import scala.util.Random
 
+/**
+ * Trait that manages the generation of the private lobby's code
+ */
 trait PrivateLobbyCodeGenerator extends IdGenerator {
-
   private var generatedIds: Seq[String] = Seq.empty
 
   override def generateId: String = {

@@ -15,5 +15,3 @@ object AmongSusServer extends App {
   val system = ActorSystem(Constants.Remote.SERVER_ACTOR_SYSTEM_NAME, config)
   system.actorOf(LobbyManagerActor.props(), Constants.Remote.SERVER_LOBBY_ACTOR_NAME)
 }
-
-

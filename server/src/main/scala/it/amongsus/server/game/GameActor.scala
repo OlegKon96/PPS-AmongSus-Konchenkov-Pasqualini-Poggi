@@ -17,7 +17,7 @@ import scala.util.Random
 object GameActor {
   def props(numberOfPlayers: Int): Props = Props(new GameActor(numberOfPlayers))
   /**
-   * Sent to the gameactor to specify the players to add to the match
+   * Sent to the Game Actor to specify the players to add to the match
    *
    * @param players players to add to the match
    */
@@ -58,9 +58,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
     case PlayerReadyServer(id, ref) =>
       this.withPlayer(id) { p =>
         log.info(s"player ${p.username} ready")
-
         val updatedReadyPlayers = playersReady :+ p.copy(actorRef = ref)
-
         if (updatedReadyPlayers.length == numberOfPlayers) {
           log.info("All players ready")
           this.initializeGame(updatedReadyPlayers)
@@ -135,6 +133,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       this.players.find(_.actorRef == ref) match {
         case Some(player) =>
           log.info(s"player ${player.username} terminated before the game starts")
+          // become in behaviour in cui a ogni ready che mi arriva invio il messaggio di fine partita
           broadcastMessageToPlayers(PlayerLeftClient(player.id))
           context.become(gameEndedWithErrorBeforeStarts(player.id))
           context.system.scheduler.scheduleOnce(20.second) {
@@ -177,18 +176,15 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   private def initializeGame(playersReady: Seq[GamePlayer]): Unit = {
     // unwatch the player with the old actor ref
     this.players.foreach(p => context.unwatch(p.actorRef))
-
     this.players = playersReady
     log.debug(s"ready players $playersReady")
     log.debug(s"updated players $players")
-
     // watch the players with the new actor ref
     val playersRole = defineRoles()
     this.players.foreach(p => {
       p.actorRef ! GamePlayersClient(playersRole)
       context.watch(p.actorRef)
     })
-
     this.players.groupBy(_.username).foreach {
       case(username, _) => this.playersToLobby = this.playersToLobby + (username -> 0)
     }
