@@ -122,7 +122,7 @@ object MenuFrame {
             guiRef.get ! PlayerCloseUi()
           }
         })
-        //_ <- menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+        _ <- menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
     private def checkName(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {

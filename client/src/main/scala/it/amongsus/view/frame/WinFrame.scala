@@ -1,9 +1,12 @@
 package it.amongsus.view.frame
 
 import java.awt.BorderLayout
+
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
+import it.amongsus.core.entities.util.GameEnd
+import it.amongsus.core.entities.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.view.swingio.{BorderFactoryIO, JFrameIO, JLabelIO, JPanelIO}
 import javax.swing.JFrame
 
@@ -20,28 +23,33 @@ trait WinFrame extends Frame {
 }
 
 object WinFrame {
-  def apply(guiRef: Option[ActorRef], winnerCrew: Player): WinFrame =
-    new WinFrameImpl(guiRef: Option[ActorRef], winnerCrew: Player)
+  def apply(gameEnd: GameEnd): WinFrame = new WinFrameImpl(gameEnd)
 
   /**
    * The Frame that manages the winning
    *
-   * @param guiRef ActorRef that is responsible to receiving and send all the messages about winning
    */
-  private class WinFrameImpl(guiRef: Option[ActorRef], winnerCrew: Player) extends WinFrame() {
+  private class WinFrameImpl(gameEnd: GameEnd) extends WinFrame() {
 
     final val spaceDimension10: Int = 10
     final val spaceDimension60: Int = 60
     val frame = new JFrameIO(new JFrame("Among Sus - Winner"))
     val votePanel: JPanelIO = JPanelIO().unsafeRunSync()
-    val WIDTH: Int = 1000
+    val WIDTH: Int = 2000
     val HEIGHT: Int = 800
+    val role: String = gameEnd match {
+      case Win(_,_) => gameEnd.crew match {
+        case _: CrewmateCrew => "Crewmate"
+        case _: ImpostorCrew => "Impostor"
+      }
+      case Lost(_,_) => gameEnd.crew match {
+        case _: CrewmateCrew => "Crewmate"
+        case _: ImpostorCrew => "Impostor"
+      }
+    }
+    var teamWinner: String = ""
 
     override def start(): IO[Unit] = {
-      val role = winnerCrew match {
-        case _: Crewmate => "Crewmate"
-        case _: Impostor => "Impostor"
-      }
       for {
         menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
           spaceDimension10, spaceDimension10, spaceDimension10)
@@ -51,7 +59,11 @@ object WinFrame {
         text <- JLabelIO()
         borderText <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension60, 0, 0)
         _ <- text.setBorder(borderText)
-        _ <- text.setText("The Winning Team is: " + role)
+
+        _ <- IO(for (user <- gameEnd.players.indices) {
+          this.teamWinner = this.teamWinner + " " + gameEnd.players(user).username
+        })
+        _ <- text.setText("The Winning Team is: " + role + "\n and the Component Team is/are: \n" + teamWinner)
 
         _ <- votePanel.add(text, BorderLayout.CENTER)
 
