@@ -28,14 +28,20 @@ object GameMessageClient {
   case class LeaveGameClient()
   /**
    * Tells the controller actor that the game is ended with a win
+   *
+   * @param end info of the game
    */
   case class GameEndClient(end: GameEnd)
   /**
    * Tells the controller actor that a button is pressed
+   *
+   * @param players of the game
    */
   case class StartVotingClient(players: Seq[Player])
   /**
    * Tells the controller actor that the player left the game
+   *
+   * @param clientId of the player
    */
   case class PlayerLeftClient(clientId: String)
   /**
@@ -62,6 +68,8 @@ object GameMessageClient {
   case class UpdatedVoteServer(username: String)
   /**
    * Tells to the Client Actor to send a text messages
+   *
+   * @param message to send to the client
    */
   case class SendTextChatClient(message: Message)
   /**

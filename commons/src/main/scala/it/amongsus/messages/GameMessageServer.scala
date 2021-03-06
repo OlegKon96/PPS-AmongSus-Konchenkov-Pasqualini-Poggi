@@ -3,7 +3,7 @@ package it.amongsus.messages
 import akka.actor.ActorRef
 import it.amongsus.core.entities.map.DeadBody
 import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{Message, WinnerCrew}
+import it.amongsus.core.entities.util.Message
 
 object GameMessageServer {
   /**
@@ -18,6 +18,7 @@ object GameMessageServer {
    * Tells the server that a player was updated
    *
    * @param player of the game
+   * @param gamePlayers of the game
    * @param deadBodys of the game
    */
   case class PlayerMovedServer(player: Player, gamePlayers: Seq[Player], deadBodys: Seq[DeadBody])
@@ -35,10 +36,15 @@ object GameMessageServer {
   case class MatchErrorOccurredServer(errorType: MatchError)
   /**
    * Tells the client to start the session of vote
+   *
+   * @param players of the game
    */
   case class StartVoting(players: Seq[Player])
   /**
    * Tells to the Ui Actor to send a text messages
+   *
+   * @param message to send to the server
+   * @param char that sends the message
    */
   case class SendTextChatServer(message: Message, char: Player)
   /**

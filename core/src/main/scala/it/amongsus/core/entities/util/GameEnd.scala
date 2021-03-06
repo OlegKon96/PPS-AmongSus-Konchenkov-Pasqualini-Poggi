@@ -6,8 +6,17 @@ import it.amongsus.core.entities.player.Player
  * Trait that manages the End of the game
  */
 trait GameEnd{
+  /**
+   * Players of the game
+   *
+   * @return
+   */
   def players: Seq[Player]
-
+  /**
+   * The winning team
+   *
+   * @return
+   */
   def crew: WinnerCrew
 }
 

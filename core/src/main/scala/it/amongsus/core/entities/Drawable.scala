@@ -4,7 +4,7 @@ import it.amongsus.core.entities.util.Point2D
 
 trait Drawable {
   /**
-   * Position of the drawable
+   * Position of the drawable element
    *
    * @return
    */
