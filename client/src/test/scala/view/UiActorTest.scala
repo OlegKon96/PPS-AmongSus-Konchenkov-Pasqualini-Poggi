@@ -44,7 +44,7 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
       client.expectMsgType[CreatePrivateLobbyClient]
     }
 
-    "Leave a Lobby" in {
+    /*"Leave a Lobby" in {
       val client = TestProbe()
       val menuFrame = MenuFrame.apply(Option(client.ref))
       val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), Option(menuFrame))))
@@ -57,6 +57,6 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
       val uiActor = system.actorOf(UiActor.props(UiActorInfo.apply(Option(client.ref), None)))
       uiActor ! MatchFoundUi()
       client.expectMsgType[PlayerReadyClient]
-    }
+    }*/
   }
 }
