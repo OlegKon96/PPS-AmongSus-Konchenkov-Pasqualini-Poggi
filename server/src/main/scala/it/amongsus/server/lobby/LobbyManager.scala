@@ -3,36 +3,9 @@ package it.amongsus.server.lobby
 import it.amongsus.server.common.{GamePlayer, Player}
 import it.amongsus.utils.CustomLogger
 
-object LobbyManager {
-  def apply(): LobbyManager[GamePlayer] = new LobbyManagerImpl[GamePlayer]()
-}
-
-/**
- * Mantains and update the list of all the lobbies available and of all the players inside them
- *
- * @tparam T
- */
 trait LobbyManager[T <: Player] {
-  /**
-   * Add a player to the lobby system
-   *
-   * @param player    player to be added
-   * @param lobbyType type of the lobby
-   */
-  def addPlayer(player: T, lobbyType: LobbyType): Unit
-  /**
-   * Remove a player from the lobby system
-   *
-   * @param playerId the id of the player to remove
-   */
-  def removePlayer(playerId: String): Unit
-  /**
-   * Return a the lobby of the given player id
-   *
-   * @param playerId the id of the player in the lobby
-   * @return the lobby
-   */
-  def getLobbyPlayer(playerId: String): Option[Lobby[T]]
+  var playersToLobby: Map[String, LobbyType] = Map.empty
+  var lobbies: Map[LobbyType, Lobby[T]] = Map.empty
   /**
    * Method to get a lobby
    *
@@ -41,22 +14,23 @@ trait LobbyManager[T <: Player] {
    */
   def getLobby(lobbyType: LobbyType): Option[Lobby[T]]
   /**
-   * Tries to extract player from the lobby manager to start a match
+   * Return a the lobby of the given player id
    *
-   * @param lobbyType type of the lobby
-   * @return the list of player to be added to the game
+   * @param playerId the id of the player in the lobby
+   * @return the lobby
    */
-  def attemptExtractPlayerForMatch(lobbyType: LobbyType): Option[Seq[T]]
+  def getLobbyPlayer(playerId: String): Option[Lobby[T]]
 }
 
-class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
-
-  private var playersToLobby: Map[String, LobbyType] = Map.empty
-  private var lobbies: Map[LobbyType, Lobby[T]] = Map.empty
+//mixin
+trait LobbyManagerUtils[T <: Player] extends CustomLogger { lobbyManager : LobbyManager[T] =>
   /**
-   * @inheritdoc
+   * Add a player to the lobby system
+   *
+   * @param player    player to be added
+   * @param lobbyType type of the lobby
    */
-  override def addPlayer(player: T, lobbyType: LobbyType): Unit = {
+  def addPlayer(player: T, lobbyType: LobbyType): Unit = {
     lobbies = lobbies.get(lobbyType) match {
       case Some(lobby) => lobbies + (lobbyType -> lobby.addPlayer(player))
       case None => lobbies + (lobbyType -> GameLobby(lobbyType.numberOfPlayers).addPlayer(player))
@@ -64,9 +38,11 @@ class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
     playersToLobby = playersToLobby + (player.id -> lobbyType)
   }
   /**
-   * @inheritdoc
+   * Remove a player from the lobby system
+   *
+   * @param playerId the id of the player to remove
    */
-  override def removePlayer(playerId: String): Unit = {
+  def removePlayer(playerId: String): Unit = {
     playersToLobby.get(playerId) match {
       case Some(lobbyType) =>
         lobbies.get(lobbyType) match {
@@ -79,8 +55,20 @@ class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
     }
   }
   /**
-   * @inheritdoc
+   * Tries to extract player from the lobby manager to start a match
+   *
+   * @param lobbyType type of the lobby
+   * @return the list of player to be added to the game
    */
+  def attemptExtractPlayerForMatch(lobbyType: LobbyType): Option[Seq[T]] =
+    lobbyManager.getLobby(lobbyType).flatMap(lobby => {
+      val updatedLobby = lobby.extractPlayersForMatch()
+      lobbies = lobbies + (lobbyType -> updatedLobby.first)
+      updatedLobby.second
+    })
+}
+
+class LobbyManagerImpl[T <: Player] extends LobbyManager[T] {
   override def getLobbyPlayer(playerId: String): Option[Lobby[T]] = {
     playersToLobby.get(playerId) match {
       case Some(lobbyType) =>
@@ -88,17 +76,10 @@ class LobbyManagerImpl[T <: Player] extends LobbyManager[T] with CustomLogger {
       case None => None
     }
   }
-  /**
-   * @inheritdoc
-   */
+
   override def getLobby(lobbyType: LobbyType): Option[Lobby[T]] = lobbies.get(lobbyType)
-  /**
-   * @inheritdoc
-   */
-  override def attemptExtractPlayerForMatch(lobbyType: LobbyType): Option[Seq[T]] =
-    this.getLobby(lobbyType).flatMap(lobby => {
-      val updatedLobby = lobby.extractPlayersForMatch()
-      lobbies = lobbies + (lobbyType -> updatedLobby.first)
-      updatedLobby.second
-    })
+}
+
+object LobbyManager {
+  def apply() = new LobbyManagerImpl[GamePlayer]() with LobbyManagerUtils[GamePlayer]
 }

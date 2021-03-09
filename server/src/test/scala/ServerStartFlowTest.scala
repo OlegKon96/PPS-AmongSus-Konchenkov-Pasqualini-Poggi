@@ -3,7 +3,7 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.messages.LobbyMessagesClient.{Connected, UpdateLobbyClient, UserAddedToLobbyClient}
 import it.amongsus.messages.LobbyMessagesServer.{ConnectServer, JoinPublicLobbyServer, MatchFound}
-import it.amongsus.server.lobby.LobbyManagerActor
+import it.amongsus.server.lobby.{LobbyManagerActor, LobbyManagerInfo}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -19,7 +19,7 @@ class ServerStartFlowTest extends TestKit(ActorSystem("test", ConfigFactory.load
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
   "The correct process" should {
     "add users to the lobby, and if there are enough players, start the game and notify the players" in {
-      val actorOfLobby = TestActorRef[LobbyManagerActor](LobbyManagerActor.props())
+      val actorOfLobby = TestActorRef[LobbyManagerActor](LobbyManagerActor.props(LobbyManagerInfo(Map())))
       val firstClient = TestProbe()
       val secondClient = TestProbe()
 

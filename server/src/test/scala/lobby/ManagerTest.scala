@@ -14,7 +14,7 @@ class ManagerTest extends AnyWordSpecLike with MockFactory {
 
   "The LobbyManager" should {
     "create a new lobby when a new player entered" in {
-      val lobbyManager = new LobbyManagerImpl[GamePlayer]()
+      val lobbyManager = LobbyManager()
       val player = mock[GamePlayer]
       val lobbyType = PlayerNumberLobby(NUM_PLAYERS)
       lobbyManager.addPlayer(player, lobbyType)

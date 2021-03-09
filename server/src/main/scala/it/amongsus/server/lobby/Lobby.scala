@@ -10,7 +10,7 @@ object Lobby {
 /**
  * Trait that manages the Lobby of the game
  *
- * @tparam T
+ * @tparam T generic player abstraction
  */
 trait Lobby[T <: Player] {
   /**

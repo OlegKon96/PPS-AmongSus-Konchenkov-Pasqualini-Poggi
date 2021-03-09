@@ -9,21 +9,18 @@ import it.amongsus.server.game.GameActor
 import it.amongsus.server.game.GameActor.GamePlayers
 
 object LobbyManagerActor {
-  def props(): Props = Props(new LobbyManagerActor())
+  def props(state: LobbyManagerInfo): Props = Props(new LobbyManagerActor(state))
 }
 
-class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
-  type UserName = String
-  type UserId = String
-  private val lobbyManger: LobbyManager[GamePlayer] = LobbyManager()
+class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with IdGenerator with ActorLogging {
+  private val lobbyManger = LobbyManager()
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
-  private var connectedPlayers: Map[UserId, ActorRef] = Map()
 
   override def receive: Receive = {
     case ConnectServer(clientRef) =>
       log.info(s"client $clientRef is asking for a connection")
       val clientId = generateId
-      connectedPlayers = connectedPlayers + (clientId -> clientRef)
+      this.state.connectedPlayers = this.state.connectedPlayers + (clientId -> clientRef)
       context.watch(clientRef)
       clientRef ! Connected(clientId)
 
@@ -68,7 +65,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
         .players.foreach(player => player.actorRef ! UpdateLobbyClient(lobby.players.length - 1))
 
     case Terminated(actorRef) =>
-      log.info(s"terminated $actorRef, connected players: $connectedPlayers")
+      log.info(s"terminated $actorRef, connected players: ${this.state.connectedPlayers}")
       removeClient(actorRef)
   }
 
@@ -86,7 +83,7 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
       // remove player form lobby
       this.lobbyManger.removePlayer(p.id)
       // remove player from connected players structure
-      this.connectedPlayers = this.connectedPlayers - p.id
+      this.state.connectedPlayers = this.state.connectedPlayers - p.id
     })
     gameActor ! GamePlayers(players)
   }
@@ -99,16 +96,16 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
   }
 
   private def getClientRef(clientId: String): Option[ActorRef] = {
-    this.connectedPlayers.get(clientId)
+    this.state.connectedPlayers.get(clientId)
   }
 
   private def removeClient(actorRef: ActorRef): Unit = {
-    this.connectedPlayers.find(_._2 == actorRef) match {
+    this.state.connectedPlayers.find(_._2 == actorRef) match {
       case Some((userId, _)) =>
         log.info(s"removing client $actorRef from lobby and connected players list")
         context.unwatch(actorRef)
         this.lobbyManger.removePlayer(userId)
-        this.connectedPlayers = this.connectedPlayers - userId
+        this.state.connectedPlayers = this.state.connectedPlayers - userId
         log.info(s"removed client $actorRef from lobby and connected players list")
       case None => log.info(s"client $actorRef not found")
     }
