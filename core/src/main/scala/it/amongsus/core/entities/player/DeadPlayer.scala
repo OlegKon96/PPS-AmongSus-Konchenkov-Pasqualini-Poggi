@@ -6,7 +6,8 @@ import it.amongsus.core.entities.util.Point2D
 /**
  * Method to manages the Dead Players
  */
-trait DeadPlayer extends Player{
+trait DeadPlayer {
+  self: Player =>
   /**
    * Method to check collision with the border of the GUI
    *

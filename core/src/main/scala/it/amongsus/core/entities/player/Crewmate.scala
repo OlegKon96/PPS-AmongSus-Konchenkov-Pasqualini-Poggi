@@ -5,7 +5,8 @@ import it.amongsus.core.entities.map.Collectionable
 /**
  * Trait that manages Crewmate
  */
-trait Crewmate extends Player {
+trait Crewmate {
+  self: Player =>
   /**
    * Number of the coin
    */
@@ -30,7 +31,7 @@ trait Crewmate extends Player {
    * @param player of the game
    * @return
    */
-  def canCollect(collectionables: Seq[Collectionable], player: Crewmate): Option[Collectionable] = {
+  def canCollect(collectionables: Seq[Collectionable], player: Player): Option[Collectionable] = {
     collectionables.find(coin => coin.position == player.position)
   }
 }

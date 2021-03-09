@@ -7,7 +7,7 @@ import it.amongsus.core.entities.util.{Movement, Point2D}
 /**
  * Trait that manages the Crewmate Alive
  */
-trait CrewmateAlive extends AlivePlayer with Crewmate
+trait CrewmateAlive extends Player with AlivePlayer with Crewmate
 
 object CrewmateAlive {
   def apply(color: String, emergencyCalled: Boolean, clientId: String, username: String,

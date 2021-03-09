@@ -6,7 +6,9 @@ import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.entities.map._
 import it.amongsus.core.entities.player._
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
+import it.amongsus.core.entities.util.Movement.Up
 import it.amongsus.core.entities.util.{Movement, Point2D}
+
 import scala.Array.ofDim
 import scala.util.Random
 

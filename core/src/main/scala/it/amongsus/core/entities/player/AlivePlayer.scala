@@ -6,7 +6,8 @@ import it.amongsus.core.entities.util.Point2D
 /**
  * Trait that manages the Alive Player of the game
  */
-trait AlivePlayer extends Player {
+trait AlivePlayer {
+  self: Player =>
   def emergencyCalled: Boolean
 
   def callEmergency(player: Player): Player = {
@@ -38,7 +39,7 @@ trait AlivePlayer extends Player {
    */
   def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Emergency]): Boolean = {
     emergencyButtons.exists(button =>
-      button.position.distance(player.position) < Constants.EMERGENCY_DISTANCE) && !player.emergencyCalled
+      button.position.distance(player.position) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
   }
 
   /**
@@ -54,4 +55,7 @@ trait AlivePlayer extends Player {
       case _ => true
     }
   }
+
+  def position:Point2D = self.position
 }
+

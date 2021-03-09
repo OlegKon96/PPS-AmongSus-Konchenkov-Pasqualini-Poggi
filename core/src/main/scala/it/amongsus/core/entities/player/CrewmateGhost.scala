@@ -7,7 +7,7 @@ import it.amongsus.core.entities.util.{Movement, Point2D}
 /**
  * Method to manages the Crewmate ghost
  */
-trait CrewmateGhost extends DeadPlayer with Crewmate
+trait CrewmateGhost extends Player with DeadPlayer with Crewmate
 
 object CrewmateGhost {
   def apply(color: String, clientId: String, username: String, numCoins: Int, position: Point2D): CrewmateGhost =

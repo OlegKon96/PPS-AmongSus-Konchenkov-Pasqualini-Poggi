@@ -7,7 +7,7 @@ import it.amongsus.core.entities.util.{Movement, Point2D}
 /**
  * Trait that manages the Impostor of the game
  */
-trait ImpostorAlive extends AlivePlayer with Impostor {
+trait ImpostorAlive extends Player with AlivePlayer with Impostor {
   /**
    * Method that manages the Impostor that killed a Crewmate
    *

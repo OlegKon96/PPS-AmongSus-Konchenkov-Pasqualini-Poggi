@@ -7,7 +7,7 @@ import it.amongsus.core.entities.util.{Movement, Point2D}
 /**
  * Trait that manages the Ghost of the Impostor of the game
  */
-trait ImpostorGhost extends DeadPlayer with Impostor
+trait ImpostorGhost extends Player with DeadPlayer with Impostor
 
 object ImpostorGhost{
   def apply(color: String, clientId: String, username: String, position: Point2D): ImpostorGhost =
