@@ -1,5 +1,6 @@
 package it.amongsus.core.entities.player
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{Tile, Vent}
 import it.amongsus.core.entities.util.Movement._
 import it.amongsus.core.entities.util.{Movement, Point2D}
@@ -52,7 +53,7 @@ object ImpostorAlive {
                                        override val fieldOfView: Int,
                                        override val position: Point2D) extends ImpostorAlive {
 
-    override def move(direction: Movement, map: Array[Array[Tile]]): Option[Player] = {
+    override def move(direction: Movement, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
       val newPlayer = direction match {
         case Up() => ImpostorAlive(color, emergencyCalled, clientId, username, Point2D(position.x - 1, position.y))
         case Down() => ImpostorAlive(color, emergencyCalled, clientId, username, Point2D(position.x + 1, position.y))

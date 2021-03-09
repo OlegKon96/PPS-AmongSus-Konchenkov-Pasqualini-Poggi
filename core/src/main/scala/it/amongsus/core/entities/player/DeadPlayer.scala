@@ -1,5 +1,6 @@
 package it.amongsus.core.entities.player
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{Boundary, Tile}
 import it.amongsus.core.entities.util.Point2D
 
@@ -15,7 +16,7 @@ trait DeadPlayer {
    * @param map game map
    * @return boolean
    */
-  def checkCollision(pos: Point2D, map: Array[Array[Tile]]): Boolean = {
+  def checkCollision(pos: Point2D, map: Array[Array[Drawable[Tile]]]): Boolean = {
     map(pos.x)(pos.y) match {
       case _: Boundary => true
       case _ => false

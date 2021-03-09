@@ -1,5 +1,6 @@
 package it.amongsus.core.entities.player
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{DeadBody, Emergency, Floor, Tile}
 import it.amongsus.core.entities.util.Point2D
 
@@ -49,7 +50,7 @@ trait AlivePlayer {
    * @param map game map
    * @return
    */
-  def checkCollision(pos: Point2D, map: Array[Array[Tile]]): Boolean = {
+  def checkCollision(pos: Point2D, map: Array[Array[Drawable[Tile]]]): Boolean = {
     map(pos.x)(pos.y) match {
       case _: Floor => false
       case _ => true

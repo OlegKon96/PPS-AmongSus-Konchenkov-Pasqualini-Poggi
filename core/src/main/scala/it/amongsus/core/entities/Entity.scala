@@ -1,6 +1,6 @@
 package it.amongsus.core.entities
 
-trait Entity extends Drawable {
+trait Entity[E <: Entity[E]] extends Drawable[Entity[E]] {
   /**
    * Color of the Entity element
    *

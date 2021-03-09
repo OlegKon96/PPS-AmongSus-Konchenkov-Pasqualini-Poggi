@@ -3,6 +3,7 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map._
 import it.amongsus.core.entities.player._
 import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
@@ -44,20 +45,20 @@ trait ModelActorInfo {
    *
    * @return
    */
-  def gameMap: Option[Array[Array[Tile]]]
+  def gameMap: Option[Array[Array[Drawable[Tile]]]]
   /**
    * Method that generates the map of the game
    *
    * @param map of the game
    * @return
    */
-  def generateMap(map: Iterator[String]): Array[Array[Tile]]
+  def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]]
   /**
    * Method that generates the collectionables of the game
    *
    * @param map of the game
    */
-  def generateCollectionables(map: Array[Array[Tile]]): Unit
+  def generateCollectionables(map: Array[Array[Drawable[Tile]]]): Unit
   /**
    * Method that finds my characters
    *
@@ -118,13 +119,13 @@ trait ModelActorInfo {
 object ModelActorInfo {
   def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "", isTimerOn = false)
 
-  def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Tile]]],
+  def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Drawable[Tile]]]],
             playersList: Seq[Player], gameCollectionables: Seq[Collectionable], clientId: String): ModelActorInfo =
     ModelActorInfoData(controllerRef, map, playersList, gameCollectionables, clientId, isTimerOn = false)
 }
 
 case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
-                              override val gameMap: Option[Array[Array[Tile]]],
+                              override val gameMap: Option[Array[Array[Drawable[Tile]]]],
                               override var gamePlayers: Seq[Player],
                               override var gameCollectionables: Seq[Collectionable],
                               override val clientId: String,
@@ -134,12 +135,12 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   val emergencyButtons: Seq[Emergency] = generateEmergencyButtons()
   override var deadBodys: Seq[DeadBody] = Seq()
 
-  override def generateMap(map: Iterator[String]): Array[Array[Tile]] = {
+  override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
     var j = 0
     var k = 0
     val n1 = 50
     val n2 = 72
-    val tileMatrix = ofDim[Tile](n1, n2)
+    val tileMatrix = ofDim[Drawable[Tile]](n1, n2)
 
     map.foreach(line => {
       line.split(",").map(_.trim).foreach(col => {
@@ -160,7 +161,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     tileMatrix
   }
 
-  override def generateCollectionables(map: Array[Array[Tile]]): Unit = {
+  override def generateCollectionables(map: Array[Array[Drawable[Tile]]]): Unit = {
     var tiles: Seq[Tile] = Seq.empty
     map.foreach(x => x.foreach {
       case tile: Floor => tiles = tiles :+ tile

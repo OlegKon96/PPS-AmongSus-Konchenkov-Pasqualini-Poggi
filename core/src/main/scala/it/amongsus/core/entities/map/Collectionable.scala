@@ -6,7 +6,7 @@ import it.amongsus.core.entities.util.Point2D
 /**
  * Trait of the collectionable of the game that the player should collect
  */
-trait Collectionable extends Entity{
+trait Collectionable extends Entity[Collectionable]{
   /**
    * Take the coin
    */

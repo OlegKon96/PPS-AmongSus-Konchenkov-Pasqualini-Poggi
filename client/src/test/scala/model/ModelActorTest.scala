@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.ActionTimer.TimerStarted
 import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{Collectionable, Tile}
 import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive, Player}
 import it.amongsus.core.entities.util.Movement.Up
@@ -23,7 +24,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
 
   private val modelActorInfo: ModelActorInfo = ModelActorInfo()
-  private val map: Array[Array[Tile]] = modelActorInfo.generateMap(loadMap())
+  private val map: Array[Array[Drawable[Tile]]] = modelActorInfo.generateMap(loadMap())
   modelActorInfo.generateCollectionables(map)
   val players = Seq(CrewmateAlive("green", emergencyCalled = false, "test", "test", 0, Point2D(35, 35)))
 

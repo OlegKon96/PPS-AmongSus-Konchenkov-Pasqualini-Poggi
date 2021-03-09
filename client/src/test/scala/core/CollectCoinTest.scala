@@ -1,5 +1,6 @@
 package core
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.Tile
 import it.amongsus.core.entities.player.{CrewmateAlive, CrewmateGhost, Player}
 import it.amongsus.core.entities.util.Point2D
@@ -16,7 +17,7 @@ class CollectCoinTest extends AnyWordSpecLike with BeforeAndAfterAll {
   private val crewmateGhost: Player = CrewmateGhost("green", "zxcvb", "imCrewmateGhost", 3,
     Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
-  private val map: Array[Array[Tile]] = modelActor.generateMap(loadMap())
+  private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
   modelActor.generateCollectionables(map)
 
   "A Crewmate Alive" should {

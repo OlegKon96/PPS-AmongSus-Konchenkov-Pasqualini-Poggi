@@ -5,4 +5,4 @@ import it.amongsus.core.entities.Drawable
 /**
  * Trait that represents the Tile of the game map
  */
-trait Tile extends Drawable
+trait Tile extends Drawable[Tile]

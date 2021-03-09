@@ -5,9 +5,12 @@ import it.amongsus.core.entities.player.{AlivePlayer, CrewmateAlive, CrewmateGho
 import it.amongsus.core.entities.player.{ImpostorGhost, Player}
 import it.amongsus.view.frame.GameFrame
 import java.awt.Graphics
+
 import javax.swing.JPanel
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
+
+import it.amongsus.core.entities.Drawable
 
 trait GamePanel extends JPanel {
   /**
@@ -24,7 +27,7 @@ trait GamePanel extends JPanel {
 
 object GamePanel {
   def apply(gameFrame: GameFrame,
-            map : Array[Array[Tile]],
+            map : Array[Array[Drawable[Tile]]],
             myChar: Player,
             players : Seq[Player],
             collectionables : Seq[Collectionable],
@@ -32,7 +35,7 @@ object GamePanel {
     new GamePanelImpl(gameFrame, map,myChar, players,collectionables,deadBodies)
 
   private class GamePanelImpl(gameFrame: GameFrame,
-                              map : Array[Array[Tile]],
+                              map : Array[Array[Drawable[Tile]]],
                               myChar: Player,
                               players : Seq[Player],
                               collectionables : Seq[Collectionable],

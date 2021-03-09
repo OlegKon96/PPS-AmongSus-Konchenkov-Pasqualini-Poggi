@@ -14,6 +14,8 @@ import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
+
+import it.amongsus.core.entities.Drawable
 import javax.swing.JFrame
 
 /**
@@ -41,7 +43,7 @@ trait GameFrame extends Frame {
    *
    * @return
    */
-  def map: Array[Array[Tile]]
+  def map: Array[Array[Drawable[Tile]]]
   /**
    * My players of the game
    *
@@ -92,14 +94,14 @@ trait GameFrame extends Frame {
 
 object GameFrame {
   def apply(guiRef: Option[ActorRef],
-            map : Array[Array[Tile]],
+            map : Array[Array[Drawable[Tile]]],
             myChar: Player,
             players : Seq[Player],
             collectionables : Seq[Collectionable]): GameFrame =
     new GameFrameImpl(guiRef,map,myChar,players,collectionables)
 
   private class GameFrameImpl(guiRef: Option[ActorRef],
-                              override val map : Array[Array[Tile]],
+                              override val map : Array[Array[Drawable[Tile]]],
                               override val myChar : Player,
                               override val players : Seq[Player],
                               override val collectionables : Seq[Collectionable]) extends GameFrame {

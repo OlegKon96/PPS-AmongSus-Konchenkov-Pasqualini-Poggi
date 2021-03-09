@@ -1,5 +1,6 @@
 package core
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{DeadBody, Tile}
 import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive, Player}
 import it.amongsus.core.entities.util.Point2D
@@ -17,7 +18,7 @@ class KillTest extends AnyWordSpecLike with BeforeAndAfterAll {
   private val impostorAlive: Player = ImpostorAlive("green", emergencyCalled = true,
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
-  private val map: Array[Array[Tile]] = modelActor.generateMap(loadMap())
+  private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
   modelActor.generateCollectionables(map)
 
   "An Impostor Alive" should {

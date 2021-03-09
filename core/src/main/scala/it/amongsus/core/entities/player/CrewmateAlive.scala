@@ -1,5 +1,6 @@
 package it.amongsus.core.entities.player
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.Tile
 import it.amongsus.core.entities.util.Movement._
 import it.amongsus.core.entities.util.{Movement, Point2D}
@@ -28,7 +29,7 @@ object CrewmateAlive {
                                        override val numCoins: Int,
                                        override val position: Point2D) extends CrewmateAlive {
 
-    override def move(direction: Movement, map: Array[Array[Tile]]): Option[Player] = {
+    override def move(direction: Movement, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
       val newPlayer = direction match {
         case Up() => CrewmateAlive(color, emergencyCalled, fieldOfView, clientId, username, numCoins,
           Point2D(position.x - 1, position.y))

@@ -1,5 +1,6 @@
 package core
 
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{Tile, Vent}
 import it.amongsus.core.entities.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.entities.util.Movement.{Down, Up}
@@ -22,7 +23,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
   private var impostorGhost: Player = ImpostorGhost("green", "lol", "imImpostorGhost",
     Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
-  private val map: Array[Array[Tile]] = modelActor.generateMap(loadMap())
+  private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
   modelActor.generateCollectionables(map)
 
   "A Crewmate Alive" should {

@@ -2,6 +2,7 @@ package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
+import it.amongsus.core.entities.Drawable
 import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.entities.player.Player
 import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement}
@@ -10,7 +11,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the model is ready
    */
-  case class ModelReadyController(map: Array[Array[Tile]], myChar: Player, players: Seq[Player],
+  case class ModelReadyController(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
                                   collectionables: Seq[Collectionable])
   /**
    * Tells to the controller that his character is moved
