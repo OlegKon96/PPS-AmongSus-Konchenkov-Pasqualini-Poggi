@@ -15,7 +15,7 @@ import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
 object GameActor {
-  def props(numberOfPlayers: Int): Props = Props(new GameActor(numberOfPlayers))
+  def props(state: GameActorInfo): Props = Props(new GameActor(state))
   /**
    * Sent to the Game Actor to specify the players to add to the match
    *
@@ -27,13 +27,12 @@ object GameActor {
 /**
  * Responsible of game match
  *
- * @param numberOfPlayers numbers of players of the game
+ * @param state information of the actor
  */
-class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash {
+class GameActor(private val state: GameActorInfo) extends Actor with ActorLogging
+  with Stash {
 
-  private var players: Seq[GamePlayer] = _
-  private var totalVotes: Int = this.numberOfPlayers
-  private var playersToLobby: Map[String, Int] = Map.empty
+  private final val mapCenter: Int = 35
 
   import context.dispatcher
 
@@ -42,9 +41,9 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
   private def idle: Receive = {
     case GamePlayers(players) =>
       log.info(s"initial players $players")
-      this.players = players
-      this.players.foreach(p => context.watch(p.actorRef))
-      require(players.size == numberOfPlayers)
+      this.state.players = players
+      this.state.players.foreach(p => context.watch(p.actorRef))
+      require(players.size == this.state.numberOfPlayers)
       this.broadcastMessageToPlayers(MatchFound(self))
       context.become(initializing(Seq.empty) orElse terminationBeforeGameStarted())
   }
@@ -59,7 +58,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       this.withPlayer(id) { p =>
         log.info(s"player ${p.username} ready")
         val updatedReadyPlayers = playersReady :+ p.copy(actorRef = ref)
-        if (updatedReadyPlayers.length == numberOfPlayers) {
+        if (updatedReadyPlayers.length == this.state.numberOfPlayers) {
           log.info("All players ready")
           this.initializeGame(updatedReadyPlayers)
         } else {
@@ -78,12 +77,13 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
       } else if(checkWinImpostor(gamePlayers)){
         sendWinMessage(gamePlayers, ImpostorCrew())
       } else{
-        players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
+        this.state.players.filter(p => p.actorRef != sender()).foreach(p =>
+          p.actorRef ! PlayerMovedClient(player, deadBodys))
       }
 
     case StartVoting(gamePlayers: Seq[Player]) =>
-      this.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
-      players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
+      this.state.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
+      this.state.players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
       context become voting(gamePlayers)
   }
 
@@ -91,16 +91,16 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
     gamePlayers.foreach{
       case c : Crewmate =>
         crew match {
-          case ImpostorCrew() => players.find(p => p.id == c.clientId).get.actorRef !
+          case ImpostorCrew() => this.state.players.find(p => p.id == c.clientId).get.actorRef !
             GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
-          case CrewmateCrew() => players.find(p => p.id == c.clientId).get.actorRef !
+          case CrewmateCrew() => this.state.players.find(p => p.id == c.clientId).get.actorRef !
             GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
         }
       case i : Impostor =>
         crew match {
-          case ImpostorCrew() => players.find(p => p.id == i.clientId).get.actorRef !
+          case ImpostorCrew() => this.state.players.find(p => p.id == i.clientId).get.actorRef !
             GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
-          case CrewmateCrew() => players.find(p => p.id == i.clientId).get.actorRef !
+          case CrewmateCrew() => this.state.players.find(p => p.id == i.clientId).get.actorRef !
             GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
         }
     }
@@ -113,11 +113,11 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
 
     case SendTextChatServer(message: Message, character: Player) => character match {
       case _: DeadPlayer => gamePlayers.filter(p => p.isInstanceOf[DeadPlayer]).foreach(player => {
-        players.filter(p =>
+        this.state.players.filter(p =>
           player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))
       })
       case _: AlivePlayer => gamePlayers.filter(p => p.isInstanceOf[AlivePlayer]).foreach(player => {
-        players.filter(p =>
+        this.state.players.filter(p =>
           player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))
       })
     }
@@ -130,7 +130,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
    */
   private def terminationBeforeGameStarted(): Receive = {
     case Terminated(ref) =>
-      this.players.find(_.actorRef == ref) match {
+      this.state.players.find(_.actorRef == ref) match {
         case Some(player) =>
           log.info(s"player ${player.username} terminated before the game starts")
           // become in behaviour in cui a ogni ready che mi arriva invio il messaggio di fine partita
@@ -148,14 +148,14 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
    * Listen for termination messages after the match start
    */
   private def terminationAfterGameStarted(): Receive = {
-    case Terminated(ref) => this.players.find(_.actorRef == ref) match {
+    case Terminated(ref) => this.state.players.find(_.actorRef == ref) match {
       case Some(player) =>
-        players = players.filter(_.actorRef != ref)
+        this.state.players = this.state.players.filter(_.actorRef != ref)
         log.info(s"Player ${player.username} left the game")
         broadcastMessageToPlayers(PlayerLeftClient(player.id))
     }
     case LeaveGameServer(playerId) => withPlayer(playerId) { player =>
-      players = players.filter(_.id != playerId)
+      this.state.players = this.state.players.filter(_.id != playerId)
       log.info(s"Player ${player.username} left the game")
       broadcastMessageToPlayers(PlayerLeftClient(player.id))
     }
@@ -175,36 +175,36 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
    */
   private def initializeGame(playersReady: Seq[GamePlayer]): Unit = {
     // unwatch the player with the old actor ref
-    this.players.foreach(p => context.unwatch(p.actorRef))
-    this.players = playersReady
+    this.state.players.foreach(p => context.unwatch(p.actorRef))
+    this.state.players = playersReady
     log.debug(s"ready players $playersReady")
-    log.debug(s"updated players $players")
+    log.debug(s"updated players ${this.state.players}")
     // watch the players with the new actor ref
     val playersRole = defineRoles()
-    this.players.foreach(p => {
+    this.state.players.foreach(p => {
       p.actorRef ! GamePlayersClient(playersRole)
       context.watch(p.actorRef)
     })
-    this.players.groupBy(_.username).foreach {
-      case(username, _) => this.playersToLobby = this.playersToLobby + (username -> 0)
+    this.state.players.groupBy(_.username).foreach {
+      case(username, _) => this.state.playersToLobby = this.state.playersToLobby + (username -> 0)
     }
     context.become(inGame() orElse terminationAfterGameStarted())
   }
 
   private def defineRoles(): Seq[Player] = {
     var playersRole: Seq[Player] = Seq()
-    val rand1 = Random.nextInt(players.length)
+    val rand1 = Random.nextInt(this.state.players.length)
     val colors = Random.shuffle(Seq("green", "red", "cyan", "yellow", "blue", "pink", "orange"))
-    val rand2 = if(players.length > 5) Random.nextInt(players.length) else rand1
-    val mapCentre = Point2D(35,35)
+    val rand2 = if(this.state.players.length > 5) Random.nextInt(this.state.players.length) else rand1
+    val mapCentre = Point2D(mapCenter, mapCenter)
 
-    for (n <- players.indices) {
+    for (n <- this.state.players.indices) {
       n match {
         case n if n == rand1 || n == rand2 =>
-          playersRole = playersRole :+ ImpostorAlive(colors(n), emergencyCalled = false, players(n).id,
-            players(n).username, mapCentre)
-        case _ => playersRole = playersRole :+ CrewmateAlive(colors(n), emergencyCalled = false, players(n).id,
-          players(n).username, Constants.Crewmate.NUM_COINS, mapCentre)
+          playersRole = playersRole :+ ImpostorAlive(colors(n), emergencyCalled = false, this.state.players(n).id,
+            this.state.players(n).username, mapCentre)
+        case _ => playersRole = playersRole :+ CrewmateAlive(colors(n), emergencyCalled = false,
+          this.state.players(n).id, this.state.players(n).username, Constants.Crewmate.NUM_COINS, mapCentre)
       }
     }
     playersRole
@@ -216,36 +216,35 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
    * @param message a generic message
    */
   private def broadcastMessageToPlayers(message: Any): Unit = {
-    this.players.foreach(p => p.actorRef ! message)
+    this.state.players.foreach(p => p.actorRef ! message)
   }
 
   private def withPlayer(playerId: String)(f: GamePlayer => Unit): Unit = {
-    this.players.find(_.id == playerId) match {
+    this.state.players.find(_.id == playerId) match {
       case Some(p) => f(p)
       case None => log.info(s"Player id $playerId not found")
     }
   }
 
   private def manageVote(username: String, gamePlayer: Seq[Player]): Unit = {
-    totalVotes = totalVotes - 1
-    //println("Tot Vote:" + totalVotes)
+    this.state.totalVotes = this.state.totalVotes - 1
     if(!isEmpty(username)) {
-      this.playersToLobby = this.playersToLobby.updated(username, this.playersToLobby.find(_._1 == username).get._2 + 1)
+      this.state.playersToLobby = this.state.playersToLobby.updated(username,
+        this.state.playersToLobby.find(_._1 == username).get._2 + 1)
     }
-    if (totalVotes <= 0) {
-      if (playersToLobby.valuesIterator.max == 0) {
-        this.players.foreach(p => p.actorRef ! NoOneEliminatedController())
+    if (this.state.totalVotes <= 0) {
+      if (this.state.playersToLobby.valuesIterator.max == 0) {
+        this.state.players.foreach(p => p.actorRef ! NoOneEliminatedController())
         context become inGame()
       } else {
-        val playerToEliminate = playersToLobby.maxBy(_._2)._1
-        this.players.foreach(p => p.actorRef ! EliminatedPlayer(playerToEliminate))
-        this.playersToLobby = Map.empty
+        val playerToEliminate = this.state.playersToLobby.maxBy(_._2)._1
+        this.state.players.foreach(p => p.actorRef ! EliminatedPlayer(playerToEliminate))
+        this.state.playersToLobby = Map.empty
         gamePlayer.filter(p => p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]).
           groupBy(_.username).foreach {
-          case (username, _) => this.playersToLobby = this.playersToLobby + (username -> 0)
+          case (username, _) => this.state.playersToLobby = this.state.playersToLobby + (username -> 0)
         }
-        totalVotes = this.playersToLobby.size
-        //println("Update Vote Var: " + totalVotes)
+        this.state.totalVotes = this.state.playersToLobby.size
 
         if (checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
           sendWinMessage(gamePlayer, CrewmateCrew())
