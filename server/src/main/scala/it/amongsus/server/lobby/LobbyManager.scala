@@ -22,12 +22,12 @@ trait LobbyManager[T <: Player] {
   def getLobbyPlayer(playerId: String): Option[Lobby[T]]
 }
 
-//mixin
-trait LobbyManagerUtils[T <: Player] extends CustomLogger { lobbyManager : LobbyManager[T] =>
+trait LobbyManagerUtils[T <: Player] extends CustomLogger {
+  lobbyManager : LobbyManager[T] =>
   /**
    * Add a player to the lobby system
    *
-   * @param player    player to be added
+   * @param player player to be added
    * @param lobbyType type of the lobby
    */
   def addPlayer(player: T, lobbyType: LobbyType): Unit = {
