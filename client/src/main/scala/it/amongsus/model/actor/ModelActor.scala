@@ -52,9 +52,9 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       case _: ReportButton => state.checkTimer(TimerEnded)
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
         context become voteBehaviour(state)
-      case _: SabotageButton => state.sabotage()
+      case _: SabotageButton => state.sabotage(true)
         ActorSystemManager.actorSystem.scheduler.scheduleOnce(5 seconds){
-          state.sabotageOff()
+          state.sabotage(false)
         }
     }
 

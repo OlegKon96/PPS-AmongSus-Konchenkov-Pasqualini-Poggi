@@ -109,11 +109,7 @@ trait ModelActorInfo {
   /**
    * Method of the impostor that allows him to reduce crewmate field of view
    */
-  def sabotage(): Unit
-  /**
-   * Method of the impostor that allows him to reduce crewmate field of view
-   */
-  def sabotageOff(): Unit
+  def sabotage(state: Boolean): Unit
 }
 
 object ModelActorInfo {
@@ -287,22 +283,11 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   /**
    * Method of the impostor that allows him to reduce crewmate field of view
    */
-  override def sabotage(): Unit = gamePlayers.foreach {
-    case aliveCrewmate: CrewmateAlive =>
-      val newPlayer = CrewmateAlive(aliveCrewmate.color,
-        aliveCrewmate.emergencyCalled, Constants.Crewmate.FIELD_OF_VIEW_SABOTAGE,
-        aliveCrewmate.clientId, aliveCrewmate.username, aliveCrewmate.numCoins, aliveCrewmate.position)
-      controllerRef.get ! UpdatedMyCharController(newPlayer, gamePlayers, deadBodys)
-    case _ =>
-  }
-
-  override def sabotageOff(): Unit = gamePlayers.foreach {
-    case aliveCrewmate: CrewmateAlive =>
-      val newPlayer = CrewmateAlive(aliveCrewmate.color,
-        aliveCrewmate.emergencyCalled, Constants.Crewmate.FIELD_OF_VIEW,
-        aliveCrewmate.clientId, aliveCrewmate.username, aliveCrewmate.numCoins, aliveCrewmate.position)
-      controllerRef.get ! UpdatedMyCharController(newPlayer, gamePlayers, deadBodys)
-    case _ =>
+  override def sabotage(state: Boolean): Unit = {
+    val newPlayers = myCharacter match {
+      case impostor : Impostor => impostor.sabotage(gamePlayers, state)
+    }
+    newPlayers.foreach(player => controllerRef.get ! UpdatedMyCharController(player, gamePlayers, deadBodys))
   }
 
   private def generateVentLinks(): Seq[(Vent, Vent)] = {
