@@ -7,7 +7,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
+import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel}
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}

@@ -4,12 +4,13 @@ import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
-import it.amongsus.core.entities.util.Message
+import it.amongsus.core.player.{Crewmate, Impostor, Player}
+import it.amongsus.core.util.Message
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, VoteUi}
 import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
 import it.amongsus.view.swingio.JTextFieldIO
+
 import javax.swing.JFrame
 
 /**

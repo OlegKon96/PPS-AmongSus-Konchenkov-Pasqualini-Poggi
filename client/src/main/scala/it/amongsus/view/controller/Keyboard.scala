@@ -1,6 +1,6 @@
 package it.amongsus.view.controller
 
-import it.amongsus.core.entities.util.Movement._
+import it.amongsus.core.util.Movement._
 import it.amongsus.view.frame.GameFrame
 import java.awt.event.{KeyEvent, KeyListener}
 

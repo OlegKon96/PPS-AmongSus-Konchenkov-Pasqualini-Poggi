@@ -1,8 +1,8 @@
 package it.amongsus.messages
 
-import it.amongsus.core.entities.map.DeadBody
-import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{GameEnd, Message}
+import it.amongsus.core.map.DeadBody
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.{GameEnd, Message}
 
 object GameMessageClient {
   /**

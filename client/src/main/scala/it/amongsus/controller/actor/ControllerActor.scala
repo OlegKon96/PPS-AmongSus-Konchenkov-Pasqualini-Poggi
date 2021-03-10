@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
-import it.amongsus.core.entities.player.Player
+import it.amongsus.core.player.Player
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
@@ -13,6 +13,7 @@ import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
 import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationDouble
 import scala.util.{Failure, Success}

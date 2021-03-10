@@ -3,12 +3,12 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map._
-import it.amongsus.core.entities.player._
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
-import it.amongsus.core.entities.util.Movement.Up
-import it.amongsus.core.entities.util.{Movement, Point2D}
+import it.amongsus.core
+import it.amongsus.core.{Drawable, map}
+import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
+import it.amongsus.core.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
+import it.amongsus.core.player.{AlivePlayer, Crewmate, CrewmateAlive, CrewmateGhost, Impostor, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.util.{Movement, Point2D}
 
 import scala.Array.ofDim
 import scala.util.Random
@@ -146,7 +146,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
           case "40" => tileMatrix(j)(k) = Floor(Point2D(j, k))
           case "1" => tileMatrix(j)(k) = Boundary(Point2D(j, k))
           case "66" => tileMatrix(j)(k) = Vent(Point2D(j, k))
-          case "222" => tileMatrix(j)(k) = Emergency(Point2D(j, k))
+          case "222" => tileMatrix(j)(k) = core.map.Emergency(Point2D(j, k))
         }
         k = k + 1
       })
@@ -255,7 +255,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
           case Some(player) =>
             val dead = CrewmateGhost(player.color, player.clientId, player.username,
               player.asInstanceOf[CrewmateAlive].numCoins, player.position)
-            deadBodies = deadBodies :+ DeadBody(player.color, dead.position)
+            deadBodies = deadBodies :+ map.DeadBody(player.color, dead.position)
             updatePlayer(dead)
             controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodies)
             controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)

@@ -1,9 +1,9 @@
 package it.amongsus.messages
 
 import akka.actor.ActorRef
-import it.amongsus.core.entities.map.DeadBody
-import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.Message
+import it.amongsus.core.map.DeadBody
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.Message
 
 object GameMessageServer {
   /**

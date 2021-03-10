@@ -1,16 +1,13 @@
 package it.amongsus.view.panel
 
-import it.amongsus.core.entities.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
-import it.amongsus.core.entities.player.{AlivePlayer, CrewmateAlive, CrewmateGhost, DeadPlayer, ImpostorAlive}
-import it.amongsus.core.entities.player.{ImpostorGhost, Player}
-import it.amongsus.view.frame.GameFrame
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
+import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 
 import java.awt.Graphics
 import javax.swing.JPanel
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
-import it.amongsus.core.entities.Drawable
 import it.amongsus.view.draw.DrawableEntity.draw
+import it.amongsus.view.draw.DrawableTile.drawTile
 
 trait GamePanel extends JPanel {
   /**
@@ -45,16 +42,6 @@ object GamePanel {
     private var gameMyChar = myChar
     private val gameMap = map
 
-    val block: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/block.png"))
-    val blockOff: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/blockOff.png"))
-    val space: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/space.png"))
-    val floor: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/floor.png"))
-    val floorOff: BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/floorOff.png"))
-    val vent : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/vent.png"))
-    val ventOff : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/ventOff.png"))
-    val emergency : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/emergencyButton.png"))
-    val emergencyOff : BufferedImage = ImageIO.read(getClass.getResourceAsStream("/images/emergencyButtonOff.png"))
-
     override def paintComponent(g : Graphics): Unit = {
       g.clearRect(0, 0, 1080, 750)
       drawMap(g)
@@ -62,54 +49,17 @@ object GamePanel {
     }
 
     private def drawMap(g:Graphics) : Unit = {
-      gameMyChar match {
-
-        case _: AlivePlayer =>
-          gameMap.foreach(x => x.foreach {
-            case tile: Vent =>
-              if (tile.position.distance(gameMyChar.position) < gameMyChar.fieldOfView) {
-                g.drawImage(vent, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              } else {
-                g.drawImage(ventOff, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              }
-            case tile: Emergency =>
-              if (tile.position.distance(gameMyChar.position) < gameMyChar.fieldOfView) {
-                g.drawImage(emergency, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              } else {
-                g.drawImage(emergencyOff, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              }
-            case tile: Boundary =>
-              g.drawImage(space, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-            case tile: Wall =>
-              if (tile.position.distance(gameMyChar.position) < gameMyChar.fieldOfView) {
-                g.drawImage(block, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              } else {
-                g.drawImage(blockOff, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              }
-            case tile: Floor =>
-              if (tile.position.distance(gameMyChar.position) < gameMyChar.fieldOfView) {
-                g.drawImage(floor, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, null)
-              } else {
-                g.drawImage(floorOff, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-              }
-            case tile: Other =>
-              g.drawImage(space, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-          })
-
-        case _: DeadPlayer =>
-          gameMap.foreach(x => x.foreach {
-            case tile: Vent => g.drawImage(vent, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-            case tile: Emergency => g.drawImage(emergency, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-            case tile: Boundary => g.drawImage(space, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-            case tile: Wall => g.drawImage(block, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-            case tile: Floor => g.drawImage(floor, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, null)
-            case tile: Other => g.drawImage(space, tile.position.y * 15 + 1, tile.position.x * 15 + 1, 15, 15, this)
-          })
-      }
+      gameMap.foreach(x => x.foreach {
+        case vent: Vent => drawTile(vent,g,gameMyChar)
+        case emergency: Emergency => drawTile(emergency,g,gameMyChar)
+        case boundary: Boundary => drawTile(boundary,g,gameMyChar)
+        case wall: Wall => drawTile(wall,g,gameMyChar)
+        case floor: Floor => drawTile(floor,g,gameMyChar)
+        case other: Other => drawTile(other,g,gameMyChar)
+      })
     }
 
     private def drawEntity(g: Graphics): Unit ={
-      //rendering in base al proprio giocatore
       gameMyChar match {
         case impostorAlive: ImpostorAlive =>
           draw(impostorAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)

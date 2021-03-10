@@ -6,11 +6,11 @@ import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.ActionTimer.TimerStarted
 import it.amongsus.controller.actor.ControllerActorMessages.{ButtonOffController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map.{Collectionable, Tile}
-import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive, Player}
-import it.amongsus.core.entities.util.Movement.Up
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.Tile
+import it.amongsus.core.player.CrewmateAlive
+import it.amongsus.core.util.Movement.Up
+import it.amongsus.core.util.Point2D
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel}
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import org.scalatest.BeforeAndAfterAll
