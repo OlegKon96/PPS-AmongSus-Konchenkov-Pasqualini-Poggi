@@ -25,7 +25,7 @@ trait ModelActorInfo {
   /**
    * Sequence of a players' DeadBody
    */
-  var deadBodys: Seq[DeadBody]
+  var deadBodies: Seq[DeadBody]
   /**
    * Check if timer is running or not
    */
@@ -129,7 +129,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   val ventList: Seq[(Vent, Vent)] = generateVentLinks()
   val emergencyButtons: Seq[Emergency] = generateEmergencyButtons()
-  override var deadBodys: Seq[DeadBody] = Seq()
+  override var deadBodies: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
     var j = 0
@@ -176,12 +176,12 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     myCharacter.move(direction, gameMap.get) match {
       case Some(player) =>
         playerUpdated(player match {
-          case crew: Crewmate =>
-            crew.canCollect(gameCollectionables, crew) match {
+          case crewmate: Crewmate =>
+            crewmate.canCollect(gameCollectionables, crewmate) match {
               case Some(collect) =>
                 gameCollectionables = gameCollectionables.filter(c => c != collect)
-                crew.collect(crew)
-              case None => crew
+                crewmate.collect(crewmate)
+              case None => crewmate
             }
           case _ => player
         })
@@ -191,9 +191,8 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def useVent(): Unit = {
     myCharacter match {
-      case p: ImpostorAlive => p.useVent(ventList) match {
-        case Some(p) =>
-          playerUpdated(p)
+      case impostorAlive: ImpostorAlive => impostorAlive.useVent(ventList) match {
+        case Some(p) => playerUpdated(p)
         case None =>
       }
       case _ =>
@@ -202,8 +201,8 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   private def playerUpdated(player: Player): Unit = {
     updatePlayer(player)
-    controllerRef.get ! UpdatedMyCharController(myCharacter, gamePlayers, deadBodys)
-    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+    controllerRef.get ! UpdatedMyCharController(myCharacter, gamePlayers, deadBodies)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
   }
 
   override def updatePlayer(player: Player): Seq[Player] = {
@@ -211,24 +210,24 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     gamePlayers = gamePlayers.updated(index, player)
 
     myCharacter match {
-      case p: AlivePlayer =>
-        if (p.canCallEmergency(p, emergencyButtons)) {
+      case alivePlayer: AlivePlayer =>
+        if (alivePlayer.canCallEmergency(alivePlayer, emergencyButtons)) {
           controllerRef.get ! ButtonOnController(EmergencyButton())
         } else {
           controllerRef.get ! ButtonOffController(EmergencyButton())
         }
-        if (p.canReport(myCharacter.position, deadBodys)) {
+        if (alivePlayer.canReport(myCharacter.position, deadBodies)) {
           controllerRef.get ! ButtonOnController(ReportButton())
         } else {
           controllerRef.get ! ButtonOffController(ReportButton())
         }
-        p match {
-          case i: ImpostorAlive =>
-            i.canVent(ventList) match {
+        alivePlayer match {
+          case impostorAlive: ImpostorAlive =>
+            impostorAlive.canVent(ventList) match {
               case Some(_) => controllerRef.get ! ButtonOnController(VentButton())
               case None => controllerRef.get ! ButtonOffController(VentButton())
             }
-            if (i.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
+            if (impostorAlive.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
               controllerRef.get ! ButtonOnController(KillButton())
             } else if (!isTimerOn) {
               controllerRef.get ! ButtonOffController(KillButton())
@@ -251,15 +250,15 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def kill(): Unit = {
     myCharacter match {
-      case i: ImpostorAlive =>
-        i.kill(i.position, gamePlayers) match {
+      case impostorAlive: ImpostorAlive =>
+        impostorAlive.kill(impostorAlive.position, gamePlayers) match {
           case Some(player) =>
             val dead = CrewmateGhost(player.color, player.clientId, player.username,
               player.asInstanceOf[CrewmateAlive].numCoins, player.position)
-            deadBodys = deadBodys :+ DeadBody(player.color, dead.position)
+            deadBodies = deadBodies :+ DeadBody(player.color, dead.position)
             updatePlayer(dead)
-            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodys)
-            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodies)
+            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
           case None =>
         }
       case _ =>
@@ -269,8 +268,10 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   override def killAfterVote(username: String): Unit = {
     val player = gamePlayers.find(p => p.username == username).get
     gamePlayers = gamePlayers.updated(gamePlayers.indexOf(player), player match {
-      case i: ImpostorAlive => ImpostorGhost(i.color, i.clientId, i.username, i.position)
-      case c: CrewmateAlive => CrewmateGhost(c.color, c.clientId, c.username, c.numCoins, c.position)
+      case impostorAlive: ImpostorAlive => ImpostorGhost(impostorAlive.color, impostorAlive.clientId,
+        impostorAlive.username, impostorAlive.position)
+      case crewmateAlive: CrewmateAlive => CrewmateGhost(crewmateAlive.color, crewmateAlive.clientId,
+        crewmateAlive.username, crewmateAlive.numCoins, crewmateAlive.position)
       case _ => player
     })
   }
@@ -287,7 +288,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     val newPlayers = myCharacter match {
       case impostor : Impostor => impostor.sabotage(gamePlayers, state)
     }
-    newPlayers.foreach(player => controllerRef.get ! UpdatedMyCharController(player, gamePlayers, deadBodys))
+    newPlayers.foreach(player => controllerRef.get ! UpdatedMyCharController(player, gamePlayers, deadBodies))
   }
 
   private def generateVentLinks(): Seq[(Vent, Vent)] = {
@@ -295,17 +296,17 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     gameMap match {
       case Some(map) => map.foreach(t => {
         t.foreach {
-          case v: Vent => vents = vents :+ v
+          case vent: Vent => vents = vents :+ vent
           case _ =>
         }
       })
       case None =>
     }
-    var v: Seq[(Vent, Vent)] = Seq()
+    var ventTuples: Seq[(Vent, Vent)] = Seq()
     for (i <- 0 until vents.length / 2) {
-      v = v :+ (vents(i), vents(vents.length - i - 1))
+      ventTuples = ventTuples :+ (vents(i), vents(vents.length - i - 1))
     }
-    v
+    ventTuples
   }
 
   private def generateEmergencyButtons(): Seq[Emergency] = {
@@ -324,6 +325,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def removePlayer(clientId: String): Unit = {
     gamePlayers = gamePlayers.filter(player => player.clientId != clientId)
-    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodys)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
   }
 }

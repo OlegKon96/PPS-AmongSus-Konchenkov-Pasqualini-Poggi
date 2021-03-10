@@ -37,10 +37,10 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case MyCharMovedModel(direction) => state.updateMyChar(direction)
 
     case PlayerMovedModel(player, deadBodys) =>
-      state.deadBodys = deadBodys
+      state.deadBodies = deadBodys
       state.updatePlayer(player)
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodys)
+        state.gameCollectionables, state.deadBodies)
 
     case UiButtonPressedModel(button) => button match {
       case _: VentButton => state.useVent()
@@ -83,9 +83,9 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
   private def voteBehaviour(state: ModelActorInfo): Receive = {
     case KillPlayerModel(username) =>
       state.killAfterVote(username)
-      state.deadBodys = Seq()
+      state.deadBodies = Seq()
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodys)
+        state.gameCollectionables, state.deadBodies)
 
     case RestartGameModel() => state.checkTimer(TimerStarted)
       context become gameBehaviour(state)
