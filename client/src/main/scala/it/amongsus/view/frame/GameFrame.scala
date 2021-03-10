@@ -106,7 +106,7 @@ object GameFrame {
                               override val players : Seq[Player],
                               override val collectionables : Seq[Collectionable]) extends GameFrame {
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
-    val gamePanel: GamePanel = GamePanel(this,map,myChar,players,collectionables,Seq.empty)
+    val gamePanel: GamePanel = GamePanel(map,myChar,players,collectionables,Seq.empty)
     val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
     val killButton: JButtonIO = JButtonIO("Kill").unsafeRunSync()
     val emergencyButton: JButtonIO = JButtonIO("Call Emergency").unsafeRunSync()
