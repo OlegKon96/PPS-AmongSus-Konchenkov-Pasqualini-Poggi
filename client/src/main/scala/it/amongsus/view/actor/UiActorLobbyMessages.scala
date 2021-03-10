@@ -1,8 +1,8 @@
 package it.amongsus.view.actor
 
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map.{Collectionable, Tile}
-import it.amongsus.core.entities.player.Player
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Collectionable, Tile}
+import it.amongsus.core.player.Player
 
 object UiActorLobbyMessages {
   /**

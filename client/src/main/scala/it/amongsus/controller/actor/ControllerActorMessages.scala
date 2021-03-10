@@ -2,10 +2,10 @@ package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
-import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement}
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.{ButtonType, GameEnd, Message, Movement}
 
 object ControllerActorMessages {
   /**

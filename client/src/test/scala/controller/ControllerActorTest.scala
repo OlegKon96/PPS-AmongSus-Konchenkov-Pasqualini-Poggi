@@ -5,9 +5,9 @@ import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, GameEndController, TestGameBehaviour, UpdatedPlayersController}
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo, LobbyActorInfoData}
-import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive}
-import it.amongsus.core.entities.util.GameEnd.{CrewmateCrew, Win}
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.core.player.ImpostorAlive
+import it.amongsus.core.util.GameEnd.{CrewmateCrew, Win}
+import it.amongsus.core.util.Point2D
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerReadyServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._

@@ -1,9 +1,10 @@
 package core
 
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map.{Emergency, Tile}
-import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive, Player}
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus
+import it.amongsus.core.{Drawable, player}
+import it.amongsus.core.map.{Emergency, Tile}
+import it.amongsus.core.player.{CrewmateAlive, ImpostorAlive, Player}
+import it.amongsus.core.util.Point2D
 import it.amongsus.model.actor.ModelActorInfo
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -12,7 +13,7 @@ class CallEmergencyTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   private final val positionDefault35 = 35
 
-  private var crewmateAlive: Player = CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
+  private var crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private var impostorAlive: Player = ImpostorAlive("green", emergencyCalled = false,
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
@@ -25,7 +26,7 @@ class CallEmergencyTest extends AnyWordSpecLike with BeforeAndAfterAll {
       this.crewmateAlive match {
         case crewmate : CrewmateAlive => assert(crewmate.canCallEmergency(crewmate,
           Seq(Emergency(Point2D(positionDefault35, positionDefault35)))))
-          this.crewmateAlive = CrewmateAlive("green", emergencyCalled = true, "asdasdasd", "imCrewmate",
+          this.crewmateAlive = player.CrewmateAlive("green", emergencyCalled = true, "asdasdasd", "imCrewmate",
             3, Point2D(positionDefault35, positionDefault35))
       }
     }
@@ -41,7 +42,7 @@ class CallEmergencyTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "Can Call Emergency" in {
       this.impostorAlive match {
         case impostor : ImpostorAlive => assert(impostor.canCallEmergency(impostor,
-          Seq(Emergency(Point2D(positionDefault35, positionDefault35)))))
+          Seq(amongsus.core.map.Emergency(Point2D(positionDefault35, positionDefault35)))))
           this.impostorAlive = ImpostorAlive("green", emergencyCalled = true, "qwerty", "imImpostor",
             Point2D(positionDefault35, positionDefault35))
       }

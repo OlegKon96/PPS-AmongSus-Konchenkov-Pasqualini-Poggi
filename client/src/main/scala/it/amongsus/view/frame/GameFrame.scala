@@ -2,20 +2,20 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.core.entities.map.{Collectionable, DeadBody, Tile}
-import it.amongsus.core.entities.player.{Crewmate, Impostor}
-import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, Movement}
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
+import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
 import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiButtonPressedUi}
 import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
 import it.amongsus.view.controller.Keyboard
 import it.amongsus.view.panel.GamePanel
 import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
+
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
+import it.amongsus.core.player.{Crewmate, Impostor, Player}
+import it.amongsus.core.util.{ButtonType, Movement}
 
-import it.amongsus.core.entities.Drawable
 import javax.swing.JFrame
 
 /**
@@ -106,7 +106,7 @@ object GameFrame {
                               override val players : Seq[Player],
                               override val collectionables : Seq[Collectionable]) extends GameFrame {
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
-    val gamePanel: GamePanel = GamePanel(this,map,myChar,players,collectionables,Seq.empty)
+    val gamePanel: GamePanel = GamePanel(map,myChar,players,collectionables,Seq.empty)
     val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
     val killButton: JButtonIO = JButtonIO("Kill").unsafeRunSync()
     val emergencyButton: JButtonIO = JButtonIO("Call Emergency").unsafeRunSync()

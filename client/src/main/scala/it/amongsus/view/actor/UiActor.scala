@@ -6,7 +6,7 @@ import it.amongsus.Constants
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
 import it.amongsus.controller.actor.ControllerActorMessages.UiButtonPressedController
-import it.amongsus.core.entities.player.{AlivePlayer, Player}
+import it.amongsus.core.player.{AlivePlayer, Player}
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient}
 import it.amongsus.messages.GameMessageClient.VoteClient
 import it.amongsus.messages.LobbyMessagesClient._
@@ -14,6 +14,7 @@ import it.amongsus.view.actor.UiActorGameMessages.KillTimerUpdateUi
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 

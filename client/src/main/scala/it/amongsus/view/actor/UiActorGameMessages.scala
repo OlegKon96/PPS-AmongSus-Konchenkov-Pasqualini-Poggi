@@ -1,8 +1,8 @@
 package it.amongsus.view.actor
 
-import it.amongsus.core.entities.map.{Collectionable, DeadBody}
-import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, GameEnd, Message, Movement}
+import it.amongsus.core.map.{Collectionable, DeadBody}
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.{ButtonType, GameEnd, Message, Movement}
 
 object UiActorGameMessages {
   /**

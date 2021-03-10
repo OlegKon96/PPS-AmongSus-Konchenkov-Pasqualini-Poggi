@@ -1,10 +1,10 @@
 package core
 
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map.Tile
-import it.amongsus.core.entities.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
-import it.amongsus.core.entities.util.Movement.{Down, Up}
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.Tile
+import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.util.Movement.{Down, Up}
+import it.amongsus.core.util.Point2D
 import it.amongsus.model.actor.ModelActorInfo
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike

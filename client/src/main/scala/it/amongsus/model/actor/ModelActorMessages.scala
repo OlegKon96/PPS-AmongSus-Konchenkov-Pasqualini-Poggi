@@ -1,9 +1,9 @@
 package it.amongsus.model.actor
 
 import it.amongsus.controller.TimerStatus
-import it.amongsus.core.entities.map.DeadBody
-import it.amongsus.core.entities.player.Player
-import it.amongsus.core.entities.util.{ButtonType, GameEnd, Movement}
+import it.amongsus.core.map.DeadBody
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.{ButtonType, GameEnd, Movement}
 
 object ModelActorMessages {
   /**

@@ -1,9 +1,9 @@
 package it.amongsus.view.actor
 
 import akka.actor.ActorRef
-import it.amongsus.core.entities.map.{Collectionable, DeadBody}
-import it.amongsus.core.entities.player.{Crewmate, Impostor, Player}
-import it.amongsus.core.entities.util.{ButtonType, GameEnd}
+import it.amongsus.core.map.{Collectionable, DeadBody}
+import it.amongsus.core.player.{Crewmate, Impostor, Player}
+import it.amongsus.core.util.{ButtonType, GameEnd}
 import it.amongsus.view.frame.{GameFrame, WinFrame}
 
 /**

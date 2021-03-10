@@ -1,10 +1,11 @@
 package core
 
-import it.amongsus.core.entities.Drawable
-import it.amongsus.core.entities.map.{Tile, Vent}
-import it.amongsus.core.entities.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
-import it.amongsus.core.entities.util.Movement.{Down, Up}
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Tile, Vent}
+import it.amongsus.core.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.util.Movement.{Down, Up}
+import it.amongsus.core.util.Point2D
 import it.amongsus.model.actor.ModelActorInfo
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -63,7 +64,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "Can Use Vent" in {
       this.impostorAlive match {
         case impostor: ImpostorAlive => impostorAlive = impostor.useVent(Seq((Vent(Point2D(positionDefault35,
-          positionDefault35)),Vent(Point2D(1,1))))).get
+          positionDefault35)),amongsus.core.map.Vent(Point2D(1,1))))).get
           assert(impostorAlive.position == Point2D(1,1))
       }
     }
