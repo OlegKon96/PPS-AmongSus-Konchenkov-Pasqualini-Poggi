@@ -12,6 +12,11 @@ object LobbyManagerActor {
   def props(state: LobbyManagerInfo): Props = Props(new LobbyManagerActor(state))
 }
 
+/**
+ * Actor that manages all operations of the Lobby
+ *
+ * @param state info of the lobby
+ */
 class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with IdGenerator with ActorLogging {
   private val lobbyManger = LobbyManager()
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
@@ -80,7 +85,7 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
     val gameActor = context.actorOf(GameActor.props(lobbyType.numberOfPlayers))
     players.foreach(p => {
       context.unwatch(p.actorRef)
-      // remove player form lobby
+      // remove player from lobby
       this.lobbyManger.removePlayer(p.id)
       // remove player from connected players structure
       this.state.connectedPlayers = this.state.connectedPlayers - p.id

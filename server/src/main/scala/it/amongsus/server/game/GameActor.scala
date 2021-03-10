@@ -77,7 +77,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
         sendWinMessage(gamePlayers, CrewmateCrew())
       } else if(checkWinImpostor(gamePlayers)){
         sendWinMessage(gamePlayers, ImpostorCrew())
-      }else{
+      } else{
         players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! PlayerMovedClient(player, deadBodys))
       }
 
@@ -228,7 +228,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
 
   private def manageVote(username: String, gamePlayer: Seq[Player]): Unit = {
     totalVotes = totalVotes - 1
-    println("Tot Vote:" + totalVotes)
+    //println("Tot Vote:" + totalVotes)
     if(!isEmpty(username)) {
       this.playersToLobby = this.playersToLobby.updated(username, this.playersToLobby.find(_._1 == username).get._2 + 1)
     }
@@ -245,7 +245,7 @@ class GameActor(numberOfPlayers: Int) extends Actor with ActorLogging with Stash
           case (username, _) => this.playersToLobby = this.playersToLobby + (username -> 0)
         }
         totalVotes = this.playersToLobby.size
-        println("Update Vote Var: " + totalVotes)
+        //println("Update Vote Var: " + totalVotes)
 
         if (checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
           sendWinMessage(gamePlayer, CrewmateCrew())
