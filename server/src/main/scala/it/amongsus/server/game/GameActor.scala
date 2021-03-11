@@ -233,12 +233,20 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
         this.state.playersToLobby.find(_._1 == username).get._2 + 1)
     }
     if (this.state.totalVotes <= 0) {
-      if (this.state.playersToLobby.valuesIterator.max == 0) {
-        this.state.players.foreach(p => p.actorRef ! NoOneEliminatedController())
+      if (this.state.playersToLobby.count(_._2 == this.state.playersToLobby.valuesIterator.max) > 0) {
+
+        for {
+          p <- this.state.players
+        } yield p.actorRef ! NoOneEliminatedController()
+
         context become inGame()
       } else {
         val playerToEliminate = this.state.playersToLobby.maxBy(_._2)._1
-        this.state.players.foreach(p => p.actorRef ! EliminatedPlayer(playerToEliminate))
+
+        for {
+          p <- this.state.players
+        } yield p.actorRef ! EliminatedPlayer(playerToEliminate)
+
         this.state.playersToLobby = Map.empty
 
         for {
@@ -246,10 +254,6 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
           if p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]
         } yield this.state.playersToLobby = this.state.playersToLobby + (p.username -> 0)
 
-        /*gamePlayer.filter(p => p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]).
-          groupBy(_.username).foreach {
-          case (username, _) => this.state.playersToLobby = this.state.playersToLobby + (username -> 0)
-        }*/
         this.state.totalVotes = this.state.playersToLobby.size
 
         if (checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
