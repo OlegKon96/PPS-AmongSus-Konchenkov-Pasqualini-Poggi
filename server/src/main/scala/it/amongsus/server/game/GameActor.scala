@@ -240,10 +240,16 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
         val playerToEliminate = this.state.playersToLobby.maxBy(_._2)._1
         this.state.players.foreach(p => p.actorRef ! EliminatedPlayer(playerToEliminate))
         this.state.playersToLobby = Map.empty
-        gamePlayer.filter(p => p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]).
+
+        for {
+          p <- gamePlayer
+          if p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]
+        } yield this.state.playersToLobby = this.state.playersToLobby + (p.username -> 0)
+
+        /*gamePlayer.filter(p => p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]).
           groupBy(_.username).foreach {
           case (username, _) => this.state.playersToLobby = this.state.playersToLobby + (username -> 0)
-        }
+        }*/
         this.state.totalVotes = this.state.playersToLobby.size
 
         if (checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
