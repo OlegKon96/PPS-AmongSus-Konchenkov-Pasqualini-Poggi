@@ -58,14 +58,17 @@ object ImpostorAlive {
     }
 
     override def canKill(position: Point2D, players: Seq[Player]): Boolean = {
-      players.exists(player =>
-        player.isInstanceOf[CrewmateAlive] && player.position.distance(position) < Constants.Impostor.KILL_DISTANCE)
+      players.exists {
+        case crewmate: CrewmateAlive if crewmate.position.distance(position) < Constants.Impostor.KILL_DISTANCE => true
+        case _=> false
+      }
     }
 
     override def kill(position: Point2D, players: Seq[Player]): Option[Player] = {
-      players.find(player =>
-        player.isInstanceOf[CrewmateAlive] &&
-          player.position.distance(position) < Constants.Impostor.KILL_DISTANCE) match {
+      players.find {
+        case crewmate: CrewmateAlive if crewmate.position.distance(position) < Constants.Impostor.KILL_DISTANCE => true
+        case _ => false
+      } match {
         case Some(player) => Option(player)
         case None => None
       }
