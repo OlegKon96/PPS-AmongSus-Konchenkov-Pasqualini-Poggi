@@ -3,7 +3,7 @@ package it.amongsus.view.actor
 import it.amongsus.ActorSystemManager
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.Constants
-import it.amongsus.common.RichActor.RichContext
+import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
 import it.amongsus.controller.actor.ControllerActorMessages.UiButtonPressedController

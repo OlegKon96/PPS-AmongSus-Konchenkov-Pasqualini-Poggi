@@ -1,4 +1,4 @@
-package it.amongsus.common
+package it.amongsus
 
 import akka.actor.Actor.Receive
 import akka.actor.ActorContext

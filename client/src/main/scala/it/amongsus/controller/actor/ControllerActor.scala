@@ -2,7 +2,7 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.common.RichActor.RichContext
+import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
 import it.amongsus.core.player.Player

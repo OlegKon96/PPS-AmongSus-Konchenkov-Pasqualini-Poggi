@@ -1,6 +1,7 @@
 package it.amongsus.server.game
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
+import it.amongsus.RichActor.RichContext
 import it.amongsus.core.player._
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.core.util.{Message, Point2D, WinnerCrew}
@@ -11,6 +12,7 @@ import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameActor.GamePlayers
+
 import scala.concurrent.duration.DurationInt
 import scala.util.Random
 
@@ -45,7 +47,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
       this.state.players.foreach(p => context.watch(p.actorRef))
       require(players.size == this.state.numberOfPlayers)
       this.broadcastMessageToPlayers(MatchFound(self))
-      context.become(initializing(Seq.empty) orElse terminationBeforeGameStarted())
+      context >>> (initializing(Seq.empty) orElse terminationBeforeGameStarted())
   }
 
   /**
@@ -62,7 +64,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
           log.info("All players ready")
           this.initializeGame(updatedReadyPlayers)
         } else {
-          context.become(initializing(updatedReadyPlayers) orElse terminationBeforeGameStarted())
+          context >>> (initializing(updatedReadyPlayers) orElse terminationBeforeGameStarted())
         }
       }
   }
@@ -84,7 +86,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     case StartVoting(gamePlayers: Seq[Player]) =>
       this.state.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
       this.state.players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
-      context become voting(gamePlayers)
+      context >>> voting(gamePlayers)
   }
 
   private def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew): Unit = {
@@ -135,7 +137,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
           log.info(s"player ${player.username} terminated before the game starts")
           // become in behaviour in cui a ogni ready che mi arriva invio il messaggio di fine partita
           broadcastMessageToPlayers(PlayerLeftClient(player.id))
-          context.become(gameEndedWithErrorBeforeStarts(player.id))
+          context >>> gameEndedWithErrorBeforeStarts(player.id)
           context.system.scheduler.scheduleOnce(20.second) {
             log.info("Terminating game actor..")
             self ! PoisonPill
@@ -188,7 +190,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     this.state.players.groupBy(_.username).foreach {
       case(username, _) => this.state.playersToLobby = this.state.playersToLobby + (username -> 0)
     }
-    context.become(inGame() orElse terminationAfterGameStarted())
+    context >>> (inGame() orElse terminationAfterGameStarted())
   }
 
   private def defineRoles(): Seq[Player] = {
@@ -239,7 +241,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
           p <- this.state.players
         } yield p.actorRef ! NoOneEliminatedController()
 
-        context become inGame()
+        context >>> inGame()
       } else {
         val playerToEliminate = this.state.playersToLobby.maxBy(_._2)._1
 
@@ -263,7 +265,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
           sendWinMessage(gamePlayer, ImpostorCrew())
           self ! PoisonPill
         } else {
-          context become inGame()
+          context >>> inGame()
         }
       }
     }

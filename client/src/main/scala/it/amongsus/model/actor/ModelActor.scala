@@ -2,7 +2,7 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
-import it.amongsus.common.RichActor.RichContext
+import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController}
