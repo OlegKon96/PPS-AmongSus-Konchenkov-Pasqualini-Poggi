@@ -31,7 +31,8 @@ object CrewmateAlive {
                                        override val position: Point2D) extends CrewmateAlive {
 
     override def move(direction: Movement, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
-      movePlayer(CrewmateAlive(color, emergencyCalled, clientId, username, numCoins, position), direction, map)
+      movePlayer(CrewmateAlive(color, emergencyCalled, fieldOfView, clientId, username, numCoins, position),
+        direction, map)
     }
   }
 }
