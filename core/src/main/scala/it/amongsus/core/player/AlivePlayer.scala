@@ -39,7 +39,7 @@ trait AlivePlayer {
    * @param emergencyButtons sequence of emergency buttons of the game
    * @return boolean
    */
-  def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Emergency]): Boolean = {
+  def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Drawable[Tile]]): Boolean = {
     emergencyButtons.exists(button =>
       button.position.distance(player.position) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
   }

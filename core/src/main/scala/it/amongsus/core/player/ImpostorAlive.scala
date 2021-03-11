@@ -31,14 +31,14 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    * @param vent sequence of the vent couple of the game
    * @return
    */
-  def useVent(vent: Seq[(Vent, Vent)]): Option[Player]
+  def useVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Player]
   /**
    * Method that manages id player can use vent or not
    *
    * @param vent sequence of the vent couple of the game
    * @return
    */
-  def canVent(vent: Seq[(Vent, Vent)]): Option[Point2D]
+  def canVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Point2D]
 }
 
 object ImpostorAlive {
@@ -71,14 +71,14 @@ object ImpostorAlive {
       }
     }
 
-    override def useVent(vent: Seq[(Vent, Vent)]): Option[Player] = {
+    override def useVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Player] = {
       canVent(vent) match {
         case Some(pos) => Option(ImpostorAlive(color, emergencyCalled, clientId, username, pos))
         case None => None
       }
     }
 
-    override def canVent(vent: Seq[(Vent, Vent)]): Option[Point2D] = {
+    override def canVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Point2D] = {
       var pos: Option[Point2D] = None
       vent.foreach(v => {
         if (v._1.position == position) {

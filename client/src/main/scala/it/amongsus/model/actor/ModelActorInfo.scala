@@ -127,8 +127,8 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override val clientId: String,
                               override var isTimerOn: Boolean) extends ModelActorInfo {
 
-  val ventList: Seq[(Vent, Vent)] = generateVentLinks()
-  val emergencyButtons: Seq[Emergency] = generateEmergencyButtons()
+  private val ventList: Seq[(Drawable[Tile], Drawable[Tile])] = generateVentLinks()
+  private val emergencyButtons: Seq[Drawable[Tile]] = generateEmergencyButtons()
   override var deadBodies: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
@@ -137,7 +137,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     val n1 = 50
     val n2 = 72
     val tileMatrix = ofDim[Drawable[Tile]](n1, n2)
-
+    
     map.foreach(line => {
       line.split(",").map(_.trim).foreach(col => {
         col match {
@@ -157,13 +157,11 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     tileMatrix
   }
 
-  override def generateCollectionables(map: Array[Array[Drawable[Tile]]]): Unit = {
-    var tiles: Seq[Tile] = Seq.empty
-    map.foreach(x => x.foreach {
-      case tile: Floor => tiles = tiles :+ tile
-      case _: Wall =>
-      case _: Other =>
-    })
+  override def generateCollectionables(gameMap: Array[Array[Drawable[Tile]]]): Unit = {
+    var tiles: Seq[Drawable[Tile]] = for{
+      map <- gameMap
+      tile <- map.filter{case _: Floor => true case _=> false}
+    } yield tile
 
     for (_ <- 0 until 10) {
       val rand = Random.nextInt(tiles.length)
@@ -291,36 +289,30 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     newPlayers.foreach(player => controllerRef.get ! UpdatedMyCharController(player, gamePlayers, deadBodies))
   }
 
-  private def generateVentLinks(): Seq[(Vent, Vent)] = {
-    var vents: Seq[Vent] = Seq()
-    gameMap match {
-      case Some(map) => map.foreach(t => {
-        t.foreach {
-          case vent: Vent => vents = vents :+ vent
-          case _ =>
-        }
-      })
-      case None =>
+  private def generateVentLinks(): Seq[(Drawable[Tile], Drawable[Tile])] = {
+    val vents: Seq[Drawable[Tile]] = gameMap match {
+      case Some(gameMap) => for{
+        map <- gameMap
+        tile <- map.filter{case  _:Vent => true case _=> false}
+      } yield tile
+      case None => Seq()
     }
-    var ventTuples: Seq[(Vent, Vent)] = Seq()
+
+    var ventTuples: Seq[(Drawable[Tile], Drawable[Tile])] = Seq()
     for (i <- 0 until vents.length / 2) {
       ventTuples = ventTuples :+ (vents(i), vents(vents.length - i - 1))
     }
     ventTuples
   }
 
-  private def generateEmergencyButtons(): Seq[Emergency] = {
-    var emergencyButtons: Seq[Emergency] = Seq()
+  private def generateEmergencyButtons(): Seq[Drawable[Tile]] = {
     gameMap match {
-      case Some(map) => map.foreach(t => {
-        t.foreach {
-          case e: Emergency => emergencyButtons = emergencyButtons :+ e
-          case _ =>
-        }
-      })
-      case None =>
+      case Some(_) => for {
+        map <- gameMap.get
+        tile <- map.filter{ case _: Emergency => true case _ => false}
+      } yield tile
+      case _ => Seq()
     }
-    emergencyButtons
   }
 
   override def removePlayer(clientId: String): Unit = {
