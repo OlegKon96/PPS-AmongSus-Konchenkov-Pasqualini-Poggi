@@ -3,6 +3,7 @@ package it.amongsus.view.actor
 import it.amongsus.ActorSystemManager
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.Constants
+import it.amongsus.common.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
 import it.amongsus.controller.actor.ControllerActorMessages.UiButtonPressedController
@@ -35,7 +36,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case Init() =>
       val frame = MenuFrame(Option(self))
       frame.start().unsafeRunSync()
-      context become defaultBehaviour(UiActorInfo(Option(sender), Option(frame)))
+      context >>> defaultBehaviour(UiActorInfo(Option(sender), Option(frame)))
 
     case PublicGameSubmitUi(username, playersNumber) =>
       state.clientRef.get ! JoinPublicLobbyClient(username, playersNumber)
@@ -50,7 +51,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.currentFrame.get.dispose().unsafeRunSync()
       val lobby = LobbyFrame(self,roomSize)
       lobby.start(numPlayers, state.getCode).unsafeRunSync()
-      context become defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
+      context >>> defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
 
     case UpdateLobbyClient(numPlayers) => state.updateLobby(numPlayers)
 
@@ -60,14 +61,14 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.currentFrame.get.dispose().unsafeRunSync()
       val lobby = LobbyFrame(self,roomSize)
       lobby.start(1, lobbyCode).unsafeRunSync()
-      context become defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
+      context >>> defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
       state.saveCode(lobbyCode)
 
     case LeaveLobbyUi() =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val frame = MenuFrame(Option(self))
       frame.start().unsafeRunSync()
-      context become defaultBehaviour(UiActorInfo(state.clientRef, Option(frame)))
+      context >>> defaultBehaviour(UiActorInfo(state.clientRef, Option(frame)))
       state.clientRef.get ! LeaveLobbyClient()
 
     case MatchFoundUi() => state.showStartButton()
@@ -81,7 +82,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.currentFrame.get.dispose().unsafeRunSync()
       val game = GameFrame(Option(self),map,myChar,players,collectionables)
       game.start().unsafeRunSync()
-      context become gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
+      context >>> gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
 
     case LobbyErrorOccurredUi => state.lobbyError()
 
@@ -111,7 +112,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
-      context become defaultBehaviour(UiActorInfo())
+      context >>> defaultBehaviour(UiActorInfo())
 
     case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
 
@@ -121,7 +122,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
         case _: AlivePlayer => voteFrame.start().unsafeRunSync()
         case _ => voteFrame.waitVote().unsafeRunSync()
       }
-      context become voteBehaviour(state, voteFrame)
+      context >>> voteBehaviour(state, voteFrame)
 
     case PlayerLeftUi(clientId) => println("left -> " + clientId)
 
@@ -149,13 +150,13 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case RestartGameUi() =>
       voteFrame.dispose().unsafeRunSync()
       state.clientRef.get ! RestartGameController()
-      context become gameBehaviour(state)
+      context >>> gameBehaviour(state)
 
     case GameEndUi(end) =>
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
-      context become defaultBehaviour(UiActorInfo())
+      context >>> defaultBehaviour(UiActorInfo())
 
     case SendTextChatUi(message, myChar) => state.clientRef.get ! SendTextChatController(message, myChar)
 

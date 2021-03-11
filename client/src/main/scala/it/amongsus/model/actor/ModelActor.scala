@@ -2,6 +2,7 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
+import it.amongsus.common.RichActor.RichContext
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController}
@@ -12,6 +13,7 @@ import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndMode
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
 import it.amongsus.model.actor.ModelActorMessages.UiButtonPressedModel
+
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -31,7 +33,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, state.gamePlayers,
         state.gameCollectionables)
       state.checkTimer(TimerStarted)
-      context become gameBehaviour(ModelActorInfo(state.controllerRef,
+      context >>> gameBehaviour(ModelActorInfo(state.controllerRef,
         Option(gameMap), players, state.gameCollectionables, state.clientId))
 
     case MyCharMovedModel(direction) => state.updateMyChar(direction)
@@ -47,11 +49,11 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       case _: EmergencyButton => state.checkTimer(TimerEnded)
         state.callEmergency()
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
-        context become voteBehaviour(state)
+        context >>> voteBehaviour(state)
       case _: KillButton => state.kill()
       case _: ReportButton => state.checkTimer(TimerEnded)
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
-        context become voteBehaviour(state)
+        context >>> voteBehaviour(state)
       case _: SabotageButton => state.sabotage(true)
         ActorSystemManager.actorSystem.scheduler.scheduleOnce(5 seconds){
           state.sabotage(false)
@@ -67,7 +69,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.updatePlayer(state.myCharacter)
 
     case BeginVotingModel() => state.checkTimer(TimerEnded)
-      context become voteBehaviour(state)
+      context >>> voteBehaviour(state)
 
     case GameEndModel(end) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
@@ -88,7 +90,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
         state.gameCollectionables, state.deadBodies)
 
     case RestartGameModel() => state.checkTimer(TimerStarted)
-      context become gameBehaviour(state)
+      context >>> gameBehaviour(state)
 
     case GameEndModel(end) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)

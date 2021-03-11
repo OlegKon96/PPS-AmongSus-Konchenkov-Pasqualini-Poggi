@@ -2,6 +2,7 @@ package it.amongsus.controller.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
+import it.amongsus.common.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
 import it.amongsus.core.player.Player
@@ -41,7 +42,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         case Failure(_) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
-    case Connected(id) => context become lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
+    case Connected(id) => context >>> lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
 
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
@@ -67,11 +68,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       val model =
         ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelActorInfo(Option(self),
           None, Seq(), Seq(), state.clientId)), "model")
-      context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
+      context >>> gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
         Option(model), state.clientId))
 
     case TestGameBehaviour(model, server) =>
-      context become gameBehaviour(GameActorInfo(Option(server), state.guiRef,
+      context >>> gameBehaviour(GameActorInfo(Option(server), state.guiRef,
         Option(model), state.clientId))
 
     case LobbyErrorOccurred(error) => error match {
@@ -112,14 +113,14 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
       state.guiRef.get ! BeginVotingUi(gamePlayers)
-      context become voteBehaviour(state)
+      context >>> voteBehaviour(state)
 
     case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
       state.guiRef.get ! BeginVotingUi(gamePlayers)
-      context become voteBehaviour(state)
+      context >>> voteBehaviour(state)
 
     case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+      context >>> lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
     case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
@@ -149,7 +150,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case SendTextChatClient(message) => state.guiRef.get ! ReceiveTextChatUi(message)
 
     case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+      context >>> lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
     case GameEndClient(end) =>
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3.1 seconds){
@@ -158,7 +159,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case RestartGameController() =>
       state.modelRef.get ! RestartGameModel()
-      context become gameBehaviour(state)
+      context >>> gameBehaviour(state)
 
     case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
       self ! PoisonPill
