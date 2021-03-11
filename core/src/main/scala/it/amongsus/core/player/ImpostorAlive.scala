@@ -78,17 +78,17 @@ object ImpostorAlive {
       }
     }
 
-    override def canVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Point2D] = {
-      var pos: Option[Point2D] = None
-      vent.foreach(v => {
-        if (v._1.position == position) {
-          pos = Option(v._2.position)
+    override def canVent(vents: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Point2D] = {
+      var newPosition: Option[Point2D] = None
+      vents.foreach(vent => {
+        if (vent._1.position == position) {
+          newPosition = Option(vent._2.position)
         }
-        else if (v._2.position == position) {
-          pos = Option(v._1.position)
+        else if (vent._2.position == position) {
+          newPosition = Option(vent._1.position)
         }
       })
-      pos
+      newPosition
     }
   }
 }

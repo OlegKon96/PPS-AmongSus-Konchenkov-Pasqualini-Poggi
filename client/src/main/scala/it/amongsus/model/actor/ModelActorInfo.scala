@@ -176,8 +176,8 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
         playerUpdated(player match {
           case crewmate: Crewmate =>
             crewmate.canCollect(gameCollectionables, crewmate) match {
-              case Some(collect) =>
-                gameCollectionables = gameCollectionables.filter(c => c != collect)
+              case Some(toCollect) =>
+                gameCollectionables = gameCollectionables.filter(collectionable => collectionable != toCollect)
                 crewmate.collect(crewmate)
               case None => crewmate
             }
