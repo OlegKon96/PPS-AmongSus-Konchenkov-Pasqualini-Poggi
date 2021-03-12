@@ -3,18 +3,16 @@ package it.amongsus.server.game
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
 import it.amongsus.RichActor.RichContext
 import it.amongsus.core.player._
-import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
-import it.amongsus.core.util.{Message, Point2D, WinnerCrew}
-import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, GameEndClient, GamePlayersClient}
+import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew}
+import it.amongsus.core.util.Message
+import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, GamePlayersClient}
 import it.amongsus.messages.GameMessageClient.{NoOneEliminatedController, PlayerLeftClient, PlayerMovedClient}
 import it.amongsus.messages.GameMessageClient.{SendTextChatClient, StartVotingClient, VoteClient}
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.game.GameActor.GamePlayers
-
 import scala.concurrent.duration.DurationInt
-import scala.util.Random
 
 object GameActor {
   def props(state: GameActorInfo): Props = Props(new GameActor(state))
@@ -31,11 +29,7 @@ object GameActor {
  *
  * @param state information of the actor
  */
-class GameActor(private val state: GameActorInfo) extends Actor with ActorLogging
-  with Stash {
-
-  private final val mapCenter: Int = 35
-
+class GameActor(private val state: GameActorInfo) extends Actor with ActorLogging with Stash {
   import context.dispatcher
 
   override def receive: Receive = idle
@@ -46,7 +40,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
       this.state.players = players
       this.state.players.foreach(p => context.watch(p.actorRef))
       require(players.size == this.state.numberOfPlayers)
-      this.broadcastMessageToPlayers(MatchFound(self))
+      this.state.broadcastMessageToPlayers(MatchFound(self))
       context >>> (initializing(Seq.empty) orElse terminationBeforeGameStarted())
   }
 
@@ -57,7 +51,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
    */
   private def initializing(playersReady: Seq[GamePlayer]): Receive = {
     case PlayerReadyServer(id, ref) =>
-      this.withPlayer(id) { p =>
+      this.state.withPlayer(id) { p =>
         log.info(s"player ${p.username} ready")
         val updatedReadyPlayers = playersReady :+ p.copy(actorRef = ref)
         if (updatedReadyPlayers.length == this.state.numberOfPlayers) {
@@ -74,10 +68,10 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
    */
   private def inGame(): Receive = {
     case PlayerMovedServer(player, gamePlayers, deadBodys) =>
-      if(checkWinCrewmate(gamePlayers)){
-        sendWinMessage(gamePlayers, CrewmateCrew())
-      } else if(checkWinImpostor(gamePlayers)){
-        sendWinMessage(gamePlayers, ImpostorCrew())
+      if(this.state.checkWinCrewmate(gamePlayers)){
+        this.state.sendWinMessage(gamePlayers, CrewmateCrew(), self)
+      } else if(this.state.checkWinImpostor(gamePlayers)){
+        this.state.sendWinMessage(gamePlayers, ImpostorCrew(), self)
       } else{
         this.state.players.filter(p => p.actorRef != sender()).foreach(p =>
           p.actorRef ! PlayerMovedClient(player, deadBodys))
@@ -87,27 +81,6 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
       this.state.totalVotes = gamePlayers.count(p => p.isInstanceOf[AlivePlayer])
       this.state.players.filter(p => p.actorRef != sender()).foreach(p => p.actorRef ! StartVotingClient(gamePlayers))
       context >>> voting(gamePlayers)
-  }
-
-  private def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew): Unit = {
-    gamePlayers.foreach{
-      case c : Crewmate =>
-        crew match {
-          case ImpostorCrew() => this.state.players.find(p => p.id == c.clientId).get.actorRef !
-            GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
-          case CrewmateCrew() => this.state.players.find(p => p.id == c.clientId).get.actorRef !
-            GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
-        }
-      case i : Impostor =>
-        crew match {
-          case ImpostorCrew() => this.state.players.find(p => p.id == i.clientId).get.actorRef !
-            GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
-          case CrewmateCrew() => this.state.players.find(p => p.id == i.clientId).get.actorRef !
-            GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
-        }
-    }
-    log.info("Game ended...")
-    self ! PoisonPill
   }
 
   private def voting(gamePlayers: Seq[Player]): Receive = {
@@ -136,7 +109,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
         case Some(player) =>
           log.info(s"player ${player.username} terminated before the game starts")
           // become in behaviour in cui a ogni ready che mi arriva invio il messaggio di fine partita
-          broadcastMessageToPlayers(PlayerLeftClient(player.id))
+          this.state.broadcastMessageToPlayers(PlayerLeftClient(player.id))
           context >>> gameEndedWithErrorBeforeStarts(player.id)
           context.system.scheduler.scheduleOnce(20.second) {
             log.info("Terminating game actor..")
@@ -154,12 +127,12 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
       case Some(player) =>
         this.state.players = this.state.players.filter(_.actorRef != ref)
         log.info(s"Player ${player.username} left the game")
-        broadcastMessageToPlayers(PlayerLeftClient(player.id))
+        this.state.broadcastMessageToPlayers(PlayerLeftClient(player.id))
     }
-    case LeaveGameServer(playerId) => withPlayer(playerId) { player =>
+    case LeaveGameServer(playerId) => this.state.withPlayer(playerId) { player =>
       this.state.players = this.state.players.filter(_.id != playerId)
       log.info(s"Player ${player.username} left the game")
-      broadcastMessageToPlayers(PlayerLeftClient(player.id))
+      this.state.broadcastMessageToPlayers(PlayerLeftClient(player.id))
     }
   }
 
@@ -182,7 +155,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     log.debug(s"ready players $playersReady")
     log.debug(s"updated players ${this.state.players}")
     // watch the players with the new actor ref
-    val playersRole = defineRoles()
+    val playersRole = this.state.defineRoles()
     this.state.players.foreach(p => {
       p.actorRef ! GamePlayersClient(playersRole)
       context.watch(p.actorRef)
@@ -193,49 +166,14 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     context >>> (inGame() orElse terminationAfterGameStarted())
   }
 
-  private def defineRoles(): Seq[Player] = {
-    var playersRole: Seq[Player] = Seq()
-    val rand1 = Random.nextInt(this.state.players.length)
-    val colors = Random.shuffle(Seq("green", "red", "cyan", "yellow", "blue", "pink", "orange"))
-    val rand2 = if(this.state.players.length > 5) Random.nextInt(this.state.players.length) else rand1
-    val mapCentre = Point2D(mapCenter, mapCenter)
-
-    for (n <- this.state.players.indices) {
-      n match {
-        case n if n == rand1 || n == rand2 =>
-          playersRole = playersRole :+ ImpostorAlive(colors(n), emergencyCalled = false, this.state.players(n).id,
-            this.state.players(n).username, mapCentre)
-        case _ => playersRole = playersRole :+ CrewmateAlive(colors(n), emergencyCalled = false,
-          this.state.players(n).id, this.state.players(n).username, Constants.Crewmate.NUM_COINS, mapCentre)
-      }
-    }
-    playersRole
-  }
-
-  /**
-   * Broadcast a generic message to all game players
-   *
-   * @param message a generic message
-   */
-  private def broadcastMessageToPlayers(message: Any): Unit = {
-    this.state.players.foreach(p => p.actorRef ! message)
-  }
-
-  private def withPlayer(playerId: String)(f: GamePlayer => Unit): Unit = {
-    this.state.players.find(_.id == playerId) match {
-      case Some(p) => f(p)
-      case None => log.info(s"Player id $playerId not found")
-    }
-  }
-
   private def manageVote(username: String, gamePlayer: Seq[Player]): Unit = {
     this.state.totalVotes = this.state.totalVotes - 1
-    if(!isEmpty(username)) {
+    if(username != "") {
       this.state.playersToLobby = this.state.playersToLobby.updated(username,
         this.state.playersToLobby.find(_._1 == username).get._2 + 1)
     }
     if (this.state.totalVotes <= 0) {
-      if (this.state.playersToLobby.count(_._2 == this.state.playersToLobby.valuesIterator.max) > 0) {
+      if (this.state.playersToLobby.count(_._2 == this.state.playersToLobby.valuesIterator.max) > 1) {
 
         for {
           p <- this.state.players
@@ -251,6 +189,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
 
         this.state.playersToLobby = Map.empty
 
+        //Generator - Filter
         for {
           p <- gamePlayer
           if p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]
@@ -258,37 +197,16 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
 
         this.state.totalVotes = this.state.playersToLobby.size
 
-        if (checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
-          sendWinMessage(gamePlayer, CrewmateCrew())
+        if (this.state.checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
+          this.state.sendWinMessage(gamePlayer, CrewmateCrew(), self)
           self ! PoisonPill
-        } else if (checkWinImpostor(gamePlayer.filter(p => p.username != playerToEliminate))) {
-          sendWinMessage(gamePlayer, ImpostorCrew())
+        } else if (this.state.checkWinImpostor(gamePlayer.filter(p => p.username != playerToEliminate))) {
+          this.state.sendWinMessage(gamePlayer, ImpostorCrew(), self)
           self ! PoisonPill
         } else {
           context >>> inGame()
         }
       }
     }
-  }
-
-  private def isEmpty(x: String) = Option(x).forall(_.isEmpty)
-
-  private def checkWinCrewmate(gamePlayers: Seq[Player]): Boolean = {
-    gamePlayers.count(player => player.isInstanceOf[ImpostorAlive]) == 0 || checkAllCoinsCollected(gamePlayers)
-  }
-
-  private def checkAllCoinsCollected(gamePlayers: Seq[Player]): Boolean = {
-    var count = 0
-    gamePlayers.foreach {
-      case p: Crewmate =>
-        if (p.numCoins == 10) count += 1
-      case _ =>
-    }
-    if (count == gamePlayers.count(player => player.isInstanceOf[Crewmate])) true else false
-  }
-
-  private def checkWinImpostor(gamePlayers: Seq[Player]): Boolean = {
-    gamePlayers.count(player =>
-      player.isInstanceOf[AlivePlayer]) <= gamePlayers.count(player => player.isInstanceOf[ImpostorAlive]) * 2
   }
 }

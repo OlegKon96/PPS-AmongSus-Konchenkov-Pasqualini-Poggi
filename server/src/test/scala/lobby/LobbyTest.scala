@@ -1,5 +1,6 @@
 package lobby
 
+import akka.actor.ActorRef
 import it.amongsus.server.common.{GamePlayer, Player}
 import it.amongsus.server.lobby.{GameLobby, Lobby}
 import org.scalamock.scalatest.MockFactory
@@ -40,7 +41,7 @@ class LobbyTest extends AnyWordSpecLike with MockFactory {
     "remove an added player if he disconnected" in {
       var lobby = create2PlayersLobby
       val playerName = "asdasdasd"
-      val player = GamePlayer(playerName, playerName, null)
+      val player = GamePlayer(playerName, playerName, ActorRef.noSender)
       lobby = lobby.addPlayer(player)
       assert(lobby.players.length == 1)
       lobby = lobby.removePlayer(playerName)

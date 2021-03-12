@@ -3,10 +3,12 @@ package controller
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, GameEndController, TestGameBehaviour, UpdatedPlayersController}
+import it.amongsus.controller.ActionTimer.TimerStarted
+import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, GameEndController, KillTimerController, MyCharMovedController, TestGameBehaviour, UpdatedPlayersController}
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo, LobbyActorInfoData}
 import it.amongsus.core.player.ImpostorAlive
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, Win}
+import it.amongsus.core.util.Movement.Up
 import it.amongsus.core.util.Point2D
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerReadyServer, StartVoting}
@@ -15,7 +17,7 @@ import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, InitModel, KillPlayerModel}
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
-import it.amongsus.view.actor.UiActorGameMessages.{BeginVotingUi, GameEndUi}
+import it.amongsus.view.actor.UiActorGameMessages.{BeginVotingUi, ButtonOffUi, GameEndUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -30,14 +32,12 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
   "The Controller Actor" should {
 
-    "Get Ready, Win a Match and then Leave the Client" in {
+    "Start Game, Get Ready, Start Voting and End Game" in {
       val serverActor = TestProbe()
       val uiActor = TestProbe()
       val model = TestProbe()
-
       val controllerActor =
         system.actorOf(ControllerActor.props(LobbyActorInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
-
       val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
 
       controllerActor ! TestGameBehaviour(model.ref, serverActor.ref)
@@ -51,6 +51,29 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
       controllerActor ! GameEndController(Win(Seq(),CrewmateCrew()))
       uiActor.expectMsgType[GameEndUi]
+    }
+
+    "Start Game, Get Ready, S" in {
+      val serverActor = TestProbe()
+      val uiActor = TestProbe()
+      val model = TestProbe()
+      val controllerActor =
+        system.actorOf(ControllerActor.props(LobbyActorInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
+      val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
+
+      controllerActor ! TestGameBehaviour(model.ref, serverActor.ref)
+
+      controllerActor ! PlayerReadyClient()
+      serverActor.expectMsgType[PlayerReadyServer]
+
+      controllerActor ! KillTimerController(TimerStarted)
+      uiActor.expectMsgType[ButtonOffUi]
+      uiActor.expectMsgType[KillTimerUpdateUi]
+      uiActor.expectMsgType[SabotageTimerUpdateUi]
+      uiActor.expectMsgType[SabotageTimerUpdateUi]
+
+      //controllerActor ! MyCharMovedController(Up())
+      //uiActor.expectMsgType[SabotageTimerUpdateUi]
     }
 
     "Add a User to a Lobby Client" in {

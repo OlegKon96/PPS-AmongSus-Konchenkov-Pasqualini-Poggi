@@ -18,7 +18,7 @@ object LobbyManagerActor {
  * @param state info of the lobby
  */
 class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with IdGenerator with ActorLogging {
-  private val lobbyManger = LobbyManager()
+  private val lobbyManager = LobbyManager()
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
 
   override def receive: Receive = {
@@ -33,17 +33,17 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
       log.info(s"client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
-        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length,numberOfPlayers)
-        this.lobbyManger.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
-          player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length))
+        this.lobbyManager.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        ref ! UserAddedToLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length,numberOfPlayers)
+        this.lobbyManager.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
+          player.actorRef ! UpdateLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length))
         this.checkAndCreateGame(lobbyType)
       }
 
     case CreatePrivateLobbyServer(clientId, username, numberOfPlayers) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
-        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        this.lobbyManager.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
         ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId,numberOfPlayers)
       }
 
@@ -52,11 +52,11 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
           case Some(lobbyType) =>
             val player = GamePlayer(clientId, username, ref)
-            this.lobbyManger.addPlayer(player, lobbyType)
-            ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length,
+            this.lobbyManager.addPlayer(player, lobbyType)
+            ref ! UserAddedToLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length,
               lobbyType.numberOfPlayers)
-            this.lobbyManger.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
-              player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length))
+            this.lobbyManager.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
+              player.actorRef ! UpdateLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length))
             this.checkAndCreateGame(lobbyType)
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
@@ -64,8 +64,8 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
 
     case LeaveLobbyServer(userId) =>
       log.info(s"client $userId")
-      val lobby = lobbyManger.getLobbyPlayer(userId).get
-      this.lobbyManger.removePlayer(userId)
+      val lobby = lobbyManager.getLobbyPlayer(userId).get
+      this.lobbyManager.removePlayer(userId)
       lobby.removePlayer(userId)
         .players.foreach(player => player.actorRef ! UpdateLobbyClient(lobby.players.length - 1))
 
@@ -75,7 +75,7 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
   }
 
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
-    this.lobbyManger.attemptExtractPlayerForMatch(lobbyType) match {
+    this.lobbyManager.attemptExtractPlayerForMatch(lobbyType) match {
       case Some(players) => this.generateAndStartGameActor(lobbyType)(players)
       case None =>
     }
@@ -86,7 +86,7 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
     players.foreach(p => {
       context.unwatch(p.actorRef)
       // remove player from lobby
-      this.lobbyManger.removePlayer(p.id)
+      this.lobbyManager.removePlayer(p.id)
       // remove player from connected players structure
       this.state.connectedPlayers = this.state.connectedPlayers - p.id
     })
@@ -109,7 +109,7 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
       case Some((userId, _)) =>
         log.info(s"removing client $actorRef from lobby and connected players list")
         context.unwatch(actorRef)
-        this.lobbyManger.removePlayer(userId)
+        this.lobbyManager.removePlayer(userId)
         this.state.connectedPlayers = this.state.connectedPlayers - userId
         log.info(s"removed client $actorRef from lobby and connected players list")
       case None => log.info(s"client $actorRef not found")

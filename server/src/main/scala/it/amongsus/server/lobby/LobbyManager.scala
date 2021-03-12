@@ -4,7 +4,13 @@ import it.amongsus.server.common.{GamePlayer, Player}
 import it.amongsus.utils.CustomLogger
 
 trait LobbyManager[T <: Player] {
+  /**
+   * Map Username-LobbyType of all Players in a Lobby
+   */
   var playersToLobby: Map[String, LobbyType] = Map.empty
+  /**
+   * Map LobbyType-Lobby of lobbies
+   */
   var lobbies: Map[LobbyType, Lobby[T]] = Map.empty
   /**
    * Method to get a lobby
@@ -68,18 +74,17 @@ trait LobbyManagerUtils[T <: Player] extends CustomLogger {
     })
 }
 
-class LobbyManagerImpl[T <: Player] extends LobbyManager[T] {
+case class LobbyManagerImpl[T <: Player]() extends LobbyManager[T] with LobbyManagerUtils[T] {
+  override def getLobby(lobbyType: LobbyType): Option[Lobby[T]] = lobbies.get(lobbyType)
+
   override def getLobbyPlayer(playerId: String): Option[Lobby[T]] = {
     playersToLobby.get(playerId) match {
-      case Some(lobbyType) =>
-        lobbies.get(lobbyType)
+      case Some(lobbyType) => lobbies.get(lobbyType)
       case None => None
     }
   }
-
-  override def getLobby(lobbyType: LobbyType): Option[Lobby[T]] = lobbies.get(lobbyType)
 }
 
 object LobbyManager {
-  def apply() = new LobbyManagerImpl[GamePlayer]() with LobbyManagerUtils[GamePlayer]
+  def apply(): LobbyManagerImpl[GamePlayer] = LobbyManagerImpl[GamePlayer]()
 }

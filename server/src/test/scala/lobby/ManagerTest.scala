@@ -1,5 +1,6 @@
 package lobby
 
+import akka.actor.ActorRef
 import it.amongsus.server.common.GamePlayer
 import it.amongsus.server.lobby.{LobbyManager, LobbyManagerImpl, PlayerNumberLobby}
 import org.scalamock.scalatest.MockFactory
@@ -60,8 +61,8 @@ class ManagerTest extends AnyWordSpecLike with MockFactory {
     "remove from lobby" in {
       val lobbyManager = LobbyManager()
       val lobbyType = PlayerNumberLobby(2)
-      val p1 = GamePlayer("1", "asdasdasd", null)
-      val p2 = GamePlayer("2", "qwerty", null)
+      val p1 = GamePlayer("1", "asdasdasd", ActorRef.noSender)
+      val p2 = GamePlayer("2", "qwerty", ActorRef.noSender)
       lobbyManager.addPlayer(p1, lobbyType)
       lobbyManager.removePlayer(p1.id)
       lobbyManager.addPlayer(p1, lobbyType)
