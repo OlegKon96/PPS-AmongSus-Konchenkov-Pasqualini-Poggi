@@ -189,7 +189,6 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
 
         this.state.playersToLobby = Map.empty
 
-        //Generator - Filter
         for {
           p <- gamePlayer
           if p.username != playerToEliminate && p.isInstanceOf[AlivePlayer]

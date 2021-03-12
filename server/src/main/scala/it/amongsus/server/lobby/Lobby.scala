@@ -18,7 +18,7 @@ trait Lobby[T <: Player] {
    */
   val players: List[T]
   /**
-   *
+   * Number of players of the lobby to start a game
    */
   val numberOfPlayers: Int
   /**

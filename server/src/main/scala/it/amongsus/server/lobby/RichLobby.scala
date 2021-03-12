@@ -3,6 +3,12 @@ package it.amongsus.server.lobby
 import akka.japi.Pair
 import it.amongsus.server.common.Player
 
+/**
+ * Rich wrapper of Lobby
+ *
+ * @param lobby of the game
+ * @tparam T generics parameter of player
+ */
 case class RichLobby[T <: Player](lobby: Lobby[T]) {
   def extractPlayersForMatch(): Pair[Lobby[T], Option[Seq[T]]] = {
     if (lobby.hasEnoughPlayers) {

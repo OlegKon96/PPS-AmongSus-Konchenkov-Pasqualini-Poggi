@@ -4,14 +4,14 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.ActionTimer.TimerStarted
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ActionOffController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.CrewmateAlive
 import it.amongsus.core.util.ActionType.EmergencyAction
 import it.amongsus.core.util.Direction.Up
 import it.amongsus.core.util.{GameEnd, Point2D}
-import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, UiActionModel}
+import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillPlayerModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, RestartGameModel, UiActionModel}
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -30,7 +30,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
   val players = Seq(CrewmateAlive("green", emergencyCalled = false, "test", "test", 0, Point2D(positionInTheMap,
     positionInTheMap)))
 
-  "Start Game, Check Timer, Moved Character and Call Emergency and Leave Game" in {
+  "Start Game, Check Timer, Moved Character, Call Emergency, Vote Player and Leave Game" in {
     val controller = TestProbe()
     val modelActor = system.actorOf(ModelActor.props(ModelActorInfo(Option(controller.ref), Option(map), players,
       modelActorInfo.gameCollectionables, "test")))
@@ -51,7 +51,12 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
     controller.expectMsgType[ActionOffController]
     controller.expectMsgType[BeginVotingController]
 
+    modelActor ! KillPlayerModel("test")
+    controller.expectMsgType[UpdatedPlayersController]
+
+    modelActor ! RestartGameModel()
     modelActor ! MyPlayerLeftModel()
+    controller.expectNoMessage()
   }
 
   def loadMap(): Iterator[String] = {
