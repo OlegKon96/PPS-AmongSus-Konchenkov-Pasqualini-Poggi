@@ -5,11 +5,11 @@ import it.amongsus.utils.CustomLogger
 
 trait LobbyManager[T <: Player] {
   /**
-   *
+   * Map Username-LobbyType of all Players in a Lobby
    */
   var playersToLobby: Map[String, LobbyType] = Map.empty
   /**
-   *
+   * Map LobbyType-Lobby of lobbies
    */
   var lobbies: Map[LobbyType, Lobby[T]] = Map.empty
   /**

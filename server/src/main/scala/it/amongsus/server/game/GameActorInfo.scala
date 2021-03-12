@@ -30,17 +30,52 @@ trait GameActorInfo {
    */
   var playersToLobby: Map[String, Int]
   /**
+   *  Method to send a Win Message to all Winners Player
    *
-   * @param gamePlayers
-   * @param crew
-   * @param gameActor
+   * @param gamePlayers of the game
+   * @param crew of the winner
+   * @param gameActor to send win messages
    */
   def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew, gameActor: ActorRef): Unit
+  /**
+   * Method to define Roles of the players
+   *
+   * @return
+   */
   def defineRoles(): Seq[Player]
+  /**
+   * Method to send a broadcast message to all players
+   *
+   * @param message to send
+   */
   def broadcastMessageToPlayers(message: Any): Unit
+  /**
+   * Method to apply function to a player
+   *
+   * @param playerId of the game
+   * @param f function
+   */
   def withPlayer(playerId: String)(f: GamePlayer => Unit): Unit
+  /**
+   * Method to check if all Crewmate have collect all coins
+   *
+   * @param gamePlayers of the Crewmate in game
+   * @return true of false
+   */
   def checkWinCrewmate(gamePlayers: Seq[Player]): Boolean
+  /**
+   * Method to check if all coins are collected
+   *
+   * @param gamePlayers of the game that should collect the coins
+   * @return true of false
+   */
   def checkAllCoinsCollected(gamePlayers: Seq[Player]): Boolean
+  /**
+   * Method to check if impostor/s win the game
+   *
+   * @param gamePlayers of the game that is/are impostor/s
+   * @return true of false
+   */
   def checkWinImpostor(gamePlayers: Seq[Player]): Boolean
 }
 
