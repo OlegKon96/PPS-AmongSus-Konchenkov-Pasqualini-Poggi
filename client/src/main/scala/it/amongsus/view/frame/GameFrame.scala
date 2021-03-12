@@ -133,7 +133,7 @@ object GameFrame {
       _ <- cp.add(new JPanelIO(gamePanel), BorderLayout.CENTER)
       _ <- cp.add(buttonPanel, BorderLayout.EAST)
       _ <- gameFrame.setSize(GAME_FRAME_WIDTH, GAME_HEIGHT)
-      _ <- gameFrame.setLocationRelativeToInvokingAndWaiting(null)
+      _ <- gameFrame.setLocationRelativeToInvokingAndWaiting(gameFrame.component)
       _ <- gameFrame.setResizable(false)
       _ <- gameFrame.setVisible(true)
       _ <- gameFrame.requestFocusInWindow()

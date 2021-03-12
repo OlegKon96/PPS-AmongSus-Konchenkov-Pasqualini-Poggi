@@ -1,80 +1,104 @@
 package it.amongsus.view.draw
 
 import it.amongsus.core.map.{Collectionable, DeadBody}
-import it.amongsus.core.player.{AlivePlayer, CrewmateAlive, CrewmateGhost,
-  DeadPlayer, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.player.{AlivePlayer, CrewmateAlive, CrewmateGhost, DeadPlayer, Impostor, ImpostorAlive, ImpostorGhost, Player}
 
 import java.awt.Graphics
+import java.awt.image.BufferedImage
 
 trait DrawableEntity[E] {
-  def draw(entity : E,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-           gameCollectionables : Seq[Collectionable])
+  def drawEntity(entity : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
+                 gameCollectionables : Seq[Collectionable])
 }
 
 object DrawableEntity {
 
-  def draw[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                               gameCollectionables : Seq[Collectionable]) : Unit =
-    implicitly[DrawableEntity[E]].draw(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
+  def drawEntity[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
+                                     gameCollectionables : Seq[Collectionable]) : Unit =
+    implicitly[DrawableEntity[E]].drawEntity(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
 
   implicit object drawCrewmateAlive extends DrawableEntity[CrewmateAlive] {
-    override def draw(entity: CrewmateAlive,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                      gameCollectionables : Seq[Collectionable]): Unit = {
-      gameDeadBodies.filter(body => body.position.distance(entity.position) < entity.fieldOfView)
-        .foreach(deadBody => g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
-          deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
-      gameCollectionables.filter(collectionable => collectionable.position.distance(entity.position) <
-        entity.fieldOfView).foreach(collectionable => g.drawImage(COIN, collectionable.position.y * DRAWABLE_SCALING + 1,
-        collectionable.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+    override def drawEntity(entity: CrewmateAlive, g : Graphics, gamePlayers : Seq[Player],
+                            gameDeadBodies : Seq[DeadBody],
+                            gameCollectionables : Seq[Collectionable]): Unit = {
+      drawDeadBodies(g,gameDeadBodies,entity)
+      drawCollectionables(g,gameCollectionables,entity)
       gamePlayers.filter(player => player.position.distance(entity.position) < entity.fieldOfView).foreach {
-        case alivePlayer: AlivePlayer => drawCrewmate(g, alivePlayer, getImageAlive(alivePlayer.color))
+        case alivePlayer: AlivePlayer => drawPlayer(g, alivePlayer, getImageAlive(alivePlayer.color),
+          alivePlayer.username.toLowerCase())
         case _ =>
       }
     }
   }
 
   implicit object drawImpostorAlive extends DrawableEntity[ImpostorAlive] {
-    override def draw(entity: ImpostorAlive,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                      gameCollectionables : Seq[Collectionable]): Unit = {
-      gameDeadBodies.filter(body => body.position.distance(entity.position) < entity.fieldOfView)
-        .foreach(deadBody => g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
-          deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+    override def drawEntity(entity: ImpostorAlive, g : Graphics, gamePlayers : Seq[Player],
+                            gameDeadBodies : Seq[DeadBody],
+                            gameCollectionables : Seq[Collectionable]): Unit = {
+      drawDeadBodies(g,gameDeadBodies,entity)
       gamePlayers.filter(player => player.position.distance(entity.position) < entity.fieldOfView).foreach {
         case impostorAlive: ImpostorAlive =>
-          drawImpostor(g, impostorAlive, getImageAlive(impostorAlive.color))
+          drawPlayer(g, impostorAlive, getImageAlive(impostorAlive.color),
+            impostorAlive.username.toUpperCase())
         case crewmateAlive: CrewmateAlive =>
-          drawCrewmate(g, crewmateAlive, getImageAlive(crewmateAlive.color))
+          drawPlayer(g, crewmateAlive, getImageAlive(crewmateAlive.color),
+            crewmateAlive.username.toLowerCase())
         case _ =>
       }
     }
   }
 
   implicit object drawImpostorGhost extends DrawableEntity[ImpostorGhost] {
-    override def draw(entity: ImpostorGhost,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                      gameCollectionables : Seq[Collectionable]): Unit = {
-      gameDeadBodies.foreach(deadBody => g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
-        deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+    override def drawEntity(entity: ImpostorGhost, g : Graphics, gamePlayers : Seq[Player],
+                            gameDeadBodies : Seq[DeadBody],
+                            gameCollectionables : Seq[Collectionable]): Unit = {
+      drawDeadBodies(g,gameDeadBodies,entity)
       gamePlayers.foreach {
-        case impostorAlive: ImpostorAlive => drawImpostor(g, impostorAlive, getImageAlive(impostorAlive.color))
-        case impostorGhost: ImpostorGhost => drawImpostor(g, impostorGhost, getImageGhost(impostorGhost.color))
-        case crewmateAlive: CrewmateAlive => drawCrewmate(g, crewmateAlive, getImageAlive(crewmateAlive.color))
-        case crewmateGhost: CrewmateGhost => drawCrewmate(g, crewmateGhost, getImageGhost(crewmateGhost.color))
+        case impostorAlive: ImpostorAlive => drawPlayer(g, impostorAlive, getImageAlive(impostorAlive.color),
+          impostorAlive.username.toUpperCase())
+        case impostorGhost: ImpostorGhost => drawPlayer(g, impostorGhost, getImageGhost(impostorGhost.color),
+          impostorGhost.username.toUpperCase())
+        case crewmateAlive: CrewmateAlive => drawPlayer(g, crewmateAlive, getImageAlive(crewmateAlive.color),
+          crewmateAlive.username.toLowerCase())
+        case crewmateGhost: CrewmateGhost => drawPlayer(g, crewmateGhost, getImageGhost(crewmateGhost.color),
+          crewmateGhost.username.toLowerCase())
       }
     }
   }
 
   implicit object drawCrewmateGhost extends DrawableEntity[CrewmateGhost] {
-    override def draw(entity: CrewmateGhost,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                      gameCollectionables : Seq[Collectionable]): Unit = {
-      gameDeadBodies.foreach(deadBody => g.drawImage(getImageDead(deadBody.color),
-        deadBody.position.y * DRAWABLE_SCALING + 1, deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
-      gameCollectionables.foreach(collectionable => g.drawImage(COIN, collectionable.position.y * DRAWABLE_SCALING + 1,
-        collectionable.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+    override def drawEntity(entity: CrewmateGhost, g : Graphics, gamePlayers : Seq[Player],
+                            gameDeadBodies : Seq[DeadBody],
+                            gameCollectionables : Seq[Collectionable]): Unit = {
+      drawDeadBodies(g,gameDeadBodies,entity)
+      drawCollectionables(g,gameCollectionables,entity)
       gamePlayers.foreach {
-        case ap: AlivePlayer => drawCrewmate(g, ap, getImageAlive(ap.color))
-        case dp: DeadPlayer =>  drawCrewmate(g, dp, getImageGhost(dp.color))
+        case alivePlayer: AlivePlayer => drawPlayer(g, alivePlayer, getImageAlive(alivePlayer.color),
+          alivePlayer.username.toLowerCase())
+        case deadPlayer: DeadPlayer =>  drawPlayer(g, deadPlayer, getImageGhost(deadPlayer.color),
+          deadPlayer.username.toLowerCase())
       }
 
     }
   }
+
+  private def drawDeadBodies(g : Graphics, gameDeadBodies : Seq[DeadBody],entity : Player): Unit = {
+    gameDeadBodies.filter(body => body.position.distance(entity.position) < entity.fieldOfView)
+      .foreach(deadBody => g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
+        deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+  }
+
+  private def drawCollectionables(g : Graphics, gameCollectionables : Seq[Collectionable], entity: Player): Unit = {
+    gameCollectionables.filter(collectionable => collectionable.position.distance(entity.position) <
+      entity.fieldOfView).foreach(collectionable => g.drawImage(COIN, collectionable.position.y * DRAWABLE_SCALING + 1,
+      collectionable.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+  }
+
+  private def drawPlayer(g : Graphics, player : Player, image : BufferedImage, username : String): Unit = {
+    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1,
+      PLAYER_SCALING, PLAYER_SCALING, null)
+    g.drawString(username, player.position.y * DRAWABLE_SCALING - 10,
+      player.position.x * DRAWABLE_SCALING - 5)
+  }
+
 }

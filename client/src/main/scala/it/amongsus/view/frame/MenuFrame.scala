@@ -49,7 +49,7 @@ object MenuFrame {
     final val MENU_COLS_NUMBER : Int = 2
     final val ROWS_NUMBER : Int = 4
 
-    val gameFrame = new JFrameIO(new JFrame("Among Sus"))
+    val menuFrame = new JFrameIO(new JFrame("Among Sus"))
     val values : Seq[Int] = Seq(4,5,6,7,8,9,10)
     val WIDTH: Int = 600
     val HEIGHT: Int = 300
@@ -107,22 +107,22 @@ object MenuFrame {
         } yield ())
         _ <- menuPanel.add(inputPanel, BorderLayout.CENTER)
         _ <- menuPanel.add(joinPrivate, BorderLayout.SOUTH)
-        cp <- gameFrame.contentPane()
-        _ <- gameFrame.background(Color.LIGHT_GRAY)
+        cp <- menuFrame.contentPane()
+        _ <- menuFrame.background(Color.LIGHT_GRAY)
         _ <- menuPanel.background(Color.lightGray)
         _ <- inputPanel.background(Color.LIGHT_GRAY)
         _ <- cp.add(menuPanel)
-        _ <- gameFrame.setResizable(false)
-        _ <- gameFrame.setTitle("Among Sus")
-        _ <- gameFrame.setSize(WIDTH, HEIGHT)
-        _  <- gameFrame.setLocationRelativeToInvokingAndWaiting(null)
-        _ <- gameFrame.setVisible(true)
-        _ <- gameFrame.addWindowListener(new WindowAdapter {
+        _ <- menuFrame.setResizable(false)
+        _ <- menuFrame.setTitle("Among Sus")
+        _ <- menuFrame.setSize(WIDTH, HEIGHT)
+        _  <- menuFrame.setLocationRelativeToInvokingAndWaiting(menuFrame.component)
+        _ <- menuFrame.setVisible(true)
+        _ <- menuFrame.addWindowListener(new WindowAdapter {
           override def windowClosing(e: WindowEvent): Unit = {
             guiRef.get ! PlayerCloseUi()
           }
         })
-        _ <- gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+        _ <- menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
     private def checkName(nameField: JTextFieldIO): Boolean = nameField.text.unsafeRunSync() match {
@@ -144,7 +144,7 @@ object MenuFrame {
     }
 
     override def dispose(): IO[Unit] = for {
-      _ <- gameFrame.dispose()
+      _ <- menuFrame.dispose()
     } yield ()
   }
 }

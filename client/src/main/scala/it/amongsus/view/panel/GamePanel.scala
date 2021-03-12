@@ -6,7 +6,7 @@ import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, Imp
 
 import java.awt.Graphics
 import javax.swing.JPanel
-import it.amongsus.view.draw.DrawableEntity.draw
+import it.amongsus.view.draw.DrawableEntity.drawEntity
 import it.amongsus.view.draw.DrawableTile.drawTile
 
 trait GamePanel extends JPanel {
@@ -65,13 +65,13 @@ object GamePanel {
     private def drawEntities(g: Graphics): Unit ={
       gameMyChar match {
         case impostorAlive: ImpostorAlive =>
-          draw(impostorAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(impostorAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)
         case impostorGhost: ImpostorGhost =>
-          draw(impostorGhost,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(impostorGhost,g,gamePlayers,gameDeadBodies,gameCollectionables)
         case crewmateAlive: CrewmateAlive =>
-          draw(crewmateAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(crewmateAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)
         case crewmateGhost: CrewmateGhost =>
-          draw(crewmateGhost,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(crewmateGhost,g,gamePlayers,gameDeadBodies,gameCollectionables)
       }
     }
 
