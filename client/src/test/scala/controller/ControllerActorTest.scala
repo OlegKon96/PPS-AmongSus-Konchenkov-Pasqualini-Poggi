@@ -17,7 +17,7 @@ import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, InitModel, KillPlayerModel}
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
-import it.amongsus.view.actor.UiActorGameMessages.{BeginVotingUi, ButtonOffUi, GameEndUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
+import it.amongsus.view.actor.UiActorGameMessages.{BeginVotingUi, ActionOffUi, GameEndUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -67,7 +67,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       serverActor.expectMsgType[PlayerReadyServer]
 
       controllerActor ! KillTimerController(TimerStarted)
-      uiActor.expectMsgType[ButtonOffUi]
+      uiActor.expectMsgType[ActionOffUi]
       uiActor.expectMsgType[SabotageTimerUpdateUi]
       uiActor.expectMsgType[KillTimerUpdateUi]
       uiActor.expectMsgType[SabotageTimerUpdateUi]

@@ -29,21 +29,21 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the Ui Button is pressed
    *
-   * @param button that is pressed
+   * @param action that is pressed
    */
-  case class UiButtonPressedController(button: ActionType)
+  case class UiActionController(action: ActionType)
   /**
    * Tells to the controller that the button can be clicked
    *
-   * @param button that can be clicked
+   * @param action that can be clicked
    */
-  case class ButtonOnController(button: ActionType)
+  case class ActionOnController(action: ActionType)
   /**
    * Tells to the controller that the button can't be clicked
    *
-   * @param button that can be clicked
+   * @param action that can be clicked
    */
-  case class ButtonOffController(button: ActionType)
+  case class ActionOffController(action: ActionType)
   /**
    * Tells to the controller that it's time to vote
    */

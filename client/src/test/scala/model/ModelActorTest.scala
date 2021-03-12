@@ -4,14 +4,14 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.ActionTimer.TimerStarted
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ActionOffController, UpdatedMyCharController, UpdatedPlayersController}
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.CrewmateAlive
 import it.amongsus.core.util.ActionType.EmergencyAction
 import it.amongsus.core.util.Direction.Up
 import it.amongsus.core.util.{GameEnd, Point2D}
-import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, UiButtonPressedModel}
+import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, UiActionModel}
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -36,19 +36,19 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
       modelActorInfo.gameCollectionables, "test")))
 
     modelActor ! KillTimerStatusModel(TimerStarted)
-    controller.expectMsgType[ButtonOffController]
+    controller.expectMsgType[ActionOffController]
 
     modelActor ! MyCharMovedModel(Up())
-    controller.expectMsgType[ButtonOffController]
-    controller.expectMsgType[ButtonOffController]
-    controller.expectMsgType[ButtonOffController]
-    controller.expectMsgType[ButtonOffController]
+    controller.expectMsgType[ActionOffController]
+    controller.expectMsgType[ActionOffController]
+    controller.expectMsgType[ActionOffController]
+    controller.expectMsgType[ActionOffController]
     controller.expectMsgType[UpdatedMyCharController]
     controller.expectMsgType[UpdatedPlayersController]
 
-    modelActor ! UiButtonPressedModel(EmergencyAction())
-    controller.expectMsgType[ButtonOffController]
-    controller.expectMsgType[ButtonOffController]
+    modelActor ! UiActionModel(EmergencyAction())
+    controller.expectMsgType[ActionOffController]
+    controller.expectMsgType[ActionOffController]
     controller.expectMsgType[BeginVotingController]
 
     modelActor ! MyPlayerLeftModel()

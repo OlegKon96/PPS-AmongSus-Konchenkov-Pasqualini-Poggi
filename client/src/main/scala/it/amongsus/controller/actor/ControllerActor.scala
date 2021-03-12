@@ -104,12 +104,12 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
-    case ButtonOnController(button) => state.guiRef.get ! ButtonOnUi(button)
+    case ActionOnController(action) => state.guiRef.get ! ActionOnUi(action)
 
-    case ButtonOffController(button) => state.guiRef.get ! ButtonOffUi(button)
+    case ActionOffController(action) => state.guiRef.get ! ActionOffUi(action)
 
-    case UiButtonPressedController(button) => state.modelRef.get ! UiButtonPressedModel(button)
-      state.checkButton(button)
+    case UiActionController(action) => state.modelRef.get ! UiActionModel(action)
+      state.checkButton(action)
 
     case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
       state.guiRef.get ! BeginVotingUi(gamePlayers)

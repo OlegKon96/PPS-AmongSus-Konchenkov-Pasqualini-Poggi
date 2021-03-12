@@ -6,7 +6,7 @@ import it.amongsus.Constants
 import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
-import it.amongsus.controller.actor.ControllerActorMessages.UiButtonPressedController
+import it.amongsus.controller.actor.ControllerActorMessages.UiActionController
 import it.amongsus.core.player.{AlivePlayer, Player}
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient}
 import it.amongsus.messages.GameMessageClient.VoteClient
@@ -100,9 +100,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
       state.updatePlayer(myChar,players,collectionables, deadBodies)
 
-    case ButtonOnUi(button) => state.enableButton(button,boolean = true)
+    case ActionOnUi(action) => state.setButtonState(action,boolean = true)
 
-    case ButtonOffUi(button) => state.enableButton(button, boolean = false)
+    case ActionOffUi(action) => state.setButtonState(action, boolean = false)
 
     case KillTimerUpdateUi(_: Long, seconds: Long) => state.updateKillButton(seconds)
 
@@ -114,7 +114,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.endGame(state.gameFrame.get.myChar, end)
       context >>> defaultBehaviour(UiActorInfo())
 
-    case UiButtonPressedUi(button) => state.clientRef.get ! UiButtonPressedController(button)
+    case UiActionTypeUi(button) => state.clientRef.get ! UiActionController(button)
 
     case BeginVotingUi(gamePlayers: Seq[Player]) =>  val voteFrame = VoteFrame(Option(self), state.gameFrame.get.myChar,
       gamePlayers.filter(p => p.isInstanceOf[AlivePlayer]))

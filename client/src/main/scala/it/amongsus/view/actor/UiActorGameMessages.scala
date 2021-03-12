@@ -22,9 +22,9 @@ object UiActorGameMessages {
   /**
    * Tells to UI actor that a Button is pressed
    *
-   * @param button that is pressed
+   * @param action that is pressed
    */
-  case class UiButtonPressedUi(button: ActionType)
+  case class UiActionTypeUi(action: ActionType)
   /**
    * Tells to the controller that his character moved
    *
@@ -44,15 +44,15 @@ object UiActorGameMessages {
   /**
    * Tells to UI actor that a Button can be pressed
    *
-   * @param button that is pressed
+   * @param action that is pressed
    */
-  case class ButtonOnUi(button: ActionType)
+  case class ActionOnUi(action: ActionType)
   /**
    * Tells to UI actor that a Button can't be pressed
    *
-   * @param button that can't be pressed
+   * @param action that can't be pressed
    */
-  case class ButtonOffUi(button: ActionType)
+  case class ActionOffUi(action: ActionType)
   /**
    * Tells to UI actor that the player has left the game
    *

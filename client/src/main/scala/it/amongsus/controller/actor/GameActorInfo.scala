@@ -7,7 +7,7 @@ import it.amongsus.controller.{ActionTimer, TimerListener, TimerStatus}
 import it.amongsus.core.util.ActionType.{KillAction, SabotageAction}
 import it.amongsus.core.util.ActionType
 import it.amongsus.model.actor.ModelActorMessages.KillTimerStatusModel
-import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
+import it.amongsus.view.actor.UiActorGameMessages.{ActionOffUi, ActionOnUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
 
 /**
  * Trait that contains all the callback functions of the messages to be sent to the server
@@ -88,11 +88,11 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
   val sabotageTimer: ActionTimer = new ActionTimerImpl(sabotageDuration, new TimerListener {
 
     override def onStart(): Unit = {
-      guiRef.get ! ButtonOffUi(SabotageAction())
+      guiRef.get ! ActionOffUi(SabotageAction())
     }
 
     override def onEnd(): Unit = {
-      guiRef.get ! ButtonOnUi(SabotageAction())
+      guiRef.get ! ActionOnUi(SabotageAction())
     }
 
     override def onTick(millis: Long): Unit = {

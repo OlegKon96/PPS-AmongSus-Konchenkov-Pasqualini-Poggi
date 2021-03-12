@@ -29,9 +29,9 @@ object ModelActorMessages {
   /**
    * Tells to the model that a button is pressed
    *
-   * @param button of the GUI
+   * @param action of the GUI
    */
-  case class UiButtonPressedModel(button: ActionType)
+  case class UiActionModel(action: ActionType)
   /**
    * Tells to the Ui actor that timer ended
    *

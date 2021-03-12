@@ -28,7 +28,7 @@ trait UiGameActorInfo {
    * @param button to enable or disable
    * @param boolean that tells is the button is to turn on or off
    */
-  def enableButton(button : ActionType, boolean: Boolean): Unit
+  def setButtonState(button : ActionType, boolean: Boolean): Unit
   /**
    * Method that updates a character
    *
@@ -73,8 +73,8 @@ case class UiGameActorData(override val clientRef: Option[ActorRef],
                             deadBodies : Seq[DeadBody]): Unit =
     gameFrame.get.updatePlayers(myChar, players, collectionables, deadBodies)
 
-  override def enableButton(button: ActionType, boolean: Boolean): Unit =
-    gameFrame.get.enableButton(button, boolean).unsafeRunSync()
+  override def setButtonState(action: ActionType, boolean: Boolean): Unit =
+    gameFrame.get.setButtonState(action, boolean).unsafeRunSync()
 
   override def updateKillButton(seconds: Long): Unit = gameFrame.get.updateKillButton(seconds).unsafeRunSync()
 
