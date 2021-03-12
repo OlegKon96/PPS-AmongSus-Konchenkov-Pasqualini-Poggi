@@ -1,6 +1,5 @@
 package it.amongsus.server.lobby
 
-import akka.japi.Pair
 import it.amongsus.server.common.Player
 
 /**
@@ -10,14 +9,6 @@ import it.amongsus.server.common.Player
  */
 case class GameLobby[T <: Player](numberOfPlayers: Int, override val players: List[T] = List()) extends Lobby[T] {
   override def hasEnoughPlayers: Boolean = players.length >= numberOfPlayers
-
-  override def extractPlayersForMatch(): Pair[Lobby[T], Option[Seq[T]]] = {
-    if (this.hasEnoughPlayers) {
-      Pair(GameLobby(numberOfPlayers, players.drop(numberOfPlayers)), Some(players.take(numberOfPlayers)))
-    } else {
-      Pair(this, None)
-    }
-  }
 
   override def addPlayer(player: T): Lobby[T] = GameLobby(numberOfPlayers, players :+ player)
 

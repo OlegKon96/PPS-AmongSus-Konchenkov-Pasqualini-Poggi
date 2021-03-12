@@ -66,12 +66,14 @@ trait LobbyManagerUtils[T <: Player] extends CustomLogger {
    * @param lobbyType type of the lobby
    * @return the list of player to be added to the game
    */
-  def attemptExtractPlayerForMatch(lobbyType: LobbyType): Option[Seq[T]] =
+  def attemptExtractPlayerForMatch(lobbyType: LobbyType): Option[Seq[T]] = {
+    import RichLobby._
     lobbyManager.getLobby(lobbyType).flatMap(lobby => {
       val updatedLobby = lobby.extractPlayersForMatch()
       lobbies = lobbies + (lobbyType -> updatedLobby.first)
       updatedLobby.second
     })
+  }
 }
 
 case class LobbyManagerImpl[T <: Player]() extends LobbyManager[T] with LobbyManagerUtils[T] {

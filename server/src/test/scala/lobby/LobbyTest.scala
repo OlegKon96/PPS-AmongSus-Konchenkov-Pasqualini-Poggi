@@ -2,7 +2,7 @@ package lobby
 
 import akka.actor.ActorRef
 import it.amongsus.server.common.{GamePlayer, Player}
-import it.amongsus.server.lobby.{GameLobby, Lobby}
+import it.amongsus.server.lobby.{GameLobby, Lobby, RichLobby}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -49,6 +49,7 @@ class LobbyTest extends AnyWordSpecLike with MockFactory {
     }
 
     "extract players to play game if they are enough" in {
+      import RichLobby._
       var lobby = create2PlayersLobby
       lobby = lobby.addPlayer(mock[Player])
       lobby = lobby.addPlayer(mock[Player])
@@ -59,6 +60,7 @@ class LobbyTest extends AnyWordSpecLike with MockFactory {
     }
 
     "return nothing in the second extraction if players aren't enough" in {
+      import RichLobby._
       var lobby = create2PlayersLobby
       lobby = lobby.addPlayer(mock[Player])
       lobby = lobby.addPlayer(mock[Player])
