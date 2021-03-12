@@ -3,7 +3,7 @@ package it.amongsus.view.actor
 import akka.actor.ActorRef
 import it.amongsus.core.map.{Collectionable, DeadBody}
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
-import it.amongsus.core.util.{ButtonType, GameEnd}
+import it.amongsus.core.util.{ActionType, GameEnd}
 import it.amongsus.view.frame.{GameFrame, WinFrame}
 
 /**
@@ -28,7 +28,7 @@ trait UiGameActorInfo {
    * @param button to enable or disable
    * @param boolean that tells is the button is to turn on or off
    */
-  def enableButton(button : ButtonType, boolean: Boolean): Unit
+  def enableButton(button : ActionType, boolean: Boolean): Unit
   /**
    * Method that updates a character
    *
@@ -73,7 +73,7 @@ case class UiGameActorData(override val clientRef: Option[ActorRef],
                             deadBodies : Seq[DeadBody]): Unit =
     gameFrame.get.updatePlayers(myChar, players, collectionables, deadBodies)
 
-  override def enableButton(button: ButtonType, boolean: Boolean): Unit =
+  override def enableButton(button: ActionType, boolean: Boolean): Unit =
     gameFrame.get.enableButton(button, boolean).unsafeRunSync()
 
   override def updateKillButton(seconds: Long): Unit = gameFrame.get.updateKillButton(seconds).unsafeRunSync()

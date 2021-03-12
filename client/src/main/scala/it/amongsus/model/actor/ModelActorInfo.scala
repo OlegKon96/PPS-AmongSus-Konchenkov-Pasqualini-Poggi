@@ -5,7 +5,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.map._
 import it.amongsus.core.player._
-import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
+import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
 import it.amongsus.core.util.{Direction, Point2D}
 import it.amongsus.core.{Drawable, map}
 
@@ -236,29 +236,29 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     myCharacter match {
       case alivePlayer: AlivePlayer =>
         if (alivePlayer.canCallEmergency(alivePlayer, emergencyButtons)) {
-          controllerRef.get ! ButtonOnController(EmergencyButton())
+          controllerRef.get ! ButtonOnController(EmergencyAction())
         } else {
-          controllerRef.get ! ButtonOffController(EmergencyButton())
+          controllerRef.get ! ButtonOffController(EmergencyAction())
         }
         if (alivePlayer.canReport(myCharacter.position, deadBodies)) {
-          controllerRef.get ! ButtonOnController(ReportButton())
+          controllerRef.get ! ButtonOnController(ReportAction())
         } else {
-          controllerRef.get ! ButtonOffController(ReportButton())
+          controllerRef.get ! ButtonOffController(ReportAction())
         }
         alivePlayer match {
           case impostorAlive: ImpostorAlive =>
             impostorAlive.canVent(ventList) match {
-              case Some(_) => controllerRef.get ! ButtonOnController(VentButton())
-              case None => controllerRef.get ! ButtonOffController(VentButton())
+              case Some(_) => controllerRef.get ! ButtonOnController(VentAction())
+              case None => controllerRef.get ! ButtonOffController(VentAction())
             }
             if (impostorAlive.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
-              controllerRef.get ! ButtonOnController(KillButton())
+              controllerRef.get ! ButtonOnController(KillAction())
             } else if (!isTimerOn) {
-              controllerRef.get ! ButtonOffController(KillButton())
+              controllerRef.get ! ButtonOffController(KillAction())
             }
           case _ =>
         }
-      case _ => controllerRef.get ! ButtonOffController(ReportButton())
+      case _ => controllerRef.get ! ButtonOffController(ReportAction())
     }
     gamePlayers
   }

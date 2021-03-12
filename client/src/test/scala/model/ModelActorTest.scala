@@ -8,7 +8,7 @@ import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingControll
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.CrewmateAlive
-import it.amongsus.core.util.ButtonType.EmergencyButton
+import it.amongsus.core.util.ActionType.EmergencyAction
 import it.amongsus.core.util.Direction.Up
 import it.amongsus.core.util.{GameEnd, Point2D}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, UiButtonPressedModel}
@@ -46,7 +46,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
     controller.expectMsgType[UpdatedMyCharController]
     controller.expectMsgType[UpdatedPlayersController]
 
-    modelActor ! UiButtonPressedModel(EmergencyButton())
+    modelActor ! UiButtonPressedModel(EmergencyAction())
     controller.expectMsgType[ButtonOffController]
     controller.expectMsgType[ButtonOffController]
     controller.expectMsgType[BeginVotingController]

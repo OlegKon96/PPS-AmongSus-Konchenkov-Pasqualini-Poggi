@@ -8,7 +8,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
-import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
+import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel}
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
@@ -45,16 +45,16 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
         state.gameCollectionables, state.deadBodies)
 
     case UiButtonPressedModel(button) => button match {
-      case _: VentButton => state.useVent()
-      case _: EmergencyButton => state.checkTimer(TimerEnded)
+      case _: VentAction => state.useVent()
+      case _: EmergencyAction => state.checkTimer(TimerEnded)
         state.callEmergency()
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
         context >>> voteBehaviour(state)
-      case _: KillButton => state.kill()
-      case _: ReportButton => state.checkTimer(TimerEnded)
+      case _: KillAction => state.kill()
+      case _: ReportAction => state.checkTimer(TimerEnded)
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
         context >>> voteBehaviour(state)
-      case _: SabotageButton => state.sabotage(true)
+      case _: SabotageAction => state.sabotage(true)
         ActorSystemManager.actorSystem.scheduler.scheduleOnce(5 seconds){
           state.sabotage(false)
         }
@@ -62,7 +62,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
     case KillTimerStatusModel(status: TimerStatus) => status match {
       case TimerStarted =>
-        state.controllerRef.get ! ButtonOffController(KillButton())
+        state.controllerRef.get ! ButtonOffController(KillAction())
         state.isTimerOn = true
       case TimerEnded => state.isTimerOn = false
     }

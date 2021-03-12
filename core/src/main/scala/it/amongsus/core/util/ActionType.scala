@@ -3,27 +3,27 @@ package it.amongsus.core.util
 /**
  * Trait that manages the Buttons of the game
  */
-trait ButtonType
+trait ActionType
 
-object ButtonType {
+object ActionType {
   /**
    * Tells that Player wants to move up
    */
-  case class VentButton() extends ButtonType
+  case class VentAction() extends ActionType
   /**
    * Tells that Player wants to move down
    */
-  case class KillButton() extends ButtonType
+  case class KillAction() extends ActionType
   /**
    * Tells that Player wants to move left
    */
-  case class EmergencyButton() extends ButtonType
+  case class EmergencyAction() extends ActionType
   /**
    * Tells that Player wants to move right
    */
-  case class ReportButton() extends ButtonType
+  case class ReportAction() extends ActionType
   /**
    * Tells that Impostor wants to sabotage Crewmate
    */
-  case class SabotageButton() extends ButtonType
+  case class SabotageAction() extends ActionType
 }

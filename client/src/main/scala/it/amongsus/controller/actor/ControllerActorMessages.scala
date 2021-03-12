@@ -5,7 +5,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Direction}
+import it.amongsus.core.util.{ActionType, GameEnd, ChatMessage, Direction}
 
 object ControllerActorMessages {
   /**
@@ -31,19 +31,19 @@ object ControllerActorMessages {
    *
    * @param button that is pressed
    */
-  case class UiButtonPressedController(button: ButtonType)
+  case class UiButtonPressedController(button: ActionType)
   /**
    * Tells to the controller that the button can be clicked
    *
    * @param button that can be clicked
    */
-  case class ButtonOnController(button: ButtonType)
+  case class ButtonOnController(button: ActionType)
   /**
    * Tells to the controller that the button can't be clicked
    *
    * @param button that can be clicked
    */
-  case class ButtonOffController(button: ButtonType)
+  case class ButtonOffController(button: ActionType)
   /**
    * Tells to the controller that it's time to vote
    */

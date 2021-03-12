@@ -2,7 +2,7 @@ package it.amongsus.view.actor
 
 import it.amongsus.core.map.{Collectionable, DeadBody}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Direction}
+import it.amongsus.core.util.{ActionType, GameEnd, ChatMessage, Direction}
 
 object UiActorGameMessages {
   /**
@@ -24,7 +24,7 @@ object UiActorGameMessages {
    *
    * @param button that is pressed
    */
-  case class UiButtonPressedUi(button: ButtonType)
+  case class UiButtonPressedUi(button: ActionType)
   /**
    * Tells to the controller that his character moved
    *
@@ -46,13 +46,13 @@ object UiActorGameMessages {
    *
    * @param button that is pressed
    */
-  case class ButtonOnUi(button: ButtonType)
+  case class ButtonOnUi(button: ActionType)
   /**
    * Tells to UI actor that a Button can't be pressed
    *
    * @param button that can't be pressed
    */
-  case class ButtonOffUi(button: ButtonType)
+  case class ButtonOffUi(button: ActionType)
   /**
    * Tells to UI actor that the player has left the game
    *

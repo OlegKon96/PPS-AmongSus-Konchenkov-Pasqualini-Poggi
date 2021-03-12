@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit
 import akka.actor.ActorRef
 import it.amongsus.controller.ActionTimer.{ActionTimerImpl, TimerEnded, TimerStarted}
 import it.amongsus.controller.{ActionTimer, TimerListener, TimerStatus}
-import it.amongsus.core.util.ButtonType.{KillButton, SabotageButton}
-import it.amongsus.core.util.ButtonType
+import it.amongsus.core.util.ActionType.{KillAction, SabotageAction}
+import it.amongsus.core.util.ActionType
 import it.amongsus.model.actor.ModelActorMessages.KillTimerStatusModel
 import it.amongsus.view.actor.UiActorGameMessages.{ButtonOffUi, ButtonOnUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
 
@@ -46,7 +46,7 @@ trait GameActorInfo {
    *
    * @param button to check
    */
-  def checkButton(button: ButtonType): Unit
+  def checkButton(button: ActionType): Unit
   /**
    * Method that manages the Kill Timer
    *
@@ -88,11 +88,11 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
   val sabotageTimer: ActionTimer = new ActionTimerImpl(sabotageDuration, new TimerListener {
 
     override def onStart(): Unit = {
-      guiRef.get ! ButtonOffUi(SabotageButton())
+      guiRef.get ! ButtonOffUi(SabotageAction())
     }
 
     override def onEnd(): Unit = {
-      guiRef.get ! ButtonOnUi(SabotageButton())
+      guiRef.get ! ButtonOnUi(SabotageAction())
     }
 
     override def onTick(millis: Long): Unit = {
@@ -113,9 +113,9 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
     (minutes, seconds)
   }
 
-  override def checkButton(button: ButtonType): Unit = button match{
-    case KillButton() => killTimer.start()
-    case SabotageButton() => sabotageTimer.start()
+  override def checkButton(button: ActionType): Unit = button match{
+    case KillAction() => killTimer.start()
+    case SabotageAction() => sabotageTimer.start()
     case _ =>
   }
 

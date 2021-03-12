@@ -3,7 +3,7 @@ package it.amongsus.model.actor
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.map.DeadBody
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, Direction}
+import it.amongsus.core.util.{ActionType, GameEnd, Direction}
 
 object ModelActorMessages {
   /**
@@ -31,7 +31,7 @@ object ModelActorMessages {
    *
    * @param button of the GUI
    */
-  case class UiButtonPressedModel(button: ButtonType)
+  case class UiButtonPressedModel(button: ActionType)
   /**
    * Tells to the Ui actor that timer ended
    *
