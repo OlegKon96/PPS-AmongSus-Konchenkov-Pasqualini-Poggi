@@ -3,7 +3,7 @@ package it.amongsus.messages
 import akka.actor.ActorRef
 import it.amongsus.core.map.DeadBody
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.Message
+import it.amongsus.core.util.ChatMessage
 
 object GameMessageServer {
   /**
@@ -46,7 +46,7 @@ object GameMessageServer {
    * @param message to send to the server
    * @param char that sends the message
    */
-  case class SendTextChatServer(message: Message, char: Player)
+  case class SendTextChatServer(message: ChatMessage, char: Player)
   /**
    * Error occurred during the game
    */

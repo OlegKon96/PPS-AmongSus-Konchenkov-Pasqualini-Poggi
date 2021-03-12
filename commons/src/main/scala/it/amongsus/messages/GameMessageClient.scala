@@ -2,7 +2,7 @@ package it.amongsus.messages
 
 import it.amongsus.core.map.DeadBody
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{GameEnd, Message}
+import it.amongsus.core.util.{GameEnd, ChatMessage}
 
 object GameMessageClient {
   /**
@@ -71,7 +71,7 @@ object GameMessageClient {
    *
    * @param message to send to the client
    */
-  case class SendTextChatClient(message: Message)
+  case class SendTextChatClient(message: ChatMessage)
   /**
    * Tells to the Client Actor that no one was ejected from the vote session
    */

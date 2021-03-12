@@ -5,7 +5,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, Message, Movement}
+import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Movement}
 
 object ControllerActorMessages {
   /**
@@ -72,7 +72,7 @@ object ControllerActorMessages {
    * @param message to send to the chat
    * @param char that sent the message
    */
-  case class SendTextChatController(message: Message, char: Player)
+  case class SendTextChatController(message: ChatMessage, char: Player)
   /**
    * Tells to the Ui Actor that Players left the game
    */

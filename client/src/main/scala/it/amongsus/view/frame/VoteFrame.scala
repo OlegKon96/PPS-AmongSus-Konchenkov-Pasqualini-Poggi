@@ -5,7 +5,7 @@ import java.awt.{BorderLayout, GridLayout}
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
-import it.amongsus.core.util.Message
+import it.amongsus.core.util.ChatMessage
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, VoteUi}
 import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
@@ -122,7 +122,7 @@ object VoteFrame {
           buttonVote(user) = JButtonIO(listUser(user).username).unsafeRunSync()
           buttonVote(user).addActionListener(for {
             _ <- IO(guiRef.get ! VoteUi(listUser(user).username))
-            _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, listUser(user).username),
+            _ <- IO(guiRef.get ! SendTextChatUi(ChatMessage(myPlayer.username, listUser(user).username),
               listUser.find(p => p.username == myPlayer.username).get))
             _ <- boxChat.appendText(s"${myPlayer.username} vote ${listUser(user).username}\n")
             _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
@@ -133,7 +133,7 @@ object VoteFrame {
 
         _ <- buttonSkipVote.addActionListener(for {
           _ <- IO(guiRef.get ! VoteUi(""))
-          _ <- IO(guiRef.get ! SendTextChatUi(Message(myPlayer.username, "Skip Vote"),
+          _ <- IO(guiRef.get ! SendTextChatUi(ChatMessage(myPlayer.username, "Skip Vote"),
             listUser.find(p => p.username == myPlayer.username).get))
           _ <- boxChat.appendText(s"${myPlayer.username} Skip Vote\n")
           _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
@@ -159,7 +159,7 @@ object VoteFrame {
           checkChatText <- chatField.text
           _ <- IO(if (checkText(chatField)) {
             boxChat.appendText(s"${myPlayer.username} said: $checkChatText\n").unsafeRunSync()
-            guiRef.get ! SendTextChatUi(Message(myPlayer.username, checkChatText),
+            guiRef.get ! SendTextChatUi(ChatMessage(myPlayer.username, checkChatText),
               listUser.find(p => p.username == myPlayer.username).get)
             chatField.clearText().unsafeRunSync()
           })
@@ -253,7 +253,7 @@ object VoteFrame {
         checkChatText <- chatField.text
         _ <- IO(if (checkText(chatField)) {
           boxChatGhost.appendText(s"${myPlayer.username} said: $checkChatText\n").unsafeRunSync()
-          guiRef.get ! SendTextChatUi(Message(myPlayer.username, checkChatText),
+          guiRef.get ! SendTextChatUi(ChatMessage(myPlayer.username, checkChatText),
             listUser.find(p => p.username == myPlayer.username).get)
           chatField.clearText().unsafeRunSync()
         })

@@ -3,7 +3,7 @@ package it.amongsus.core.util
 /**
  * Trait that manages the messages of the Chat in the Game
  */
-trait Message{
+trait ChatMessage{
   /**
    * Username of the player that send the message
    *
@@ -18,8 +18,8 @@ trait Message{
   def text: String
 }
 
-object Message {
-  def apply(username: String, text: String) : Message = MessageImpl(username, text)
+object ChatMessage {
+  def apply(username: String, text: String) : ChatMessage = ChatMessageImpl(username, text)
 
-  private case class MessageImpl(override val username: String, override val text: String) extends Message
+  private case class ChatMessageImpl(override val username: String, override val text: String) extends ChatMessage
 }

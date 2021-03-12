@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, PoisonPill, Props, Stash, Terminated}
 import it.amongsus.RichActor.RichContext
 import it.amongsus.core.player._
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew}
-import it.amongsus.core.util.Message
+import it.amongsus.core.util.ChatMessage
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, GamePlayersClient}
 import it.amongsus.messages.GameMessageClient.{NoOneEliminatedController, PlayerLeftClient, PlayerMovedClient}
 import it.amongsus.messages.GameMessageClient.{SendTextChatClient, StartVotingClient, VoteClient}
@@ -86,7 +86,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
   private def voting(gamePlayers: Seq[Player]): Receive = {
     case VoteClient(username: String) => manageVote(username, gamePlayers)
 
-    case SendTextChatServer(message: Message, character: Player) => character match {
+    case SendTextChatServer(message: ChatMessage, character: Player) => character match {
       case _: DeadPlayer => gamePlayers.filter(p => p.isInstanceOf[DeadPlayer]).foreach(player => {
         this.state.players.filter(p =>
           player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))

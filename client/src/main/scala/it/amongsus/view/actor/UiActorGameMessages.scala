@@ -2,7 +2,7 @@ package it.amongsus.view.actor
 
 import it.amongsus.core.map.{Collectionable, DeadBody}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, Message, Movement}
+import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Movement}
 
 object UiActorGameMessages {
   /**
@@ -95,13 +95,13 @@ object UiActorGameMessages {
    * @param message that is sent
    * @param char that sends the message
    */
-  case class SendTextChatUi(message: Message, char: Player)
+  case class SendTextChatUi(message: ChatMessage, char: Player)
   /**
    * Tells to the Ui Actor to send a text messages
    *
    * @param message that is received
    */
-  case class ReceiveTextChatUi(message: Message)
+  case class ReceiveTextChatUi(message: ChatMessage)
   /**
    * Tells to the Ui Actor that no one was ejected from vote session
    */
