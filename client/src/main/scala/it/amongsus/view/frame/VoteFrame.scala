@@ -179,7 +179,6 @@ object VoteFrame {
             guiRef.get ! VoteUi("")
           }
         })
-        _ <- frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
       } yield ()
 
     override def dispose(): IO[Unit] = for {
