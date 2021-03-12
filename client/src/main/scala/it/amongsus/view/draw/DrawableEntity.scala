@@ -1,7 +1,7 @@
 package it.amongsus.view.draw
 
 import it.amongsus.core.map.{Collectionable, DeadBody}
-import it.amongsus.core.player.{AlivePlayer, CrewmateAlive, CrewmateGhost, DeadPlayer, Impostor, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.player._
 
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -83,15 +83,19 @@ object DrawableEntity {
   }
 
   private def drawDeadBodies(g : Graphics, gameDeadBodies : Seq[DeadBody],entity : Player): Unit = {
-    gameDeadBodies.filter(body => body.position.distance(entity.position) < entity.fieldOfView)
-      .foreach(deadBody => g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
-        deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+    for {
+      deadBody <- gameDeadBodies
+      if deadBody.position.distance(entity.position) < entity.fieldOfView
+    } g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
+      deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
   }
 
   private def drawCollectionables(g : Graphics, gameCollectionables : Seq[Collectionable], entity: Player): Unit = {
-    gameCollectionables.filter(collectionable => collectionable.position.distance(entity.position) <
-      entity.fieldOfView).foreach(collectionable => g.drawImage(COIN, collectionable.position.y * DRAWABLE_SCALING + 1,
-      collectionable.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null))
+    for {
+      collectionable <- gameCollectionables
+      if collectionable.position.distance(entity.position) < entity.fieldOfView
+    } g.drawImage(COIN, collectionable.position.y * DRAWABLE_SCALING + 1,
+      collectionable.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
   }
 
   private def drawPlayer(g : Graphics, player : Player, image : BufferedImage, username : String): Unit = {
