@@ -3,12 +3,11 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.core
-import it.amongsus.core.{Drawable, map}
+import it.amongsus.core.map._
+import it.amongsus.core.player._
 import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
-import it.amongsus.core.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
-import it.amongsus.core.player.{AlivePlayer, Crewmate, CrewmateAlive, CrewmateGhost, Impostor, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.{Movement, Point2D}
+import it.amongsus.core.{Drawable, map}
 
 import scala.Array.ofDim
 import scala.util.Random
@@ -30,22 +29,26 @@ trait ModelActorInfo {
    * Check if timer is running or not
    */
   var isTimerOn: Boolean
+
   /**
    * The ID of the Client
    */
   def clientId: String
+
   /**
    * The reference of the Game Server
    *
    * @return
    */
   def controllerRef: Option[ActorRef]
+
   /**
    * The map of the game
    *
    * @return
    */
   def gameMap: Option[Array[Array[Drawable[Tile]]]]
+
   /**
    * Method that generates the map of the game
    *
@@ -53,24 +56,28 @@ trait ModelActorInfo {
    * @return
    */
   def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]]
+
   /**
    * Method that generates the collectionables of the game
    *
    * @param map of the game
    */
   def generateCollectionables(map: Array[Array[Drawable[Tile]]]): Unit
+
   /**
    * Method that finds my characters
    *
    * @return
    */
   def myCharacter: Player
+
   /**
    * Method that updates position of the characters
    *
    * @param direction to move on
    */
   def updateMyChar(direction: Movement): Unit
+
   /**
    * Method that updates buttons of the characters
    *
@@ -78,34 +85,41 @@ trait ModelActorInfo {
    * @return
    */
   def updatePlayer(player: Player): Seq[Player]
+
   /**
    * Method of the Impostor to use vent
    */
   def useVent(): Unit
+
   /**
    * Method of an Alive player that allows him one time per game to call an emergency
    */
   def callEmergency(): Unit
+
   /**
    * Method of the Impostor to kill a player
    */
   def kill(): Unit
+
   /**
    * Check the status of the timer
    *
    * @param status of the timer
    */
   def checkTimer(status: TimerStatus): Unit
+
   /**
    * Method that kills a player during a vote session
    */
   def killAfterVote(username: String): Unit
+
   /**
    * Method that remove a player
    *
    * @param clientId of the player to remove
    */
   def removePlayer(clientId: String): Unit
+
   /**
    * Method of the impostor that allows him to reduce crewmate field of view
    */
@@ -127,16 +141,16 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override val clientId: String,
                               override var isTimerOn: Boolean) extends ModelActorInfo {
 
+  private final val ROWS: Int = 50
+  private final val COLS: Int = 72
+
   private val ventList: Seq[(Drawable[Tile], Drawable[Tile])] = generateVentLinks()
   private val emergencyButtons: Seq[Drawable[Tile]] = generateEmergencyButtons()
   override var deadBodies: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
-    val n1 = 50
-    val n2 = 72
-    val tileMatrix = ofDim[Drawable[Tile]](n1, n2)
-
-    for{
+    val tileMatrix = ofDim[Drawable[Tile]](ROWS, COLS)
+    for {
       (line, j) <- map.zipWithIndex
       (tile, k) <- line.split(",").map(_.trim).zipWithIndex
     } tile match {
@@ -152,9 +166,9 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   }
 
   override def generateCollectionables(gameMap: Array[Array[Drawable[Tile]]]): Unit = {
-    var tiles: Seq[Drawable[Tile]] = for{
+    var tiles: Seq[Drawable[Tile]] = for {
       map <- gameMap
-      tile <- map.filter{case _: Floor => true case _=> false}
+      tile <- map.filter { case _: Floor => true case _ => false }
     } yield tile
 
     for (_ <- 0 until 10) {
@@ -191,10 +205,28 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     }
   }
 
-  private def playerUpdated(player: Player): Unit = {
-    updatePlayer(player)
-    controllerRef.get ! UpdatedMyCharController(myCharacter, gamePlayers, deadBodies)
-    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
+  override def callEmergency(): Unit = {
+    myCharacter match {
+      case alive: AlivePlayer => updatePlayer(alive.callEmergency(alive))
+      case _ =>
+    }
+  }
+
+  override def kill(): Unit = {
+    myCharacter match {
+      case impostorAlive: ImpostorAlive =>
+        impostorAlive.kill(impostorAlive.position, gamePlayers) match {
+          case Some(player) =>
+            val dead = CrewmateGhost(player.color, player.clientId, player.username,
+              player.asInstanceOf[CrewmateAlive].numCoins, player.position)
+            deadBodies = deadBodies :+ map.DeadBody(player.color, dead.position)
+            updatePlayer(dead)
+            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodies)
+            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
+          case None =>
+        }
+      case _ =>
+    }
   }
 
   override def updatePlayer(player: Player): Seq[Player] = {
@@ -233,30 +265,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def myCharacter: Player = gamePlayers.find(player => player.clientId == this.clientId).get
 
-  override def callEmergency(): Unit = {
-    myCharacter match {
-      case alive: AlivePlayer => updatePlayer(alive.callEmergency(alive))
-      case _ =>
-    }
-  }
-
-  override def kill(): Unit = {
-    myCharacter match {
-      case impostorAlive: ImpostorAlive =>
-        impostorAlive.kill(impostorAlive.position, gamePlayers) match {
-          case Some(player) =>
-            val dead = CrewmateGhost(player.color, player.clientId, player.username,
-              player.asInstanceOf[CrewmateAlive].numCoins, player.position)
-            deadBodies = deadBodies :+ map.DeadBody(player.color, dead.position)
-            updatePlayer(dead)
-            controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodies)
-            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
-          case None =>
-        }
-      case _ =>
-    }
-  }
-
   override def killAfterVote(username: String): Unit = {
     val player = gamePlayers.find(p => p.username == username).get
     gamePlayers = gamePlayers.updated(gamePlayers.indexOf(player), player match {
@@ -273,21 +281,23 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     case _ =>
   }
 
-  /**
-   * Method of the impostor that allows him to reduce crewmate field of view
-   */
   override def sabotage(state: Boolean): Unit = {
     val newPlayers = myCharacter match {
-      case impostor : Impostor => impostor.sabotage(gamePlayers, state)
+      case impostor: Impostor => impostor.sabotage(gamePlayers, state)
     }
     newPlayers.foreach(player => controllerRef.get ! UpdatedMyCharController(player, gamePlayers, deadBodies))
   }
 
+  override def removePlayer(clientId: String): Unit = {
+    gamePlayers = gamePlayers.filter(player => player.clientId != clientId)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
+  }
+
   private def generateVentLinks(): Seq[(Drawable[Tile], Drawable[Tile])] = {
     val vents: Seq[Drawable[Tile]] = gameMap match {
-      case Some(gameMap) => for{
+      case Some(gameMap) => for {
         map <- gameMap
-        tile <- map.filter{case  _:Vent => true case _=> false}
+        tile <- map.filter { case _: Vent => true case _ => false }
       } yield tile
       case None => Seq()
     }
@@ -303,14 +313,15 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     gameMap match {
       case Some(_) => for {
         map <- gameMap.get
-        tile <- map.filter{ case _: Emergency => true case _ => false}
+        tile <- map.filter { case _: Emergency => true case _ => false }
       } yield tile
       case _ => Seq()
     }
   }
 
-  override def removePlayer(clientId: String): Unit = {
-    gamePlayers = gamePlayers.filter(player => player.clientId != clientId)
+  private def playerUpdated(player: Player): Unit = {
+    updatePlayer(player)
+    controllerRef.get ! UpdatedMyCharController(myCharacter, gamePlayers, deadBodies)
     controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
   }
 }
