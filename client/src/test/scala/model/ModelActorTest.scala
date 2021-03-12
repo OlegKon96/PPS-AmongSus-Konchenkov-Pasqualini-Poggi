@@ -9,7 +9,7 @@ import it.amongsus.core.Drawable
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.CrewmateAlive
 import it.amongsus.core.util.ButtonType.EmergencyButton
-import it.amongsus.core.util.Movement.Up
+import it.amongsus.core.util.Direction.Up
 import it.amongsus.core.util.{GameEnd, Point2D}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, UiButtonPressedModel}
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}

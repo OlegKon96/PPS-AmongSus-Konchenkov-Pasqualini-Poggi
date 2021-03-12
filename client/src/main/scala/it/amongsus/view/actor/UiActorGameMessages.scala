@@ -2,7 +2,7 @@ package it.amongsus.view.actor
 
 import it.amongsus.core.map.{Collectionable, DeadBody}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Movement}
+import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Direction}
 
 object UiActorGameMessages {
   /**
@@ -30,7 +30,7 @@ object UiActorGameMessages {
    *
    * @param direction to move the player
    */
-  case class MyCharMovedUi(direction: Movement)
+  case class MyCharMovedUi(direction: Direction)
   /**
    * Tells to the ui actor that a player was updated
    *

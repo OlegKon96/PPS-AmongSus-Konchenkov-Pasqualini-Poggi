@@ -3,7 +3,7 @@ package it.amongsus.model.actor
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.map.DeadBody
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, Movement}
+import it.amongsus.core.util.{ButtonType, GameEnd, Direction}
 
 object ModelActorMessages {
   /**
@@ -18,7 +18,7 @@ object ModelActorMessages {
    *
    * @param direction to move on
    */
-  case class MyCharMovedModel(direction: Movement)
+  case class MyCharMovedModel(direction: Direction)
   /**
    * Tells to the model that another player moved
    *

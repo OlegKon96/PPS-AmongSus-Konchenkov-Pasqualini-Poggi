@@ -6,7 +6,7 @@ import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.map._
 import it.amongsus.core.player._
 import it.amongsus.core.util.ButtonType.{EmergencyButton, KillButton, ReportButton, VentButton}
-import it.amongsus.core.util.{Movement, Point2D}
+import it.amongsus.core.util.{Direction, Point2D}
 import it.amongsus.core.{Drawable, map}
 
 import scala.Array.ofDim
@@ -76,7 +76,7 @@ trait ModelActorInfo {
    *
    * @param direction to move on
    */
-  def updateMyChar(direction: Movement): Unit
+  def updateMyChar(direction: Direction): Unit
 
   /**
    * Method that updates buttons of the characters
@@ -178,7 +178,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     }
   }
 
-  override def updateMyChar(direction: Movement): Unit = {
+  override def updateMyChar(direction: Direction): Unit = {
     myCharacter.move(direction, gameMap.get) match {
       case Some(player) =>
         playerUpdated(player match {

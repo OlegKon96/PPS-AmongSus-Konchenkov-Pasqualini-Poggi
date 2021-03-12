@@ -2,7 +2,7 @@ package it.amongsus.core.player
 
 import it.amongsus.core.{Drawable, Entity}
 import it.amongsus.core.map.Tile
-import it.amongsus.core.util.Movement
+import it.amongsus.core.util.Direction
 
 /**
  * Trait that represents the actions of the Game's Player
@@ -15,7 +15,7 @@ trait Player extends Entity[Player]{
    * @param map of the game
    * @return
    */
-  def move(direction: Movement, map: Array[Array[Drawable[Tile]]]) : Option[Player]
+  def move(direction: Direction, map: Array[Array[Drawable[Tile]]]) : Option[Player]
   /**
    * Username of the player
    *

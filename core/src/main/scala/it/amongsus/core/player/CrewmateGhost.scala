@@ -2,7 +2,7 @@ package it.amongsus.core.player
 
 import it.amongsus.core.Drawable
 import it.amongsus.core.util.MovePlayer._
-import it.amongsus.core.util.{Movement, Point2D}
+import it.amongsus.core.util.{Direction, Point2D}
 import it.amongsus.core.map.Tile
 
 /**
@@ -22,7 +22,7 @@ object CrewmateGhost {
                                        override val numCoins: Int,
                                        override val position: Point2D) extends CrewmateGhost {
 
-    override def move(direction: Movement, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
+    override def move(direction: Direction, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
       movePlayer(CrewmateGhost(color, clientId, username, numCoins, position), direction, map)
     }
   }

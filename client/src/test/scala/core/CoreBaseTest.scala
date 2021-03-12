@@ -4,7 +4,7 @@ import it.amongsus
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Tile, Vent}
 import it.amongsus.core.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
-import it.amongsus.core.util.Movement.{Down, Up}
+import it.amongsus.core.util.Direction.{Down, Up}
 import it.amongsus.core.util.Point2D
 import it.amongsus.model.actor.ModelActorInfo
 import org.scalatest.BeforeAndAfterAll

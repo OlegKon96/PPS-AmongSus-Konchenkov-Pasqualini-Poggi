@@ -5,7 +5,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Movement}
+import it.amongsus.core.util.{ButtonType, GameEnd, ChatMessage, Direction}
 
 object ControllerActorMessages {
   /**
@@ -16,7 +16,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that his character is moved
    */
-  case class MyCharMovedController(direction: Movement)
+  case class MyCharMovedController(direction: Direction)
   /**
    * Tells to the controller that the model has updated his character status
    */

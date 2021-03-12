@@ -8,7 +8,7 @@ import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingControll
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo, LobbyActorInfoData}
 import it.amongsus.core.player.ImpostorAlive
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, Win}
-import it.amongsus.core.util.Movement.Up
+import it.amongsus.core.util.Direction.Up
 import it.amongsus.core.util.Point2D
 import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerReadyServer, StartVoting}

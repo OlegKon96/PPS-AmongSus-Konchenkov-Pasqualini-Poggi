@@ -14,7 +14,7 @@ import it.amongsus.view.swingio.{JButtonIO, JFrameIO, JPanelIO}
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
-import it.amongsus.core.util.{ButtonType, Movement}
+import it.amongsus.core.util.{ButtonType, Direction}
 
 import javax.swing.JFrame
 
@@ -75,7 +75,7 @@ trait GameFrame extends Frame {
    *
    * @param direction to move on
    */
-  def movePlayer(direction: Movement)
+  def movePlayer(direction: Direction)
   /**
    * Method to update the kill button
    *
@@ -147,7 +147,7 @@ object GameFrame {
 
     override def dispose(): IO[Unit] = gameFrame.dispose()
 
-    override def movePlayer(direction : Movement): Unit = guiRef.get ! MyCharMovedUi(direction)
+    override def movePlayer(direction : Direction): Unit = guiRef.get ! MyCharMovedUi(direction)
 
     override def updatePlayers(myChar: Player,
                                players: Seq[Player],
