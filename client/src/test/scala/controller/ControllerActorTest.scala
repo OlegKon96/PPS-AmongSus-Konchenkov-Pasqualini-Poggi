@@ -68,8 +68,8 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
       controllerActor ! KillTimerController(TimerStarted)
       uiActor.expectMsgType[ButtonOffUi]
-      uiActor.expectMsgType[KillTimerUpdateUi]
       uiActor.expectMsgType[SabotageTimerUpdateUi]
+      uiActor.expectMsgType[KillTimerUpdateUi]
       uiActor.expectMsgType[SabotageTimerUpdateUi]
 
       //controllerActor ! MyCharMovedController(Up())
