@@ -132,27 +132,21 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   override var deadBodies: Seq[DeadBody] = Seq()
 
   override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
-    var j = 0
-    var k = 0
     val n1 = 50
     val n2 = 72
     val tileMatrix = ofDim[Drawable[Tile]](n1, n2)
-    
-    map.foreach(line => {
-      line.split(",").map(_.trim).foreach(col => {
-        col match {
-          case "189" => tileMatrix(j)(k) = Wall(Point2D(j, k))
-          case "0" => tileMatrix(j)(k) = Other(Point2D(j, k))
-          case "40" => tileMatrix(j)(k) = Floor(Point2D(j, k))
-          case "1" => tileMatrix(j)(k) = Boundary(Point2D(j, k))
-          case "66" => tileMatrix(j)(k) = Vent(Point2D(j, k))
-          case "222" => tileMatrix(j)(k) = core.map.Emergency(Point2D(j, k))
-        }
-        k = k + 1
-      })
-      j = j + 1
-      k = 0
-    })
+
+    for{
+      (line, j) <- map.zipWithIndex
+      (tile, k) <- line.split(",").map(_.trim).zipWithIndex
+    } tile match {
+      case "189" => tileMatrix(j)(k) = Wall(Point2D(j, k))
+      case "0" => tileMatrix(j)(k) = Other(Point2D(j, k))
+      case "40" => tileMatrix(j)(k) = Floor(Point2D(j, k))
+      case "1" => tileMatrix(j)(k) = Boundary(Point2D(j, k))
+      case "66" => tileMatrix(j)(k) = Vent(Point2D(j, k))
+      case "222" => tileMatrix(j)(k) = Emergency(Point2D(j, k))
+    }
     generateCollectionables(tileMatrix)
     tileMatrix
   }
