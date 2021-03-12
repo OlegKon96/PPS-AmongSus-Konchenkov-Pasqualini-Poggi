@@ -1,6 +1,7 @@
 package it.amongsus.view
 
 import it.amongsus.core.player.Player
+import it.amongsus.view.draw.DrawableEntity.getClass
 
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -31,19 +32,5 @@ package object draw {
 
   def getImageDead(color : String) : BufferedImage =  {
     ImageIO.read(getClass.getResourceAsStream(s"/images/playerDead$color.png"))
-  }
-
-  def drawImpostor(g : Graphics, player : Player, image : BufferedImage) : Unit = {
-    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1,
-      PLAYER_SCALING, PLAYER_SCALING, null)
-    g.drawString(player.username.toUpperCase, player.position.y * DRAWABLE_SCALING - 10,
-      player.position.x * DRAWABLE_SCALING - 5)
-  }
-
-  def drawCrewmate(g : Graphics, player : Player, image : BufferedImage) : Unit = {
-    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1,
-      PLAYER_SCALING, PLAYER_SCALING, null)
-    g.drawString(player.username.toLowerCase(), player.position.y * DRAWABLE_SCALING - 10,
-      player.position.x * DRAWABLE_SCALING - 5)
   }
 }
