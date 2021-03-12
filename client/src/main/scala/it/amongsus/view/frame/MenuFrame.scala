@@ -101,7 +101,6 @@ object MenuFrame {
             guiRef.get ! PrivateGameSubmitUi(nameText, code)
           })
         } yield ())
-
         _ <- menuPanel.add(inputPanel, BorderLayout.CENTER)
         _ <- menuPanel.add(joinPrivate, BorderLayout.SOUTH)
         cp <- gameFrame.contentPane()
@@ -113,6 +112,7 @@ object MenuFrame {
         _ <- gameFrame.setResizable(false)
         _ <- gameFrame.setTitle("Among Sus")
         _ <- gameFrame.setSize(WIDTH, HEIGHT)
+        _  <- gameFrame.setLocationRelativeToInvokingAndWaiting(null)
         _ <- gameFrame.setVisible(true)
         _ <- gameFrame.addWindowListener(new WindowAdapter {
           override def windowClosing(e: WindowEvent): Unit = {

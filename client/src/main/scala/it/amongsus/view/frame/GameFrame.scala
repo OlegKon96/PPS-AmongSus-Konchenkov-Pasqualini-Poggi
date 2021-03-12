@@ -124,6 +124,7 @@ object GameFrame {
       _ <- cp.add(new JPanelIO(gamePanel), BorderLayout.CENTER)
       _ <- cp.add(buttonPanel, BorderLayout.EAST)
       _ <- gameFrame.setSize(1230, 775)
+      _ <- gameFrame.setLocationRelativeToInvokingAndWaiting(null)
       _ <- gameFrame.setResizable(false)
       _ <- gameFrame.setVisible(true)
       _ <- gameFrame.requestFocusInWindow()

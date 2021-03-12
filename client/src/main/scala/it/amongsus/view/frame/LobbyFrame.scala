@@ -95,6 +95,7 @@ object LobbyFrame {
         _ <- lobbyPanel.add(controlPanel)
         cp <- lobbyFrame.contentPane()
         _ <- lobbyFrame.setSize(WIDTH, HEIGHT)
+        _  <- lobbyFrame.setLocationRelativeToInvokingAndWaiting(null)
         _ <- cp.add(lobbyPanel)
         _ <- lobbyFrame.setVisible(true)
         _ <- lobbyFrame.setResizable(false)
