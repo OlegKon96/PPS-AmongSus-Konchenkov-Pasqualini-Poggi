@@ -22,24 +22,28 @@ package object draw {
   final val PLAYER_SCALING : Int = 20
 
   def getImageAlive(color : String) : BufferedImage =  {
-    ImageIO.read(getClass.getResourceAsStream(s"/images/playerAlive${color}.png"))
+    ImageIO.read(getClass.getResourceAsStream(s"/images/playerAlive$color.png"))
   }
 
   def getImageGhost(color : String) : BufferedImage =  {
-    ImageIO.read(getClass.getResourceAsStream(s"/images/playerGhost${color}.png"))
+    ImageIO.read(getClass.getResourceAsStream(s"/images/playerGhost$color.png"))
   }
 
   def getImageDead(color : String) : BufferedImage =  {
-    ImageIO.read(getClass.getResourceAsStream(s"/images/playerDead${color}.png"))
+    ImageIO.read(getClass.getResourceAsStream(s"/images/playerDead$color.png"))
   }
 
   def drawImpostor(g : Graphics, player : Player, image : BufferedImage) : Unit = {
-    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1, PLAYER_SCALING, PLAYER_SCALING, null)
-    g.drawString(player.username.toUpperCase, player.position.y * DRAWABLE_SCALING - 10, player.position.x * DRAWABLE_SCALING - 5)
+    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1,
+      PLAYER_SCALING, PLAYER_SCALING, null)
+    g.drawString(player.username.toUpperCase, player.position.y * DRAWABLE_SCALING - 10,
+      player.position.x * DRAWABLE_SCALING - 5)
   }
 
   def drawCrewmate(g : Graphics, player : Player, image : BufferedImage) : Unit = {
-    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1, PLAYER_SCALING, PLAYER_SCALING, null)
-    g.drawString(player.username.toLowerCase(), player.position.y * DRAWABLE_SCALING - 10, player.position.x * DRAWABLE_SCALING - 5)
+    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1,
+      PLAYER_SCALING, PLAYER_SCALING, null)
+    g.drawString(player.username.toLowerCase(), player.position.y * DRAWABLE_SCALING - 10,
+      player.position.x * DRAWABLE_SCALING - 5)
   }
 }

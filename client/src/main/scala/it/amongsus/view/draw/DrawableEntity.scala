@@ -1,19 +1,21 @@
 package it.amongsus.view.draw
 
 import it.amongsus.core.map.{Collectionable, DeadBody}
-import it.amongsus.core.player.{AlivePlayer, CrewmateAlive, CrewmateGhost, DeadPlayer, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.player.{AlivePlayer, CrewmateAlive, CrewmateGhost,
+  DeadPlayer, ImpostorAlive, ImpostorGhost, Player}
 
 import java.awt.Graphics
 
 trait DrawableEntity[E] {
-  def draw(entity : E,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody], gameCollectionables : Seq[Collectionable])
+  def draw(entity : E,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
+           gameCollectionables : Seq[Collectionable])
 }
 
 object DrawableEntity {
 
-  def draw[T : DrawableEntity](elem : T, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
+  def draw[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
                                gameCollectionables : Seq[Collectionable]) : Unit =
-    implicitly[DrawableEntity[T]].draw(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
+    implicitly[DrawableEntity[E]].draw(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
 
   implicit object drawCrewmateAlive extends DrawableEntity[CrewmateAlive] {
     override def draw(entity: CrewmateAlive,g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],

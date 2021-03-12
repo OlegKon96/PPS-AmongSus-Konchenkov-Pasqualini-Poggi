@@ -75,7 +75,7 @@ trait GameFrame extends Frame {
    *
    * @param direction to move on
    */
-  def movePlayer(direction: Movement): Unit
+  def movePlayer(direction: Movement)
   /**
    * Method to update the kill button
    *
@@ -105,6 +105,15 @@ object GameFrame {
                               override val myChar : Player,
                               override val players : Seq[Player],
                               override val collectionables : Seq[Collectionable]) extends GameFrame {
+
+    final val GAME_FRAME_WIDTH : Int = 1230
+    final val GAME_PANEL_WIDTH : Int = 1080
+    final val GAME_HEIGHT : Int = 775
+    final val BUTTON_PANEL_WIDTH : Int = 150
+    final val IMPOSTOR_ROWS_NUMBER : Int = 5
+    final val CREWMATE_ROWS_NUMBER : Int = 2
+    final val COLS_NUMBER : Int = 1
+
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
     val gamePanel: GamePanel = GamePanel(map,myChar,players,collectionables,Seq.empty)
     val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
@@ -115,7 +124,7 @@ object GameFrame {
 
     override def start(): IO[Unit] = for {
       _ <- gameFrame.addKeyListener(Keyboard(this))
-      _ <- IO(gamePanel.setSize(1080,775))
+      _ <- IO(gamePanel.setSize(GAME_PANEL_WIDTH,GAME_HEIGHT))
       buttonPanel <- myChar match {
         case _: Crewmate => createCrewmateButton()
         case _: Impostor => createImpostorButton()
@@ -123,7 +132,7 @@ object GameFrame {
       cp <- gameFrame.contentPane()
       _ <- cp.add(new JPanelIO(gamePanel), BorderLayout.CENTER)
       _ <- cp.add(buttonPanel, BorderLayout.EAST)
-      _ <- gameFrame.setSize(1230, 775)
+      _ <- gameFrame.setSize(GAME_FRAME_WIDTH, GAME_HEIGHT)
       _ <- gameFrame.setLocationRelativeToInvokingAndWaiting(null)
       _ <- gameFrame.setResizable(false)
       _ <- gameFrame.setVisible(true)
@@ -148,63 +157,56 @@ object GameFrame {
 
     private def createCrewmateButton() : IO[JPanelIO] = for {
       crewmateButtonPanel <- JPanelIO()
-      _ <- crewmateButtonPanel.setLayout(new GridLayout(2, 1))
+      _ <- crewmateButtonPanel.setLayout(new GridLayout(CREWMATE_ROWS_NUMBER, COLS_NUMBER))
       _ <- reportButton.setFocusable(false)
       _ <- reportButton.setEnabled(false)
-      _ <- reportButton.setSize(150,50)
       _ <- reportButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(ReportButton()))
       } yield ())
       _ <- crewmateButtonPanel.add(reportButton)
       _ <- emergencyButton.setFocusable(false)
       _ <- emergencyButton.setEnabled(false)
-      _ <- emergencyButton.setSize(150,50)
       _ <- emergencyButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(EmergencyButton()))
       } yield ())
       _ <- crewmateButtonPanel.add(emergencyButton)
-      _ <- crewmateButtonPanel.setSize(150,775)
+      _ <- crewmateButtonPanel.setSize(BUTTON_PANEL_WIDTH,GAME_HEIGHT)
     } yield (crewmateButtonPanel)
 
     private def createImpostorButton() : IO[JPanelIO] = for {
       impostorButtonPanel <- JPanelIO()
-      _ <- impostorButtonPanel.setLayout(new GridLayout(5, 1))
+      _ <- impostorButtonPanel.setLayout(new GridLayout(IMPOSTOR_ROWS_NUMBER, COLS_NUMBER))
       _ <- ventButton.setFocusable(false)
       _ <- ventButton.setEnabled(false)
-      _ <- ventButton.setSize(150,50)
       _ <- ventButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(VentButton()))
       } yield ())
       _ <- impostorButtonPanel.add(ventButton)
       _ <- sabotageButton.setFocusable(false)
       _ <- sabotageButton.setEnabled(false)
-      _ <- sabotageButton.setSize(150,50)
       _ <- sabotageButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(SabotageButton()))
       } yield ())
       _ <- impostorButtonPanel.add(sabotageButton)
       _ <- reportButton.setFocusable(false)
       _ <- reportButton.setEnabled(false)
-      _ <- reportButton.setSize(150,50)
       _ <- reportButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(ReportButton()))
       } yield ())
       _ <- impostorButtonPanel.add(reportButton)
       _ <- emergencyButton.setFocusable(false)
       _ <- emergencyButton.setEnabled(false)
-      _ <- emergencyButton.setSize(150,50)
       _ <- emergencyButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(EmergencyButton()))
       } yield ())
       _ <- impostorButtonPanel.add(emergencyButton)
       _ <- killButton.setFocusable(false)
       _ <- killButton.setEnabled(false)
-      _ <- killButton.setSize(150,50)
       _ <- killButton.addActionListener(for {
         _ <- IO(guiRef.get ! UiButtonPressedUi(KillButton()))
       } yield ())
       _ <- impostorButtonPanel.add(killButton)
-      _ <- impostorButtonPanel.setSize(150,775)
+      _ <- impostorButtonPanel.setSize(BUTTON_PANEL_WIDTH,GAME_HEIGHT)
     } yield(impostorButtonPanel)
 
     override def enableButton(button: ButtonType, boolean: Boolean): IO[Unit] = {

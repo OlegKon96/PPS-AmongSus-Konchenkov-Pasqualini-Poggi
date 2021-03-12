@@ -11,7 +11,7 @@ import it.amongsus.view.draw.DrawableTile.drawTile
 
 trait GamePanel extends JPanel {
   /**
-   * Method that update the game
+   * Method that update state of the game
    *
    * @param myChar of the game
    * @param players of the game
@@ -36,6 +36,9 @@ object GamePanel {
                               collectionables : Seq[Collectionable],
                               deadBodies : Seq[DeadBody]) extends GamePanel {
 
+    final val WIDTH : Int = 1080
+    final val HEIGHT : Int = 750
+
     private var gamePlayers = players
     private var gameCollectionables = collectionables
     private var gameDeadBodies = deadBodies
@@ -43,12 +46,12 @@ object GamePanel {
     private val gameMap = map
 
     override def paintComponent(g : Graphics): Unit = {
-      g.clearRect(0, 0, 1080, 750)
-      drawMap(g)
-      drawEntity(g)
+      g.clearRect(0, 0, WIDTH, HEIGHT)
+      drawTiles(g)
+      drawEntities(g)
     }
 
-    private def drawMap(g:Graphics) : Unit = {
+    private def drawTiles(g:Graphics) : Unit = {
       gameMap.foreach(x => x.foreach {
         case vent: Vent => drawTile(vent,g,gameMyChar)
         case emergency: Emergency => drawTile(emergency,g,gameMyChar)
@@ -59,7 +62,7 @@ object GamePanel {
       })
     }
 
-    private def drawEntity(g: Graphics): Unit ={
+    private def drawEntities(g: Graphics): Unit ={
       gameMyChar match {
         case impostorAlive: ImpostorAlive =>
           draw(impostorAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)

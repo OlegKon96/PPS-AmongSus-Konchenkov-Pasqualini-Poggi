@@ -45,6 +45,10 @@ object MenuFrame {
    */
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
+    final val BASIC_BORDER : Int = 10
+    final val MENU_COLS_NUMBER : Int = 2
+    final val ROWS_NUMBER : Int = 4
+
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
     val values : Seq[Int] = Seq(4,5,6,7,8,9,10)
     val WIDTH: Int = 600
@@ -55,23 +59,23 @@ object MenuFrame {
       for {
         _ <- IO(code = "")
         menuPanel <- JPanelIO()
-        menuBorder <- BorderFactoryIO.emptyBorderCreated(10, 10, 10, 10)
+        menuBorder <- BorderFactoryIO.emptyBorderCreated(BASIC_BORDER, BASIC_BORDER, BASIC_BORDER, BASIC_BORDER)
         _ <- menuPanel.setBorder(menuBorder)
         _ <- menuPanel.setLayout(new BorderLayout())
         inputPanel <- JPanelIO()
-        _ <- inputPanel.setLayout(new GridLayout(4, 2))
+        _ <- inputPanel.setLayout(new GridLayout(ROWS_NUMBER, MENU_COLS_NUMBER))
         nameLabel <- JLabelIO()
-        _ <- nameLabel.setText("Inserisci il tuo nome")
+        _ <- nameLabel.setText("Insert your name")
         _ <- inputPanel.add(nameLabel)
         nameField <- JTextFieldIO()
         _ <- inputPanel.add(nameField)
         playersLabel <- JLabelIO()
-        _ <- playersLabel.setText("Inserisci il numero di giocatori")
+        _ <- playersLabel.setText("Insert the number of players")
         _ <- inputPanel.add(playersLabel)
         comboBoxPlayers <- JComboBoxIO()
         _ <- IO(values.foreach(value => comboBoxPlayers.addItem(value).unsafeRunSync()))
         _ <- inputPanel.add(comboBoxPlayers)
-        joinPublic <- JButtonIO("Partecipa ad una partita pubblica")
+        joinPublic <- JButtonIO("Join public game")
         _ <- joinPublic.addActionListener(for {
           nameText <- nameField.text
           _ <- IO(if (checkName(nameField)) {
@@ -79,7 +83,7 @@ object MenuFrame {
           })
         } yield ())
         _ <- inputPanel.add(joinPublic)
-        startPrivate <- JButtonIO("Crea una partita privata")
+        startPrivate <- JButtonIO("Create private game")
         _ <- startPrivate.addActionListener(for {
           nameText <- nameField.text
           _ <- IO(if (checkName(nameField)) {
@@ -88,11 +92,11 @@ object MenuFrame {
         } yield ())
         _ <- inputPanel.add(startPrivate)
         codeLabel <- JLabelIO()
-        _ <- codeLabel.setText("Inserisci il codice della partita privata")
+        _ <- codeLabel.setText("Insert code of private game")
         _ <- inputPanel.add(codeLabel)
         codeField <- JTextFieldIO()
         _ <- inputPanel.add(codeField)
-        joinPrivate <- JButtonIO("Partecipa ad una partita privata")
+        joinPrivate <- JButtonIO("Join private game")
         _ <- joinPrivate.addActionListener(for {
           codeText <- codeField.text
           nameText <- nameField.text
@@ -107,7 +111,6 @@ object MenuFrame {
         _ <- gameFrame.background(Color.LIGHT_GRAY)
         _ <- menuPanel.background(Color.lightGray)
         _ <- inputPanel.background(Color.LIGHT_GRAY)
-        //_ <- titlePanel.background(Color.orange)
         _ <- cp.add(menuPanel)
         _ <- gameFrame.setResizable(false)
         _ <- gameFrame.setTitle("Among Sus")

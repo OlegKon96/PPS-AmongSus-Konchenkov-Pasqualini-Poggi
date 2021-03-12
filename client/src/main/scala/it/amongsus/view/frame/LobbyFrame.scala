@@ -48,41 +48,48 @@ object LobbyFrame {
    * The Frame that manages the Lobby
    */
   private class LobbyFrameImpl(guiRef: ActorRef, roomSize : Int) extends LobbyFrame {
+
+    final val LOBBY_WIDTH: Int = 400
+    final val LOBBY_HEIGHT: Int = 300
+    final val LOBBY_COLS_NUMBER : Int = 1
+    final val ROWS_NUMBER : Int = 4
+    final val BASIC_BORDER : Int = 10
+    final val RL_BORDER : Int = 120
+    final val TB_BORDER : Int = 0
+
     val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
-    val WIDTH: Int = 400
-    val HEIGHT: Int = 300
     val players: JLabelIO = JLabelIO().unsafeRunSync()
-    val startButton : JButtonIO = JButtonIO("Inizia partita").unsafeRunSync()
+    val startButton : JButtonIO = JButtonIO("Start game").unsafeRunSync()
     val size: Int = roomSize
     val backButton : JButtonIO = JButtonIO("<").unsafeRunSync()
 
     override def start(numPlayers: Int, code: String): IO[Unit] =
       for {
         lobbyPanel <- JPanelIO()
-        _ <- lobbyPanel.setLayout(new GridLayout(4,1))
+        _ <- lobbyPanel.setLayout(new GridLayout(ROWS_NUMBER,LOBBY_COLS_NUMBER))
         topPanel <- JPanelIO()
         _ <- topPanel.setLayout(new BorderLayout())
         controlPanel <- JPanelIO()
         _ <- controlPanel.setLayout(new BorderLayout())
-        basicBorder <- BorderFactoryIO.emptyBorderCreated(10, 10, 10, 10)
+        basicBorder <- BorderFactoryIO.emptyBorderCreated(BASIC_BORDER, BASIC_BORDER, BASIC_BORDER, BASIC_BORDER)
         _ <- controlPanel.setBorder(basicBorder)
         _ <- topPanel.setBorder(basicBorder)
         _ <- backButton.addActionListener(for {
           _ <- IO(guiRef ! LeaveLobbyUi())
         } yield ())
         _ <- topPanel.add(backButton, BorderLayout.WEST)
-        _ <- players.setText("Partecipanti" + numPlayers.toString + "/" + size.toString)
+        _ <- players.setText("Players" + numPlayers.toString + "/" + size.toString)
         _ <- controlPanel.add(players, BorderLayout.EAST)
         mainPanel <- JPanelIO()
         _ <- mainPanel.setLayout(new BorderLayout())
-        mainBorder <- BorderFactoryIO.emptyBorderCreated(0, 120, 0, 120)
+        mainBorder <- BorderFactoryIO.emptyBorderCreated(TB_BORDER, RL_BORDER, TB_BORDER, RL_BORDER)
         _ <- mainPanel.setBorder(mainBorder)
-        codeLabel <- JLabelIO(if (code == "") "Attendi altri giocatori" else "Il tuo codice è : " + code)
+        codeLabel <- JLabelIO(if (code == "") "Wait other players" else "Your code is : " + code)
         _ <- mainPanel.add(codeLabel, BorderLayout.CENTER)
         _ <- startButton.setVisible(false)
-        startLabel <- JLabelIO("Attendi..")
+        startLabel <- JLabelIO("Waiting..")
         _ <- startLabel.setVisible(false)
-        - <- startLabel.setBorder(mainBorder)
+        _ <- startLabel.setBorder(mainBorder)
         _ <- startButton.addActionListener(for {
           _ <- IO(guiRef ! PlayerReadyUi())
           _ <- startLabel.setVisible(true)
@@ -94,7 +101,7 @@ object LobbyFrame {
         _ <- lobbyPanel.add(startLabel)
         _ <- lobbyPanel.add(controlPanel)
         cp <- lobbyFrame.contentPane()
-        _ <- lobbyFrame.setSize(WIDTH, HEIGHT)
+        _ <- lobbyFrame.setSize(LOBBY_WIDTH, LOBBY_HEIGHT)
         _  <- lobbyFrame.setLocationRelativeToInvokingAndWaiting(null)
         _ <- cp.add(lobbyPanel)
         _ <- lobbyFrame.setVisible(true)
@@ -108,7 +115,7 @@ object LobbyFrame {
       } yield ()
 
     override def updatePlayers(numPlayers: Int): IO[Unit] =
-      players.setText("Partecipanti" + numPlayers.toString + "/" + size.toString)
+      players.setText("Players" + numPlayers.toString + "/" + size.toString)
 
     override def dispose(): IO[Unit] = lobbyFrame.dispose()
 
