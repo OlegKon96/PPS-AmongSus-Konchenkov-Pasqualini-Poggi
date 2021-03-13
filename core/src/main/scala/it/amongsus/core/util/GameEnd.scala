@@ -9,13 +9,13 @@ trait GameEnd{
   /**
    * Players of the game
    *
-   * @return
+   * @return sequence of players
    */
   def players: Seq[Player]
   /**
    * The winning team
    *
-   * @return
+   * @return winner crew
    */
   def crew: WinnerCrew
 }
@@ -30,7 +30,7 @@ object GameEnd{
 
   case class Lost(override val players: Seq[Player], override val crew:WinnerCrew) extends GameEnd
 
-  case class ImpostorCrew() extends WinnerCrew
+  case object ImpostorCrew extends WinnerCrew
 
-  case class CrewmateCrew() extends WinnerCrew
+  case object CrewmateCrew extends WinnerCrew
 }

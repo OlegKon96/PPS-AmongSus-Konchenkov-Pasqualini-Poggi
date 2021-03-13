@@ -68,9 +68,9 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
   private def inGame(): Receive = {
     case PlayerMovedServer(player, gamePlayers, deadBodys) =>
       if(this.state.checkWinCrewmate(gamePlayers)){
-        this.state.sendWinMessage(gamePlayers, CrewmateCrew(), self)
+        this.state.sendWinMessage(gamePlayers, CrewmateCrew, self)
       } else if(this.state.checkWinImpostor(gamePlayers)){
-        this.state.sendWinMessage(gamePlayers, ImpostorCrew(), self)
+        this.state.sendWinMessage(gamePlayers, ImpostorCrew, self)
       } else{
         this.state.players.filter(p => p.actorRef != sender()).foreach(p =>
           p.actorRef ! PlayerMovedClient(player, deadBodys))
@@ -212,10 +212,10 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
         this.state.totalVotes = this.state.playersToLobby.size
 
         if (this.state.checkWinCrewmate(gamePlayer.filter(p => p.username != playerToEliminate))) {
-          this.state.sendWinMessage(gamePlayer, CrewmateCrew(), self)
+          this.state.sendWinMessage(gamePlayer, CrewmateCrew, self)
           self ! PoisonPill
         } else if (this.state.checkWinImpostor(gamePlayer.filter(p => p.username != playerToEliminate))) {
-          this.state.sendWinMessage(gamePlayer, ImpostorCrew(), self)
+          this.state.sendWinMessage(gamePlayer, ImpostorCrew, self)
           self ! PoisonPill
         } else {
           context >>> inGame()

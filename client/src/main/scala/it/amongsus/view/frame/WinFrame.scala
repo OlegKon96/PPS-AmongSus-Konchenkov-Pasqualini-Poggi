@@ -32,12 +32,12 @@ object WinFrame {
     val votePanel: JPanelIO = JPanelIO().unsafeRunSync()
     val role: String = gameEnd match {
       case Win(_,_) => gameEnd.crew match {
-        case _: CrewmateCrew => CREWMATE
-        case _: ImpostorCrew => IMPOSTOR
+        case CrewmateCrew => CREWMATE
+        case ImpostorCrew => IMPOSTOR
       }
       case Lost(_,_) => gameEnd.crew match {
-        case _: CrewmateCrew => CREWMATE
-        case _: ImpostorCrew => IMPOSTOR
+        case CrewmateCrew => CREWMATE
+        case ImpostorCrew => IMPOSTOR
       }
     }
     var teamWinner: String = ""

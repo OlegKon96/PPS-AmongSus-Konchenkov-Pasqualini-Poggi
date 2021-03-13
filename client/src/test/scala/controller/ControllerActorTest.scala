@@ -64,7 +64,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       model.expectMsgType[KillPlayerModel]
       uiActor.expectMsgType[EliminatedPlayer]
 
-      controllerActor ! GameEndController(Win(Seq(),CrewmateCrew()))
+      controllerActor ! GameEndController(Win(Seq(),CrewmateCrew))
       uiActor.expectMsgType[GameEndUi]
 
       uiActor.expectNoMessage()

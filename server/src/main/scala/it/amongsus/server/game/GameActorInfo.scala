@@ -98,16 +98,16 @@ case class GameActorInfoData(override var players: Seq[GamePlayer], override var
     gamePlayers.foreach{
       case c : Crewmate =>
         crew match {
-          case ImpostorCrew() => this.players.find(p => p.id == c.clientId).get.actorRef !
+          case ImpostorCrew => this.players.find(p => p.id == c.clientId).get.actorRef !
             GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
-          case CrewmateCrew() => this.players.find(p => p.id == c.clientId).get.actorRef !
+          case CrewmateCrew => this.players.find(p => p.id == c.clientId).get.actorRef !
             GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
         }
       case i : Impostor =>
         crew match {
-          case ImpostorCrew() => this.players.find(p => p.id == i.clientId).get.actorRef !
+          case ImpostorCrew => this.players.find(p => p.id == i.clientId).get.actorRef !
             GameEndClient(Win(gamePlayers.filter(player => player.isInstanceOf[Impostor]), crew))
-          case CrewmateCrew() => this.players.find(p => p.id == i.clientId).get.actorRef !
+          case CrewmateCrew => this.players.find(p => p.id == i.clientId).get.actorRef !
             GameEndClient(Lost(gamePlayers.filter(player => player.isInstanceOf[Crewmate]), crew))
         }
     }
