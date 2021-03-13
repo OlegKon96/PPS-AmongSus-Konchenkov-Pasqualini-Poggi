@@ -5,33 +5,33 @@ import it.amongsus.core.map.Tile
 import it.amongsus.core.util.Direction
 
 /**
- * Trait that represents the actions of the Game's Player
+ * Trait that represents the actions of the Game's Player.
  */
 trait Player extends Entity[Player]{
   /**
-   * Method that manages the move of the player in the game map
+   * Method that manages the move of the player in the game map.
    *
-   * @param direction to move on
-   * @param map of the game
-   * @return Option[Player]
+   * @param direction to move on.
+   * @param map of the game.
+   * @return player whit updated position, None otherwise.
    */
   def move(direction: Direction, map: Array[Array[Drawable[Tile]]]) : Option[Player]
   /**
-   * Username of the player
+   * Username of the player.
    *
-   * @return String
+   * @return player's username.
    */
   def username: String
   /**
    * Id of the player
    *
-   * @return String
+   * @return player's client id.
    */
   def clientId: String
   /**
    * Range of view of the player
    *
-   * @return String
+   * @return player's field of view.
    */
   def fieldOfView: Int
 }
