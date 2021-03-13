@@ -10,47 +10,47 @@ import it.amongsus.model.actor.ModelActorMessages.KillTimerStatusModel
 import it.amongsus.view.actor.UiActorGameMessages.{ActionOffUi, ActionOnUi, KillTimerUpdateUi, SabotageTimerUpdateUi}
 
 /**
- * Trait that contains all the callback functions of the messages to be sent to the server
+ * Trait that contains all the callback functions of the messages to be sent to the server.
  */
 trait GameActorInfo {
   /**
-   * The ID of the Client
+   * The ID of the Client.
    */
   def clientId: String
   /**
-   * The reference of the Game Server
+   * The reference of the Game Server.
    *
-   * @return
+   * @return game server actor ref.
    */
   def gameServerRef: Option[ActorRef]
   /**
-   * The reference of the Actor's GUI
+   * The reference of the Actor's GUI.
    *
-   * @return
+   * @return ui actor ref.
    */
   def guiRef: Option[ActorRef]
   /**
-   * The reference to the Model Actor
+   * The reference to the Model Actor.
    *
-   * @return
+   * @return model actor ref.
    */
   def modelRef: Option[ActorRef]
   /**
-   * Method that loads the map of the game
+   * Method that loads the map of the game.
    *
-   * @return
+   * @return string iterator.
    */
   def loadMap(): Iterator[String]
   /**
-   * Method that check che button
+   * Method that check che button.
    *
-   * @param button to check
+   * @param action to check.
    */
-  def checkButton(button: ActionType): Unit
+  def checkButton(action: ActionType): Unit
   /**
-   * Method that manages the Kill Timer
+   * Method that manages the Kill Timer.
    *
-   * @param status of the timer
+   * @param status of the timer.
    */
   def manageKillTimer(status: TimerStatus): Unit
 }
@@ -113,7 +113,7 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
     (minutes, seconds)
   }
 
-  override def checkButton(button: ActionType): Unit = button match{
+  override def checkButton(action: ActionType): Unit = action match{
     case KillAction => killTimer.start()
     case SabotageAction => sabotageTimer.start()
     case _ =>
