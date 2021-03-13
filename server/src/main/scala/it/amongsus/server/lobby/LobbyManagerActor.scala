@@ -23,14 +23,14 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
 
   override def receive: Receive = {
     case ConnectServer(clientRef) =>
-      log.info(s"client $clientRef is asking for a connection")
+      log.info(s"Server -> client $clientRef is asking for a connection")
       val clientId = generateId
       this.state.connectedPlayers = this.state.connectedPlayers + (clientId -> clientRef)
       context.watch(clientRef)
       clientRef ! Connected(clientId)
 
     case JoinPublicLobbyServer(clientId, username, numberOfPlayers) =>
-      log.info(s"client $clientId wants to join a public lobby")
+      log.info(s"Server -> client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
         this.lobbyManager.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
@@ -63,14 +63,14 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
       }
 
     case LeaveLobbyServer(userId) =>
-      log.info(s"client $userId")
+      log.info(s"Server -> client $userId")
       val lobby = lobbyManager.getLobbyPlayer(userId).get
       this.lobbyManager.removePlayer(userId)
       lobby.removePlayer(userId)
         .players.foreach(player => player.actorRef ! UpdateLobbyClient(lobby.players.length - 1))
 
     case Terminated(actorRef) =>
-      log.info(s"terminated $actorRef, connected players: ${this.state.connectedPlayers}")
+      log.info(s"Server -> terminated $actorRef, connected players: ${this.state.connectedPlayers}")
       removeClient(actorRef)
   }
 
@@ -107,12 +107,12 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
   private def removeClient(actorRef: ActorRef): Unit = {
     this.state.connectedPlayers.find(_._2 == actorRef) match {
       case Some((userId, _)) =>
-        log.info(s"removing client $actorRef from lobby and connected players list")
+        log.info(s"Server -> removing client $actorRef from lobby and connected players list")
         context.unwatch(actorRef)
         this.lobbyManager.removePlayer(userId)
         this.state.connectedPlayers = this.state.connectedPlayers - userId
-        log.info(s"removed client $actorRef from lobby and connected players list")
-      case None => log.info(s"client $actorRef not found")
+        log.info(s"Server -> removed client $actorRef from lobby and connected players list")
+      case None => log.info(s"Server -> client $actorRef not found")
     }
   }
 }

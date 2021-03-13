@@ -36,7 +36,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
 
   private def idle: Receive = {
     case GamePlayers(players) =>
-      log.info(s"initial players $players")
+      log.info(s"Server -> initial players $players")
       this.state.players = players
       this.state.players.foreach(p => context.watch(p.actorRef))
       require(players.size == this.state.numberOfPlayers)
@@ -52,10 +52,10 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
   private def initializing(playersReady: Seq[GamePlayer]): Receive = {
     case PlayerReadyServer(id, ref) =>
       this.state.withPlayer(id) { p =>
-        log.info(s"player ${p.username} ready")
+        log.info(s"Server -> player ${p.username} ready")
         val updatedReadyPlayers = playersReady :+ p.copy(actorRef = ref)
         if (updatedReadyPlayers.length == this.state.numberOfPlayers) {
-          log.info("All players ready")
+          log.info("Server -> All players ready")
           this.initializeGame(updatedReadyPlayers)
         } else {
           context >>> (initializing(updatedReadyPlayers) orElse terminationBeforeGameStarted())
@@ -87,17 +87,18 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     case VoteClient(username: String) => manageVote(username, gamePlayers)
 
     case SendTextChatServer(message: ChatMessage, character: Player) => character match {
-      case _: DeadPlayer => gamePlayers.filter(p => p.isInstanceOf[DeadPlayer]).foreach(player => {
-        this.state.players.filter(p =>
-          player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))
-      })
-      case _: AlivePlayer => gamePlayers.filter(p => p.isInstanceOf[AlivePlayer]).foreach(player => {
-        this.state.players.filter(p =>
-          player.clientId == p.id && p.actorRef != sender()).foreach(p => p.actorRef ! SendTextChatClient(message))
-      })
+      case _: DeadPlayer => for{
+        deadPlayer <- gamePlayers.filter{ case _:DeadPlayer => true case _ => false}
+        player <- state.players.filter(player => deadPlayer.clientId == player.id && player.actorRef != sender())
+      } player.actorRef ! SendTextChatClient(message)
+
+      case _: AlivePlayer => for{
+        alivePlayer <- gamePlayers.filter{ case _:AlivePlayer => true case _ => false}
+        player <- state.players.filter(player => alivePlayer.clientId == player.id && player.actorRef != sender())
+      } player.actorRef ! SendTextChatClient(message)
     }
 
-    case _ => log.info("voting error...")
+    case _ => log.info("Server -> Game Actor -> voting error...")
   }
 
   /**
@@ -115,7 +116,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
             log.info("Terminating game actor..")
             self ! PoisonPill
           }
-        case None => log.error(s"client with ref $ref not found")
+        case None => log.error(s"Server -> client with ref $ref not found")
       }
   }
 
@@ -126,12 +127,12 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     case Terminated(ref) => this.state.players.find(_.actorRef == ref) match {
       case Some(player) =>
         this.state.players = this.state.players.filter(_.actorRef != ref)
-        log.info(s"Player ${player.username} left the game")
+        log.info(s"Server -> Player ${player.username} left the game")
         this.state.broadcastMessageToPlayers(PlayerLeftClient(player.id))
     }
     case LeaveGameServer(playerId) => this.state.withPlayer(playerId) { player =>
       this.state.players = this.state.players.filter(_.id != playerId)
-      log.info(s"Player ${player.username} left the game")
+      log.info(s"Server -> Player ${player.username} left the game")
       this.state.broadcastMessageToPlayers(PlayerLeftClient(player.id))
     }
   }
@@ -152,8 +153,8 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     // unwatch the player with the old actor ref
     this.state.players.foreach(p => context.unwatch(p.actorRef))
     this.state.players = playersReady
-    log.debug(s"ready players $playersReady")
-    log.debug(s"updated players ${this.state.players}")
+    log.debug(s"Server -> ready players $playersReady")
+    log.debug(s"Server -> updated players ${this.state.players}")
     // watch the players with the new actor ref
     val playersRole = this.state.defineRoles()
     this.state.players.foreach(p => {
