@@ -27,10 +27,10 @@ object Keyboard {
      */
     override def keyPressed(keyEvent: KeyEvent): Unit = {
       keyEvent.getKeyCode match {
-        case UP => gameFrame.movePlayer(Up())
-        case LEFT => gameFrame.movePlayer(Left())
-        case DOWN => gameFrame.movePlayer(Down())
-        case RIGHT => gameFrame.movePlayer(Right())
+        case UP => gameFrame.movePlayer(Up)
+        case LEFT => gameFrame.movePlayer(Left)
+        case DOWN => gameFrame.movePlayer(Down)
+        case RIGHT => gameFrame.movePlayer(Right)
         case _ =>
       }
     }

@@ -28,9 +28,9 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   "A Crewmate Alive" should {
     "Move" in {
-      this.crewmateAlive = crewmateAlive.move(Up(), map).get
+      this.crewmateAlive = crewmateAlive.move(Up, map).get
       assert(crewmateAlive.position == Point2D(positionDefault34, positionDefault35))
-      this.crewmateAlive = crewmateAlive.move(Down(), map).get
+      this.crewmateAlive = crewmateAlive.move(Down, map).get
       assert(crewmateAlive.position == Point2D(positionDefault35, positionDefault35))
     }
 
@@ -47,9 +47,9 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   "An Impostor Alive" should {
     "Move" in {
-      this.impostorAlive = impostorAlive.move(Up(), map).get
+      this.impostorAlive = impostorAlive.move(Up, map).get
       assert(impostorAlive.position == Point2D(positionDefault34, positionDefault35))
-      this.impostorAlive = impostorAlive.move(Down(), map).get
+      this.impostorAlive = impostorAlive.move(Down, map).get
       assert(impostorAlive.position == Point2D(positionDefault35, positionDefault35))
     }
 

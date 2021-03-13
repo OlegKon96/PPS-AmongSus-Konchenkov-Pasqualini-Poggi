@@ -38,7 +38,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
     modelActor ! KillTimerStatusModel(TimerStarted)
     controller.expectMsgType[ActionOffController]
 
-    modelActor ! MyCharMovedModel(Up())
+    modelActor ! MyCharMovedModel(Up)
     controller.expectMsgType[ActionOffController]
     controller.expectMsgType[ActionOffController]
     controller.expectMsgType[ActionOffController]

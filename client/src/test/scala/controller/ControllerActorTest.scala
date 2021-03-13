@@ -80,7 +80,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! PlayerReadyClient
       serverActor.expectMsgType[PlayerReadyServer]
 
-      controllerActor ! MyCharMovedController(Up())
+      controllerActor ! MyCharMovedController(Up)
       model.expectMsgType[MyCharMovedModel]
 
       controllerActor ! PlayerMovedClient(crewmateAlive, Seq())

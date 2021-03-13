@@ -30,84 +30,84 @@ class DirectionTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   "A Crewmate Alive" should {
     "Normally Move" in {
-      this.crewmateAlive = crewmateAlive.move(Up(), map).get
+      this.crewmateAlive = crewmateAlive.move(Up, map).get
       assert(crewmateAlive.position == Point2D(positionDefault34, positionDefault35))
-      this.crewmateAlive = crewmateAlive.move(Down(), map).get
+      this.crewmateAlive = crewmateAlive.move(Down, map).get
       assert(crewmateAlive.position == Point2D(positionDefault35, positionDefault35))
     }
 
     "Move Not Across a Wall" in {
-      this.crewmateAlive = crewmateAlive.move(Up(), map).get
-      this.crewmateAlive = crewmateAlive.move(Up(), map).get
-      this.crewmateAlive = crewmateAlive.move(Up(), map).get
-      this.crewmateAlive = crewmateAlive.move(Up(), map).get
+      this.crewmateAlive = crewmateAlive.move(Up, map).get
+      this.crewmateAlive = crewmateAlive.move(Up, map).get
+      this.crewmateAlive = crewmateAlive.move(Up, map).get
+      this.crewmateAlive = crewmateAlive.move(Up, map).get
       assertThrows[NoSuchElementException] {
-        this.crewmateAlive = crewmateAlive.move(Up(), map).get
+        this.crewmateAlive = crewmateAlive.move(Up, map).get
       }
       assert(crewmateAlive.position == Point2D(positionDefault31, positionDefault35))
-      this.crewmateAlive = crewmateAlive.move(Down(), map).get
+      this.crewmateAlive = crewmateAlive.move(Down, map).get
       assert(crewmateAlive.position == Point2D(positionDefault32, positionDefault35))
     }
   }
 
   "A Crewmate Ghost" should {
     "Normally Move" in {
-      this.crewmateGhost = crewmateGhost.move(Up(), map).get
+      this.crewmateGhost = crewmateGhost.move(Up, map).get
       assert(crewmateGhost.position == Point2D(positionDefault34, positionDefault35))
-      this.crewmateGhost = crewmateGhost.move(Down(), map).get
+      this.crewmateGhost = crewmateGhost.move(Down, map).get
       assert(crewmateGhost.position == Point2D(positionDefault35, positionDefault35))
     }
 
     "Move Across Wall" in {
-      this.crewmateGhost = crewmateGhost.move(Up(), map).get
-      this.crewmateGhost = crewmateGhost.move(Up(), map).get
-      this.crewmateGhost = crewmateGhost.move(Up(), map).get
-      this.crewmateGhost = crewmateGhost.move(Up(), map).get
-      this.crewmateGhost = crewmateGhost.move(Up(), map).get
+      this.crewmateGhost = crewmateGhost.move(Up, map).get
+      this.crewmateGhost = crewmateGhost.move(Up, map).get
+      this.crewmateGhost = crewmateGhost.move(Up, map).get
+      this.crewmateGhost = crewmateGhost.move(Up, map).get
+      this.crewmateGhost = crewmateGhost.move(Up, map).get
       assert(crewmateGhost.position == Point2D(positionDefault30, positionDefault35))
-      this.crewmateGhost = crewmateGhost.move(Down(), map).get
+      this.crewmateGhost = crewmateGhost.move(Down, map).get
       assert(crewmateGhost.position == Point2D(positionDefault31, positionDefault35))
     }
   }
 
   "An Impostor Alive" should {
     "Normally Move" in {
-      this.impostorAlive = impostorAlive.move(Up(), map).get
+      this.impostorAlive = impostorAlive.move(Up, map).get
       assert(impostorAlive.position == Point2D(positionDefault34, positionDefault35))
-      this.impostorAlive = impostorAlive.move(Down(), map).get
+      this.impostorAlive = impostorAlive.move(Down, map).get
       assert(impostorAlive.position == Point2D(positionDefault35, positionDefault35))
     }
 
     "Move Not Across a Wall" in {
-      this.impostorAlive = impostorAlive.move(Up(), map).get
-      this.impostorAlive = impostorAlive.move(Up(), map).get
-      this.impostorAlive = impostorAlive.move(Up(), map).get
-      this.impostorAlive = impostorAlive.move(Up(), map).get
+      this.impostorAlive = impostorAlive.move(Up, map).get
+      this.impostorAlive = impostorAlive.move(Up, map).get
+      this.impostorAlive = impostorAlive.move(Up, map).get
+      this.impostorAlive = impostorAlive.move(Up, map).get
       assertThrows[NoSuchElementException] {
-        this.impostorAlive = impostorAlive.move(Up(), map).get
+        this.impostorAlive = impostorAlive.move(Up, map).get
       }
       assert(impostorAlive.position == Point2D(positionDefault31, positionDefault35))
-      this.impostorAlive = impostorAlive.move(Down(), map).get
+      this.impostorAlive = impostorAlive.move(Down, map).get
       assert(impostorAlive.position == Point2D(positionDefault32, positionDefault35))
     }
   }
 
   "An Impostor Ghost" should {
     "Normally Move" in {
-      this.impostorGhost = impostorGhost.move(Up(), map).get
+      this.impostorGhost = impostorGhost.move(Up, map).get
       assert(impostorGhost.position == Point2D(positionDefault34, positionDefault35))
-      this.impostorGhost = impostorGhost.move(Down(), map).get
+      this.impostorGhost = impostorGhost.move(Down, map).get
       assert(impostorGhost.position == Point2D(positionDefault35, positionDefault35))
     }
 
     "Move Across Wall" in {
-      this.impostorGhost = impostorGhost.move(Up(), map).get
-      this.impostorGhost = impostorGhost.move(Up(), map).get
-      this.impostorGhost = impostorGhost.move(Up(), map).get
-      this.impostorGhost = impostorGhost.move(Up(), map).get
-      this.impostorGhost = impostorGhost.move(Up(), map).get
+      this.impostorGhost = impostorGhost.move(Up, map).get
+      this.impostorGhost = impostorGhost.move(Up, map).get
+      this.impostorGhost = impostorGhost.move(Up, map).get
+      this.impostorGhost = impostorGhost.move(Up, map).get
+      this.impostorGhost = impostorGhost.move(Up, map).get
       assert(impostorGhost.position == Point2D(positionDefault30, positionDefault35))
-      this.impostorGhost = impostorGhost.move(Down(), map).get
+      this.impostorGhost = impostorGhost.move(Down, map).get
       assert(impostorGhost.position == Point2D(positionDefault31, positionDefault35))
     }
   }
