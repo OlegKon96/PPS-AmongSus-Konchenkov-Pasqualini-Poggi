@@ -4,7 +4,7 @@ import it.amongsus.core.Entity
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait of the coin of the game that the player should collect
+ * Trait of the coin of the game that the player should collect.
  */
 trait Coin extends Entity[Coin]
 

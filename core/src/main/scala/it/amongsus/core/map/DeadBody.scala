@@ -4,7 +4,7 @@ import it.amongsus.core.Entity
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that represents the report of a dead body
+ * Trait that represents the report of a dead body.
  */
 trait DeadBody extends Entity[DeadBody]
 

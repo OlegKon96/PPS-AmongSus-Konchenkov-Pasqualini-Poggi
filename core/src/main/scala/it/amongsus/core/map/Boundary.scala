@@ -3,7 +3,7 @@ package it.amongsus.core.map
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that represents the Boundary of the game
+ * Trait that represents the Boundary of the game.
  */
 trait Boundary extends Wall
 

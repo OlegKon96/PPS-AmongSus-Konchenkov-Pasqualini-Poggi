@@ -3,7 +3,7 @@ package it.amongsus.core.map
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that represents the vent of the game
+ * Trait that represents the vent of the game.
  */
 trait Vent extends Floor
 

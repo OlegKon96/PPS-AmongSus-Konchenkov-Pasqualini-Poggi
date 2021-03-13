@@ -3,25 +3,25 @@ package it.amongsus.core.util
 import it.amongsus.core.player.Player
 
 /**
- * Trait that manages the End of the game
+ * Trait that manages the End of the game.
  */
 trait GameEnd{
   /**
-   * Players of the game
+   * Players of the game.
    *
-   * @return sequence of players
+   * @return sequence of players.
    */
   def players: Seq[Player]
   /**
-   * The winning team
+   * The winning team.
    *
-   * @return winner crew
+   * @return winner crew.
    */
   def crew: WinnerCrew
 }
 
 /**
- * Trait that manages the Winning of a Crew
+ * Trait that manages the Winning of a Crew.
  */
 trait WinnerCrew
 

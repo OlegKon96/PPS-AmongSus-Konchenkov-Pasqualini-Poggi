@@ -6,37 +6,37 @@ import it.amongsus.core.util.MovePlayer._
 import it.amongsus.core.util.{Direction, Point2D}
 
 /**
- * Trait that manages the Impostor of the game
+ * Trait that manages the Impostor of the game.
  */
 trait ImpostorAlive extends Player with AlivePlayer with Impostor {
   /**
-   * Method that manages the Impostor that killed a Crewmate
+   * Method that manages the Impostor that killed a Crewmate.
    *
-   * @param position of the player
-   * @param players sequence of the players of the game
-   * @return true if there is a player in range, else otherwise
+   * @param position of the player.
+   * @param players sequence of the players of the game.
+   * @return true if there is a player in range, else otherwise.
    */
   def canKill(position: Point2D, players: Seq[Player]): Boolean
   /**
-   * Method that manages the kill of the game
+   * Method that manages the kill of the game.
    *
-   * @param position of the player
-   * @param players sequence of the players of the game
-   * @return a player that is in range to kill, None otherwise
+   * @param position of the player.
+   * @param players sequence of the players of the game.
+   * @return a player that is in range to kill, None otherwise.
    */
   def kill(position: Point2D, players: Seq[Player]): Option[Player]
   /**
-   * Method that manages the use of the vent
+   * Method that manages the use of the vent.
    *
-   * @param vent sequence of the vent couple of the game
-   * @return a player whit modified position if he can vent, None otherwise
+   * @param vent sequence of the vent couple of the game.
+   * @return a player whit modified position if he can vent, None otherwise.
    */
   def useVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Player]
   /**
    * Method that manages id player can use vent or not
    *
-   * @param vent sequence of the vent couple of the game
-   * @return a new position if the player can vent, None otherwise
+   * @param vent sequence of the vent couple of the game.
+   * @return a new position if the player can vent, None otherwise.
    */
   def canVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Point2D]
 }

@@ -6,7 +6,7 @@ import it.amongsus.core.map.Tile
 import it.amongsus.core.util.{Direction, Point2D}
 
 /**
- * Trait that manages the Ghost of the Impostor of the game
+ * Trait that manages the Ghost of the Impostor of the game.
  */
 trait ImpostorGhost extends Player with DeadPlayer with Impostor
 

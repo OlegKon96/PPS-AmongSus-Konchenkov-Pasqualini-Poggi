@@ -1,26 +1,26 @@
 package it.amongsus.core.util
 
 /**
- * Trait that manages the Point2D of the game
+ * Trait that manages the Point2D of the game.
  */
 trait Point2D {
   /**
-   * X Axis
+   * X Axis.
    *
-   * @return x value of the point
+   * @return x value of the point.
    */
   def x: Int
   /**
-   * Y Axis
+   * Y Axis.
    *
-   * @return y value of the point
+   * @return y value of the point.
    */
   def y: Int
   /**
-   * Method to find the distance from 2 points
+   * Method to find the distance from 2 points.
    *
    * @param point point 2D
-   * @return the distance between two points
+   * @return the distance between two points.
    */
   def distance(point: Point2D): Int
 }

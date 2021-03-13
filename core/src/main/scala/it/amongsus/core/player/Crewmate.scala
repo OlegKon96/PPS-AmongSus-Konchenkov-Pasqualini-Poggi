@@ -3,19 +3,19 @@ package it.amongsus.core.player
 import it.amongsus.core.map.Coin
 
 /**
- * Trait that manages Crewmate
+ * Trait that manages Crewmate.
  */
 trait Crewmate {
   self: Player =>
   /**
-   * Number of the coin
+   * Number of the coin.
    */
   val numCoins: Int
   /**
-   * Method to collect the coin
+   * Method to collect the coin.
    *
-   * @param player of the game
-   * @return a new instance of a player whit updated coin number
+   * @param player of the game.
+   * @return a new instance of a player whit updated coin number.
    */
   def collect(player: Crewmate):  Player = {
     player match {
@@ -26,10 +26,10 @@ trait Crewmate {
     }
   }
   /**
-   * Method to check if a player can collect the coin of the game
-   * @param coins of the game
-   * @param player of the game
-   * @return a coin to collect if the player is on top of it, None otherwise
+   * Method to check if a player can collect the coin of the game.
+   * @param coins of the game.
+   * @param player of the game.
+   * @return a coin to collect if the player is on top of it, None otherwise.
    */
   def canCollect(coins: Seq[Coin], player: Player): Option[Coin] = {
     coins.find(coin => coin.position == player.position)

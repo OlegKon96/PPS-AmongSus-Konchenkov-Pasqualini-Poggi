@@ -3,7 +3,7 @@ package it.amongsus.core.map
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that represents "other" objects in the game
+ * Trait that represents "other" objects in the game.
  */
 trait Other extends Tile
 

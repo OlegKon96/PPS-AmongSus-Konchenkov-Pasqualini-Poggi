@@ -3,8 +3,8 @@ package it.amongsus.core.util
 import it.amongsus.core.util.Direction.{Down, Left, Right, Up}
 
 /**
- * Rich version of Point2D
- * @param point to which add some functionalities
+ * Rich version of Point2D.
+ * @param point to which add some functionalities.
  */
 case class RichPoint2D(point: Point2D){
   final val MOVEMENT_DISTANCE: Int = 1
@@ -18,7 +18,7 @@ case class RichPoint2D(point: Point2D){
 }
 
 /**
- * implicit conversion of Point2D to RichPoint2D
+ * implicit conversion of Point2D to RichPoint2D.
  */
 object RichPoint2D {
   implicit def toMyRichPoint2D(point: Point2D): RichPoint2D = RichPoint2D(point)

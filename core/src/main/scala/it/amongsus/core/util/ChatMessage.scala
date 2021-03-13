@@ -1,19 +1,19 @@
 package it.amongsus.core.util
 
 /**
- * Trait that manages the messages of the Chat in the Game
+ * Trait that manages the messages of the Chat in the Game.
  */
 trait ChatMessage{
   /**
-   * Username of the player that send the message
+   * Username of the player that send the message.
    *
-   * @return sender username
+   * @return sender username.
    */
   def username: String
   /**
-   * Text of the message
+   * Text of the message.
    *
-   * @return message test
+   * @return message test.
    */
   def text: String
 }
