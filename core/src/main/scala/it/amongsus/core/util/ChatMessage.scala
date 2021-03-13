@@ -7,13 +7,13 @@ trait ChatMessage{
   /**
    * Username of the player that send the message
    *
-   * @return
+   * @return sender username
    */
   def username: String
   /**
    * Text of the message
    *
-   * @return
+   * @return message test
    */
   def text: String
 }
