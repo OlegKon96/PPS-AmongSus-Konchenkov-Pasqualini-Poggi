@@ -5,10 +5,13 @@ import it.amongsus.ActorSystemManager
 import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ActionOffController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
+import it.amongsus.core.map.DeadBody
+import it.amongsus.core.player.Player
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
+import it.amongsus.core.util.{ActionType, Direction, GameEnd}
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel}
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
@@ -36,15 +39,15 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       context >>> gameBehaviour(ModelActorInfo(state.controllerRef,
         Option(gameMap), players, state.gameCollectionables, state.clientId))
 
-    case MyCharMovedModel(direction) => state.updateMyChar(direction)
+    case MyCharMovedModel(direction: Direction) => state.updateMyChar(direction)
 
-    case PlayerMovedModel(player, deadBodys) =>
+    case PlayerMovedModel(player: Player, deadBodys: Seq[DeadBody]) =>
       state.deadBodies = deadBodys
       state.updatePlayer(player)
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
         state.gameCollectionables, state.deadBodies)
 
-    case UiActionModel(action) => action match {
+    case UiActionModel(action: ActionType) => action match {
       case _: VentAction => state.useVent()
       case _: EmergencyAction => state.checkTimer(TimerEnded)
         state.callEmergency()
@@ -71,19 +74,19 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case BeginVotingModel => state.checkTimer(TimerEnded)
       context >>> voteBehaviour(state)
 
-    case GameEndModel(end) => state.checkTimer(TimerEnded)
+    case GameEndModel(end: GameEnd) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
     case MyPlayerLeftModel => self ! PoisonPill
 
-    case PlayerLeftModel(clientId) => state.removePlayer(clientId)
+    case PlayerLeftModel(clientId: String) => state.removePlayer(clientId)
 
     case _ => log.info("Model Actor -> game error" )
   }
 
   private def voteBehaviour(state: ModelActorInfo): Receive = {
-    case KillPlayerModel(username) =>
+    case KillPlayerModel(username: String) =>
       state.killAfterVote(username)
       state.deadBodies = Seq()
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
@@ -92,7 +95,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case RestartGameModel => state.checkTimer(TimerStarted)
       context >>> gameBehaviour(state)
 
-    case GameEndModel(end) => state.checkTimer(TimerEnded)
+    case GameEndModel(end: GameEnd) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
