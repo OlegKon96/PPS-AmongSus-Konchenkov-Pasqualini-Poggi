@@ -154,7 +154,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case UpdatedPlayersController(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
     deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
-    case SendTextChatController(message: ChatMessage, myChar: Player) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
+    case SendTextChatController(message: ChatMessage, myChar: Player) =>
+      state.gameServerRef.get ! SendTextChatServer(message, myChar)
 
     case SendTextChatClient(message: ChatMessage) => state.guiRef.get ! ReceiveTextChatUi(message)
 
