@@ -7,20 +7,20 @@ trait Point2D {
   /**
    * X Axis
    *
-   * @return
+   * @return x value of the point
    */
   def x: Int
   /**
    * Y Axis
    *
-   * @return
+   * @return y value of the point
    */
   def y: Int
   /**
    * Method to find the distance from 2 points
    *
    * @param point point 2D
-   * @return
+   * @return the distance between two points
    */
   def distance(point: Point2D): Int
 }
