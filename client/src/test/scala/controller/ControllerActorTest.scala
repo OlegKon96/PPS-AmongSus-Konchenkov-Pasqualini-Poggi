@@ -1,11 +1,10 @@
 package controller
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.controller.ActionTimer.TimerStarted
-import it.amongsus.controller.actor.ControllerActorMessages.{ActionOnController, BeginVotingController, GameEndController, KillTimerController, MyCharMovedController, PlayerLeftController, SendTextChatController, TestGameBehaviour, UpdatedPlayersController}
-import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo, LobbyActorInfoData}
+import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
 import it.amongsus.core.map.Tile
 import it.amongsus.core.{Drawable, player}
 import it.amongsus.core.player.{ImpostorAlive, Player}
@@ -14,13 +13,12 @@ import it.amongsus.core.util.GameEnd.{CrewmateCrew, Win}
 import it.amongsus.core.util.Direction.Up
 import it.amongsus.core.util.{ChatMessage, Point2D}
 import it.amongsus.messages.GameMessageClient._
-import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerReadyServer, SendTextChatServer, StartVoting}
+import it.amongsus.messages.GameMessageServer.{PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, InitModel, KillPlayerModel, MyCharMovedModel, MyPlayerLeftModel, PlayerMovedModel}
-import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.view.actor.{UiActor, UiActorInfo}
-import it.amongsus.view.actor.UiActorGameMessages.{ActionOffUi, ActionOnUi, BeginVotingUi, GameEndUi, KillTimerUpdateUi, NoOneEliminatedUi, PlayerLeftUi, PlayerUpdatedUi, ReceiveTextChatUi, SabotageTimerUpdateUi}
+import it.amongsus.model.actor.ModelActorMessages._
+import it.amongsus.model.actor.ModelActorInfo
+import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -54,7 +52,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! TestGameBehaviour(model.ref, serverActor.ref)
       serverActor.expectNoMessage()
 
-      controllerActor ! PlayerReadyClient()
+      controllerActor ! PlayerReadyClient
       serverActor.expectMsgType[PlayerReadyServer]
 
       controllerActor ! BeginVotingController(Seq())
@@ -81,7 +79,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! TestGameBehaviour(model.ref, serverActor.ref)
       serverActor.expectNoMessage()
 
-      controllerActor ! PlayerReadyClient()
+      controllerActor ! PlayerReadyClient
       serverActor.expectMsgType[PlayerReadyServer]
 
       controllerActor ! MyCharMovedController(Up())
@@ -97,7 +95,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       uiActor.expectMsgType[ActionOnUi]
 
       controllerActor ! StartVotingClient(players)
-      model.expectMsgType[BeginVotingModel]
+      model.expectMsg(BeginVotingModel)
       uiActor.expectMsgType[BeginVotingUi]
 
       controllerActor ! SendTextChatController(ChatMessage("dasds", "Hello"), crewmateAlive)
@@ -106,14 +104,14 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! SendTextChatClient(ChatMessage("dasds", "Hello"))
       uiActor.expectMsgType[ReceiveTextChatUi]
 
-      controllerActor ! NoOneEliminatedController()
-      uiActor.expectMsgType[NoOneEliminatedUi]
+      controllerActor ! NoOneEliminatedController
+      uiActor.expectMsg(NoOneEliminatedUi)
 
       controllerActor ! PlayerLeftClient("dasds")
       uiActor.expectMsgType[PlayerLeftUi]
 
-      controllerActor ! PlayerLeftController()
-      model.expectMsgType[MyPlayerLeftModel]
+      controllerActor ! PlayerLeftController
+      model.expectMsg(MyPlayerLeftModel)
 
       uiActor.expectNoMessage()
       model.expectNoMessage()
@@ -146,7 +144,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       val controllerActor =
         system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
       controllerActor ! MatchFound(client.ref)
-      client.expectMsgType[MatchFoundUi]
+      client.expectMsg(MatchFoundUi)
     }
   }
 

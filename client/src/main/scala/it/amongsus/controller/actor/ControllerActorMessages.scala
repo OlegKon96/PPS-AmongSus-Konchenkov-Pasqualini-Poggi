@@ -47,7 +47,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that it's time to vote
    */
-  case class InitVote()
+  case object InitVote
   /**
    * Tells to the controller that the game is ended
    */
@@ -55,7 +55,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the game needs to be restarted
    */
-  case class RestartGameController()
+  case object RestartGameController
   /**
    * Tells to the controller that the voting fase is beginning
    */
@@ -76,7 +76,7 @@ object ControllerActorMessages {
   /**
    * Tells to the Ui Actor that Players left the game
    */
-  case class PlayerLeftController()
+  case object PlayerLeftController
 
   case class TestGameBehaviour(model: ActorRef, server: ActorRef)
 }

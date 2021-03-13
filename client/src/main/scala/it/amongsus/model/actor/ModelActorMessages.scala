@@ -41,7 +41,7 @@ object ModelActorMessages {
   /**
    * Tells to the controller that the voting fase is beginning
    */
-  case class BeginVotingModel()
+  case object BeginVotingModel
   /**
    * Tells to the model that a player is killed
    *
@@ -51,7 +51,7 @@ object ModelActorMessages {
   /**
    * Tells to the model to restart the game
    */
-  case class RestartGameModel()
+  case object RestartGameModel
   /**
    * Tells to the model that the game ended
    *
@@ -61,7 +61,7 @@ object ModelActorMessages {
   /**
    * Tells to the Ui Actor that a player left
    */
-  case class MyPlayerLeftModel()
+  case object MyPlayerLeftModel
   /**
    * Tells to the Ui Actor that a player left
    *

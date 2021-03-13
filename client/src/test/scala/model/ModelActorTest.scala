@@ -54,8 +54,8 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
     modelActor ! KillPlayerModel("test")
     controller.expectMsgType[UpdatedPlayersController]
 
-    modelActor ! RestartGameModel()
-    modelActor ! MyPlayerLeftModel()
+    modelActor ! RestartGameModel
+    modelActor ! MyPlayerLeftModel
     controller.expectNoMessage()
   }
 

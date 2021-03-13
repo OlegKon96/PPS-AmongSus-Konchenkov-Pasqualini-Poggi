@@ -119,7 +119,7 @@ object MenuFrame {
         _ <- menuFrame.setVisible(true)
         _ <- menuFrame.addWindowListener(new WindowAdapter {
           override def windowClosing(e: WindowEvent): Unit = {
-            guiRef.get ! PlayerCloseUi()
+            guiRef.get ! PlayerCloseUi
           }
         })
         _ <- menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)

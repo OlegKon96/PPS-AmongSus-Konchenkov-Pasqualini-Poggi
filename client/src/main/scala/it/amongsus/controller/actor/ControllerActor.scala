@@ -35,7 +35,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
   private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
     case ConnectClient(address, port) =>
-      state.guiRef.get ! Init()
+      state.guiRef.get ! Init
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
           ref ! ConnectServer(context.self)
@@ -53,7 +53,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case JoinPrivateLobbyClient(username: String, privateLobbyCode: String) =>
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
 
-    case LeaveLobbyClient() => state.serverRef.get ! LeaveLobbyServer(state.clientId)
+    case LeaveLobbyClient => state.serverRef.get ! LeaveLobbyServer(state.clientId)
 
     case UserAddedToLobbyClient(numPlayers, roomSize) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
 
@@ -61,10 +61,10 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case PrivateLobbyCreatedClient(lobbyCode,roomSize) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
 
-    case PlayerLeftController() => self ! PoisonPill
+    case PlayerLeftController => self ! PoisonPill
 
     case MatchFound(gameRoom) =>
-      state.guiRef.get ! MatchFoundUi()
+      state.guiRef.get ! MatchFoundUi
       val model =
         ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelActorInfo(Option(self),
           None, Seq(), Seq(), state.clientId)), "model")
@@ -84,7 +84,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
   }
 
   private def gameBehaviour(state: GameActorInfo): Receive = {
-    case PlayerReadyClient() => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
+    case PlayerReadyClient => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
 
     case GamePlayersClient(players) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
@@ -115,7 +115,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.guiRef.get ! BeginVotingUi(gamePlayers)
       context >>> voteBehaviour(state)
 
-    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
+    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel
       state.guiRef.get ! BeginVotingUi(gamePlayers)
       context >>> voteBehaviour(state)
 
@@ -124,7 +124,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
 
-    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
+    case PlayerLeftController => state.modelRef.get ! MyPlayerLeftModel
       self ! PoisonPill
 
     //case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
@@ -140,7 +140,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.modelRef.get ! KillPlayerModel(username)
       state.guiRef.get ! EliminatedPlayer(username)
 
-    case NoOneEliminatedController() => state.guiRef.get ! NoOneEliminatedUi()
+    case NoOneEliminatedController => state.guiRef.get ! NoOneEliminatedUi
 
     case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
       state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
@@ -157,11 +157,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         state.modelRef.get ! GameEndModel(end)
       }
 
-    case RestartGameController() =>
-      state.modelRef.get ! RestartGameModel()
+    case RestartGameController =>
+      state.modelRef.get ! RestartGameModel
       context >>> gameBehaviour(state)
 
-    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
+    case PlayerLeftController => state.modelRef.get ! MyPlayerLeftModel
       self ! PoisonPill
 
     case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)

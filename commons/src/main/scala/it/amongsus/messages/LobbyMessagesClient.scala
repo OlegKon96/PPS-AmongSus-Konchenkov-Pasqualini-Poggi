@@ -45,7 +45,7 @@ object LobbyMessagesClient {
   /**
    * Message sent by the client to leave the current lobby
    */
-  case class LeaveLobbyClient()
+  case object LeaveLobbyClient
   /**
    * Message sent by the server after a successful lobby connection
    *

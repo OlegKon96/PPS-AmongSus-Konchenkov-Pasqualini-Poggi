@@ -8,7 +8,7 @@ object UiActorLobbyMessages {
   /**
    * Initialize Actor
    */
-  case class Init()
+  case object Init
   /**
    * Create a Public Lobby view event
    *
@@ -33,11 +33,7 @@ object UiActorLobbyMessages {
   /**
    * Leave the Lobby view event
    */
-  case class LeaveLobbyUi()
-  /**
-   * Retry the connection to the Server view event
-   */
-  case class RetryServerConnectionUi()
+  case object LeaveLobbyUi
   /**
    * Notify User that he was added to a Lobby
    *
@@ -65,13 +61,13 @@ object UiActorLobbyMessages {
   /**
    * Notify the User that there's a match to a Lobby
    */
-  case class MatchFoundUi()
+  case object MatchFoundUi
   /**
    * Notify the User that there's an Error Occurred
    */
-  case class LobbyErrorOccurredUi()
+  case object LobbyErrorOccurredUi
   /**
    * Notify the User that a player close the game
    */
-  case class PlayerCloseUi()
+  case object PlayerCloseUi
 }

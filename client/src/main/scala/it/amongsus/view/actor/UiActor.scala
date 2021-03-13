@@ -33,7 +33,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
   override def receive: Receive = defaultBehaviour(serverResponsesListener)
 
   private def defaultBehaviour(state: UiActorInfo): Receive = {
-    case Init() =>
+    case Init =>
       val frame = MenuFrame(Option(self))
       frame.start().unsafeRunSync()
       context >>> defaultBehaviour(UiActorInfo(Option(sender), Option(frame)))
@@ -55,8 +55,6 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case UpdateLobbyClient(numPlayers) => state.updateLobby(numPlayers)
 
-    case RetryServerConnectionUi() => ???
-
     case PrivateLobbyCreatedUi(lobbyCode, roomSize) =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val lobby = LobbyFrame(self,roomSize)
@@ -64,19 +62,19 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       context >>> defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
       state.saveCode(lobbyCode)
 
-    case LeaveLobbyUi() =>
+    case LeaveLobbyUi =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val frame = MenuFrame(Option(self))
       frame.start().unsafeRunSync()
       context >>> defaultBehaviour(UiActorInfo(state.clientRef, Option(frame)))
-      state.clientRef.get ! LeaveLobbyClient()
+      state.clientRef.get ! LeaveLobbyClient
 
-    case MatchFoundUi() => state.showStartButton()
+    case MatchFoundUi => state.showStartButton()
 
-    case PlayerCloseUi() => state.clientRef.get ! PlayerLeftController()
+    case PlayerCloseUi => state.clientRef.get ! PlayerLeftController
       self ! PoisonPill
 
-    case PlayerReadyUi() => state.clientRef.get ! PlayerReadyClient()
+    case PlayerReadyUi => state.clientRef.get ! PlayerReadyClient
 
     case GameFoundUi(map, myChar, players, collectionables) =>
       state.currentFrame.get.dispose().unsafeRunSync()
@@ -86,13 +84,13 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case LobbyErrorOccurredUi => state.lobbyError()
 
-    case _ => println("ERROR")
+    case _ => log.info("Ui Actor lobby error")
   }
 
   private def gameBehaviour(state: UiGameActorInfo): Receive = {
-    case LeaveGameUi() => state.clientRef.get ! LeaveGameClient()
+    case LeaveGameUi => state.clientRef.get ! LeaveGameClient
 
-    case PlayerCloseUi() => state.clientRef.get ! PlayerLeftController()
+    case PlayerCloseUi => state.clientRef.get ! PlayerLeftController
       self ! PoisonPill
 
     case MyCharMovedUi(direction) => state.clientRef.get ! MyCharMovedController(direction)
@@ -124,9 +122,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       }
       context >>> voteBehaviour(state, voteFrame)
 
-    case PlayerLeftUi(clientId) => println("left -> " + clientId)
+    case PlayerLeftUi(clientId) => log.info("Player -> " + clientId + " left the game.")
 
-    case _ => println("ERROR 2")
+    case _ => log.info("Ui Actor game error")
   }
 
   private def voteBehaviour(state: UiGameActorInfo, voteFrame : VoteFrame): Receive = {
@@ -135,21 +133,21 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case EliminatedPlayer(username) =>
       voteFrame.eliminated(username).unsafeRunSync()
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3 seconds){
-        self ! RestartGameUi()
+        self ! RestartGameUi
       }
 
-    case NoOneEliminatedUi() =>
+    case NoOneEliminatedUi =>
       voteFrame.noOneEliminated().unsafeRunSync()
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3 seconds){
-        self ! RestartGameUi()
+        self ! RestartGameUi
       }
 
     case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
       state.updatePlayer(myChar,players,collectionables, deadBodies)
 
-    case RestartGameUi() =>
+    case RestartGameUi =>
       voteFrame.dispose().unsafeRunSync()
-      state.clientRef.get ! RestartGameController()
+      state.clientRef.get ! RestartGameController
       context >>> gameBehaviour(state)
 
     case GameEndUi(end) =>
@@ -162,6 +160,6 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case ReceiveTextChatUi(message) => voteFrame.appendTextToChat(message.text, message.username).unsafeRunSync()
 
-    case _ => println("Error vote behaviour")
+    case _ => log.info("Error vote behaviour")
   }
 }

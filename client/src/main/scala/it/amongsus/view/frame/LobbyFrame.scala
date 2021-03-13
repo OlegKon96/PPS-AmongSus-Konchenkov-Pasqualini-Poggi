@@ -75,7 +75,7 @@ object LobbyFrame {
         _ <- controlPanel.setBorder(basicBorder)
         _ <- topPanel.setBorder(basicBorder)
         _ <- backButton.addActionListener(for {
-          _ <- IO(guiRef ! LeaveLobbyUi())
+          _ <- IO(guiRef ! LeaveLobbyUi)
         } yield ())
         _ <- topPanel.add(backButton, BorderLayout.WEST)
         _ <- players.setText("Players" + numPlayers.toString + "/" + size.toString)
@@ -91,7 +91,7 @@ object LobbyFrame {
         _ <- startLabel.setVisible(false)
         _ <- startLabel.setBorder(mainBorder)
         _ <- startButton.addActionListener(for {
-          _ <- IO(guiRef ! PlayerReadyUi())
+          _ <- IO(guiRef ! PlayerReadyUi)
           _ <- startLabel.setVisible(true)
           _ <- startButton.setEnabled(false)
         }yield())
@@ -108,7 +108,7 @@ object LobbyFrame {
         _ <- lobbyFrame.setResizable(false)
         _ <- lobbyFrame.addWindowListener(new WindowAdapter {
           override def windowClosing(e: WindowEvent): Unit = {
-            guiRef ! PlayerCloseUi()
+            guiRef ! PlayerCloseUi
           }
         })
         _ <- lobbyFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)

@@ -177,7 +177,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
 
         for {
           p <- this.state.players
-        } yield p.actorRef ! NoOneEliminatedController()
+        } yield p.actorRef ! NoOneEliminatedController
 
         context >>> inGame()
       } else {

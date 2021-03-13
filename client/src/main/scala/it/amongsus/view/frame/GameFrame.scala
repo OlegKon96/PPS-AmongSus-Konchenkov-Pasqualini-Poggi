@@ -139,7 +139,7 @@ object GameFrame {
       _ <- gameFrame.requestFocusInWindow()
       _ <- gameFrame.addWindowListener(new WindowAdapter {
         override def windowClosing(e: WindowEvent): Unit = {
-          guiRef.get ! PlayerCloseUi()
+          guiRef.get ! PlayerCloseUi
         }
       })
       _ <- gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)

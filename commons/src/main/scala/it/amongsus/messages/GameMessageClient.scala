@@ -8,7 +8,7 @@ object GameMessageClient {
   /**
    * Tells the controller actor that a player is ready to start a game
    */
-  case class PlayerReadyClient()
+  case object PlayerReadyClient
   /**
    * Tells the controller actor that the list of players of a game
    *
@@ -25,7 +25,7 @@ object GameMessageClient {
   /**
    * Tells the controller actor that a player wants to leave the game
    */
-  case class LeaveGameClient()
+  case object LeaveGameClient
   /**
    * Tells the controller actor that the game is ended with a win
    *
@@ -47,7 +47,7 @@ object GameMessageClient {
   /**
    * Tells the controller actor that Player skip the vote
    */
-  case class SkipVoteClient()
+  case object SkipVoteClient
   /**
    * Tells the controller actor that Player vote another player
    *
@@ -75,5 +75,5 @@ object GameMessageClient {
   /**
    * Tells to the Client Actor that no one was ejected from the vote session
    */
-  case class NoOneEliminatedController()
+  case object NoOneEliminatedController
 }

@@ -8,11 +8,11 @@ object UiActorGameMessages {
   /**
    * Tells to UI actor that the player is ready to start the game
    */
-  case class PlayerReadyUi()
+  case object PlayerReadyUi
   /**
    * Tells to UI actor that the player wants to leave the game
    */
-  case class LeaveGameUi()
+  case object LeaveGameUi
   /**
    * Tells to UI actor that the game is ended with a win
    *
@@ -68,7 +68,7 @@ object UiActorGameMessages {
   /**
    * Tells to UI actor to restart the game
    */
-  case class RestartGameUi()
+  case object RestartGameUi
   /**
    * Tells to the Ui actor that the voting phase is beginning
    *
@@ -105,5 +105,5 @@ object UiActorGameMessages {
   /**
    * Tells to the Ui Actor that no one was ejected from vote session
    */
-  case class NoOneEliminatedUi()
+  case object NoOneEliminatedUi
 }

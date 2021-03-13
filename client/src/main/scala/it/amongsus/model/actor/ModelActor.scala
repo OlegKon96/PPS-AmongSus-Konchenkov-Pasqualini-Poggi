@@ -68,14 +68,14 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     }
       state.updatePlayer(state.myCharacter)
 
-    case BeginVotingModel() => state.checkTimer(TimerEnded)
+    case BeginVotingModel => state.checkTimer(TimerEnded)
       context >>> voteBehaviour(state)
 
     case GameEndModel(end) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
-    case MyPlayerLeftModel() => self ! PoisonPill
+    case MyPlayerLeftModel => self ! PoisonPill
 
     case PlayerLeftModel(clientId) => state.removePlayer(clientId)
 
@@ -89,14 +89,14 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
         state.gameCollectionables, state.deadBodies)
 
-    case RestartGameModel() => state.checkTimer(TimerStarted)
+    case RestartGameModel => state.checkTimer(TimerStarted)
       context >>> gameBehaviour(state)
 
     case GameEndModel(end) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
-    case MyPlayerLeftModel() => self ! PoisonPill
+    case MyPlayerLeftModel => self ! PoisonPill
 
     case _ => println("ERROR VOTE")
   }
