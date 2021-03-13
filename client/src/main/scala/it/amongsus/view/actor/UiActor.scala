@@ -8,7 +8,7 @@ import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedControll
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
 import it.amongsus.controller.actor.ControllerActorMessages.UiActionController
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
+import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.player.{AlivePlayer, Player}
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient}
@@ -80,9 +80,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case PlayerReadyUi => state.clientRef.get ! PlayerReadyClient
 
     case GameFoundUi(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
-                      collectionables: Seq[Collectionable]) =>
+                      coins: Seq[Coin]) =>
       state.currentFrame.get.dispose().unsafeRunSync()
-      val game = GameFrame(Option(self),map,myChar,players,collectionables)
+      val game = GameFrame(Option(self),map,myChar,players,coins)
       game.start().unsafeRunSync()
       context >>> gameBehaviour(UiGameActorData(state.clientRef, Option(game)))
 
@@ -99,9 +99,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case MyCharMovedUi(direction: Direction) => state.clientRef.get ! MyCharMovedController(direction)
 
-    case PlayerUpdatedUi(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
+    case PlayerUpdatedUi(myChar: Player, players: Seq[Player], coins: Seq[Coin],
                           deadBodies: Seq[DeadBody]) =>
-      state.updatePlayer(myChar,players,collectionables, deadBodies)
+      state.updatePlayer(myChar,players,coins, deadBodies)
 
     case ActionOnUi(action: ActionType) => state.setButtonState(action,boolean = true)
 
@@ -147,9 +147,9 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
         self ! RestartGameUi
       }
 
-    case PlayerUpdatedUi(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
+    case PlayerUpdatedUi(myChar: Player, players: Seq[Player], coins: Seq[Coin],
                           deadBodies: Seq[DeadBody]) =>
-      state.updatePlayer(myChar,players,collectionables, deadBodies)
+      state.updatePlayer(myChar,players,coins, deadBodies)
 
     case RestartGameUi =>
       voteFrame.dispose().unsafeRunSync()

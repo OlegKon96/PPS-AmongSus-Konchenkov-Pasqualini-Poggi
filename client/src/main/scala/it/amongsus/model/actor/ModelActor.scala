@@ -8,7 +8,8 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
-import it.amongsus.core.map.DeadBody
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{DeadBody, Tile}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.core.util.{ActionType, Direction, GameEnd}
@@ -29,23 +30,23 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
   override def receive: Receive = gameBehaviour(state)
 
   private def gameBehaviour(state: ModelActorInfo): Receive = {
-    case InitModel(map, players) =>
+    case InitModel(map: Iterator[String], players: Seq[Player]) =>
       state.gamePlayers = players
       val gameMap = state.generateMap(map)
-      state.generateCollectionables(gameMap)
+      state.generateCoins(gameMap)
       state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, state.gamePlayers,
-        state.gameCollectionables)
+        state.gameCoins)
       state.checkTimer(TimerStarted)
       context >>> gameBehaviour(ModelActorInfo(state.controllerRef,
-        Option(gameMap), players, state.gameCollectionables, state.clientId))
+        Option(gameMap), players, state.gameCoins, state.clientId))
 
     case MyCharMovedModel(direction: Direction) => state.updateMyChar(direction)
 
-    case PlayerMovedModel(player: Player, deadBodys: Seq[DeadBody]) =>
-      state.deadBodies = deadBodys
+    case PlayerMovedModel(player: Player, deadBodiss: Seq[DeadBody]) =>
+      state.deadBodies = deadBodiss
       state.updatePlayer(player)
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodies)
+        state.gameCoins, state.deadBodies)
 
     case UiActionModel(action: ActionType) => action match {
       case _: VentAction => state.useVent()
@@ -90,7 +91,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.killAfterVote(username)
       state.deadBodies = Seq()
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodies)
+        state.gameCoins, state.deadBodies)
 
     case RestartGameModel => state.checkTimer(TimerStarted)
       context >>> gameBehaviour(state)

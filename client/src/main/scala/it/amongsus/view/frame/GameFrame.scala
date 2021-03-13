@@ -3,7 +3,7 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
+import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiActionTypeUi}
 import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
@@ -27,10 +27,10 @@ trait GameFrame extends Frame {
    *
    * @param myChar my character of the game
    * @param players of the game
-   * @param collectionables of the game
+   * @param coins of the game
    * @param deadBodies of the game
    */
-  def updatePlayers(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
+  def updatePlayers(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                     deadBodies : Seq[DeadBody]) :Unit
   /**
    * Method to start the Game Frame
@@ -69,7 +69,7 @@ trait GameFrame extends Frame {
    *
    * @return
    */
-  def collectionables : Seq[Collectionable]
+  def coins : Seq[Coin]
   /**
    * Method that moves the player
    *
@@ -97,14 +97,14 @@ object GameFrame {
             map : Array[Array[Drawable[Tile]]],
             myChar: Player,
             players : Seq[Player],
-            collectionables : Seq[Collectionable]): GameFrame =
-    new GameFrameImpl(guiRef,map,myChar,players,collectionables)
+            coins : Seq[Coin]): GameFrame =
+    new GameFrameImpl(guiRef,map,myChar,players,coins)
 
   private class GameFrameImpl(guiRef: Option[ActorRef],
                               override val map : Array[Array[Drawable[Tile]]],
                               override val myChar : Player,
                               override val players : Seq[Player],
-                              override val collectionables : Seq[Collectionable]) extends GameFrame {
+                              override val coins : Seq[Coin]) extends GameFrame {
 
     final val GAME_FRAME_WIDTH : Int = 1230
     final val GAME_PANEL_WIDTH : Int = 1080
@@ -115,7 +115,7 @@ object GameFrame {
     final val COLS_NUMBER : Int = 1
 
     val gameFrame = new JFrameIO(new JFrame("Among Sus"))
-    val gamePanel: GamePanel = GamePanel(map,myChar,players,collectionables,Seq.empty)
+    val gamePanel: GamePanel = GamePanel(map,myChar,players,coins,Seq.empty)
     val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
     val killButton: JButtonIO = JButtonIO("Kill").unsafeRunSync()
     val emergencyButton: JButtonIO = JButtonIO("Call Emergency").unsafeRunSync()
@@ -151,9 +151,9 @@ object GameFrame {
 
     override def updatePlayers(myChar: Player,
                                players: Seq[Player],
-                               collectionables : Seq[Collectionable],
+                               coins : Seq[Coin],
                                deadBodies : Seq[DeadBody]): Unit =
-      gamePanel.updateGame(myChar,players,collectionables,deadBodies)
+      gamePanel.updateGame(myChar,players,coins,deadBodies)
 
     private def createCrewmateButton() : IO[JPanelIO] = for {
       crewmateButtonPanel <- JPanelIO()

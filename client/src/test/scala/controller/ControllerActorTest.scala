@@ -35,7 +35,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
   private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
-  modelActor.generateCollectionables(map)
+  modelActor.generateCoins(map)
 
   val client: TestProbe = TestProbe()
   val serverActor: TestProbe = TestProbe()
@@ -88,7 +88,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! PlayerMovedClient(crewmateAlive, Seq())
       model.expectMsgType[PlayerMovedModel]
 
-      controllerActor ! UpdatedPlayersController(crewmateAlive, players, modelActor.gameCollectionables, Seq())
+      controllerActor ! UpdatedPlayersController(crewmateAlive, players, modelActor.gameCoins, Seq())
       uiActor.expectMsgType[PlayerUpdatedUi]
 
       controllerActor ! ActionOnController(EmergencyAction())

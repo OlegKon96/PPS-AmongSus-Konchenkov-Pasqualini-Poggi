@@ -1,7 +1,7 @@
 package it.amongsus.view.actor
 
 import akka.actor.ActorRef
-import it.amongsus.core.map.{Collectionable, DeadBody}
+import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.util.{ActionType, GameEnd}
 import it.amongsus.view.frame.{GameFrame, WinFrame}
@@ -34,10 +34,10 @@ trait UiGameActorInfo {
    *
    * @param myChar to update
    * @param players of the game
-   * @param collectionables of the game
+   * @param coins of the game
    * @param deadBodies of the game
    */
-  def updatePlayer(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
+  def updatePlayer(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                    deadBodies : Seq[DeadBody]): Unit
   /**
    * Method to updates the kill button of the GUI
@@ -69,9 +69,9 @@ object UiGameActorInfo {
 case class UiGameActorData(override val clientRef: Option[ActorRef],
                            override val gameFrame: Option[GameFrame]) extends UiGameActorInfo {
 
-  override def updatePlayer(myChar: Player,players: Seq[Player], collectionables : Seq[Collectionable],
+  override def updatePlayer(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                             deadBodies : Seq[DeadBody]): Unit =
-    gameFrame.get.updatePlayers(myChar, players, collectionables, deadBodies)
+    gameFrame.get.updatePlayers(myChar, players, coins, deadBodies)
 
   override def setButtonState(action: ActionType, boolean: Boolean): Unit =
     gameFrame.get.setButtonState(action, boolean).unsafeRunSync()

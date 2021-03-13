@@ -1,7 +1,7 @@
 package it.amongsus.view.panel
 
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Boundary, Collectionable, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
+import it.amongsus.core.map.{Boundary, Coin, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 
 import java.awt.Graphics
@@ -15,10 +15,10 @@ trait GamePanel extends JPanel {
    *
    * @param myChar of the game
    * @param players of the game
-   * @param collectionables of the game
+   * @param coins of the game
    * @param deadBodies in the game
    */
-  def updateGame(myChar: Player, players: Seq[Player], collectionables : Seq[Collectionable],
+  def updateGame(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                  deadBodies : Seq[DeadBody]) : Unit
 }
 
@@ -26,21 +26,21 @@ object GamePanel {
   def apply(map : Array[Array[Drawable[Tile]]],
             myChar: Player,
             players : Seq[Player],
-            collectionables : Seq[Collectionable],
+            coins : Seq[Coin],
             deadBodies : Seq[DeadBody]): GamePanel =
-    new GamePanelImpl(map,myChar, players,collectionables,deadBodies)
+    new GamePanelImpl(map,myChar, players,coins,deadBodies)
 
   private class GamePanelImpl(map : Array[Array[Drawable[Tile]]],
                               myChar: Player,
                               players : Seq[Player],
-                              collectionables : Seq[Collectionable],
+                              coins : Seq[Coin],
                               deadBodies : Seq[DeadBody]) extends GamePanel {
 
     final val WIDTH : Int = 1080
     final val HEIGHT : Int = 750
 
     private var gamePlayers = players
-    private var gameCollectionables = collectionables
+    private var gameCoins = coins
     private var gameDeadBodies = deadBodies
     private var gameMyChar = myChar
     private val gameMap = map
@@ -65,23 +65,23 @@ object GamePanel {
     private def drawEntities(g: Graphics): Unit ={
       gameMyChar match {
         case impostorAlive: ImpostorAlive =>
-          drawEntity(impostorAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(impostorAlive,g,gamePlayers,gameDeadBodies,gameCoins)
         case impostorGhost: ImpostorGhost =>
-          drawEntity(impostorGhost,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(impostorGhost,g,gamePlayers,gameDeadBodies,gameCoins)
         case crewmateAlive: CrewmateAlive =>
-          drawEntity(crewmateAlive,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(crewmateAlive,g,gamePlayers,gameDeadBodies,gameCoins)
         case crewmateGhost: CrewmateGhost =>
-          drawEntity(crewmateGhost,g,gamePlayers,gameDeadBodies,gameCollectionables)
+          drawEntity(crewmateGhost,g,gamePlayers,gameDeadBodies,gameCoins)
       }
     }
 
     def updateGame(myChar: Player,
                    players: Seq[Player],
-                   collectionables : Seq[Collectionable],
+                   coins : Seq[Coin],
                    deadBodies : Seq[DeadBody]): Unit = {
       this.gameMyChar = myChar
       this.gamePlayers = players
-      this.gameCollectionables = collectionables
+      this.gameCoins = coins
       this.gameDeadBodies = deadBodies
       repaint()
     }

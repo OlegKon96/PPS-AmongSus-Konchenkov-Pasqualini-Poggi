@@ -3,7 +3,7 @@ package it.amongsus.controller.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
+import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.{ActionType, GameEnd, ChatMessage, Direction}
 
@@ -12,7 +12,7 @@ object ControllerActorMessages {
    * Tells to the controller that the model is ready
    */
   case class ModelReadyController(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
-                                  collectionables: Seq[Collectionable])
+                                  collectionables: Seq[Coin])
   /**
    * Tells to the controller that his character is moved
    */
@@ -24,7 +24,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the model has updated a player status
    */
-  case class UpdatedPlayersController(myChar: Player, player: Seq[Player], collectionables: Seq[Collectionable],
+  case class UpdatedPlayersController(myChar: Player, player: Seq[Player], collectionables: Seq[Coin],
                                       deadBodies: Seq[DeadBody])
   /**
    * Tells to the controller that the Ui Button is pressed
