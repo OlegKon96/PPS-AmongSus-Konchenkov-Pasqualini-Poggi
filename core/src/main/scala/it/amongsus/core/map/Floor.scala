@@ -11,5 +11,4 @@ object Floor{
   def apply(position: Point2D): Floor = FloorImpl(position)
 
   private case class FloorImpl(override val position: Point2D) extends Floor
-
 }

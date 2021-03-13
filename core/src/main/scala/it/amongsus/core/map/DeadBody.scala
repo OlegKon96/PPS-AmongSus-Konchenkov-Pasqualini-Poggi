@@ -12,5 +12,4 @@ object DeadBody{
   def apply(color: String, position: Point2D): DeadBody = DeadBodyImpl(color, position)
 
   private case class DeadBodyImpl(override val color: String, override val position: Point2D) extends DeadBody
-
 }

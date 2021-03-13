@@ -11,5 +11,4 @@ object Vent{
   def apply(position: Point2D): Vent = VentImpl(position)
 
   private case class VentImpl(override val position: Point2D) extends Vent
-
 }

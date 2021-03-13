@@ -1,7 +1,7 @@
 package it.amongsus.core.player
 
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Tile, Vent}
+import it.amongsus.core.map.Tile
 import it.amongsus.core.util.MovePlayer._
 import it.amongsus.core.util.{Direction, Point2D}
 

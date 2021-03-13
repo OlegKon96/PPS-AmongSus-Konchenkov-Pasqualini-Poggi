@@ -5,7 +5,6 @@ import it.amongsus.core.map.Tile
 import it.amongsus.core.util.MovePlayer.movePlayer
 import it.amongsus.core.util.{Direction, Point2D}
 
-
 /**
  * Trait that manages the Crewmate Alive
  */

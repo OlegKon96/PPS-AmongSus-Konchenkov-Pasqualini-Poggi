@@ -2,7 +2,7 @@ package it.amongsus.core.player
 
 import it.amongsus.core
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{DeadBody, Emergency, Floor, Tile}
+import it.amongsus.core.map.{DeadBody, Floor, Tile}
 import it.amongsus.core.util.Point2D
 
 /**
@@ -10,8 +10,18 @@ import it.amongsus.core.util.Point2D
  */
 trait AlivePlayer {
   self: Player =>
+  /**
+   * Field to check if the emergency was called previously or not
+   *
+   * @return
+   */
   def emergencyCalled: Boolean
-
+  /**
+   * Method to call an emergency
+   *
+   * @param player that calls the emergency
+   * @return
+   */
   def callEmergency(player: Player): Player = {
     player match {
       case crewmateAlive: CrewmateAlive => core.player.CrewmateAlive(crewmateAlive.color, emergencyCalled = true,
@@ -20,7 +30,6 @@ trait AlivePlayer {
         impostorAlive.clientId, impostorAlive.username, impostorAlive.position)
     }
   }
-
   /**
    * Method to let player to report a dead body
    *
@@ -31,7 +40,6 @@ trait AlivePlayer {
   def canReport(pos: Point2D, deadPlayers: Seq[DeadBody]): Boolean = {
     deadPlayers.exists(player => player.position.distance(pos) < Constants.REPORT_DISTANCE)
   }
-
   /**
    * Method to let player to call an emergency in the game
    *
@@ -43,7 +51,6 @@ trait AlivePlayer {
     emergencyButtons.exists(button =>
       button.position.distance(player.position) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
   }
-
   /**
    * Method to check collisions of the player
    *
@@ -57,7 +64,10 @@ trait AlivePlayer {
       case _ => true
     }
   }
-
+  /**
+   * Position of the player
+   *
+   * @return
+   */
   def position:Point2D = self.position
 }
-

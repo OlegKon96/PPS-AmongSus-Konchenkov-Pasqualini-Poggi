@@ -11,5 +11,4 @@ object Emergency{
   def apply(position: Point2D): Emergency = EmergencyImpl(position)
 
   private case class EmergencyImpl(override val position: Point2D) extends Emergency
-
 }
