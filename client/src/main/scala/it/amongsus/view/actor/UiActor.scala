@@ -28,10 +28,10 @@ object UiActor {
 /**
  * Actor that manages the messages from View Actor
  *
- * @param serverResponsesListener the server response listener
+ * @param state the server response listener
  */
-class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor with ActorLogging {
-  override def receive: Receive = defaultBehaviour(serverResponsesListener)
+class UiActor(private val state: UiActorInfo) extends Actor with ActorLogging {
+  override def receive: Receive = defaultBehaviour(state)
 
   private def defaultBehaviour(state: UiActorInfo): Receive = {
     case Init =>

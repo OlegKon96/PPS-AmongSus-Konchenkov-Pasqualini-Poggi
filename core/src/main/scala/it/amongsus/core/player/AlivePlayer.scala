@@ -20,7 +20,7 @@ trait AlivePlayer {
    * Method to call an emergency
    *
    * @param player that calls the emergency
-   * @return
+   * @return a new instance of the same player but he will no longer be able to call an emergency
    */
   def callEmergency(player: Player): Player = {
     player match {
@@ -35,7 +35,7 @@ trait AlivePlayer {
    *
    * @param pos         position of the player
    * @param deadPlayers sequence of dead bodies of the game
-   * @return boolean
+   * @return true if the player is near enought to a dead body, else otherwise
    */
   def canReport(pos: Point2D, deadPlayers: Seq[DeadBody]): Boolean = {
     deadPlayers.exists(player => player.position.distance(pos) < Constants.REPORT_DISTANCE)
@@ -45,7 +45,7 @@ trait AlivePlayer {
    *
    * @param player           game player
    * @param emergencyButtons sequence of emergency buttons of the game
-   * @return boolean
+   * @return true if the player if in the correct distance whit the emergency button else otherwise
    */
   def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Drawable[Tile]]): Boolean = {
     emergencyButtons.exists(button =>
@@ -56,7 +56,7 @@ trait AlivePlayer {
    *
    * @param pos position of the player
    * @param map game map
-   * @return
+   * @return true if collides false otherwise
    */
   def checkCollision(pos: Point2D, map: Array[Array[Drawable[Tile]]]): Boolean = {
     map(pos.x)(pos.y) match {

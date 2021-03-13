@@ -235,29 +235,29 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     myCharacter match {
       case alivePlayer: AlivePlayer =>
         if (alivePlayer.canCallEmergency(alivePlayer, emergencyButtons)) {
-          controllerRef.get ! ActionOnController(EmergencyAction())
+          controllerRef.get ! ActionOnController(EmergencyAction)
         } else {
-          controllerRef.get ! ActionOffController(EmergencyAction())
+          controllerRef.get ! ActionOffController(EmergencyAction)
         }
         if (alivePlayer.canReport(myCharacter.position, deadBodies)) {
-          controllerRef.get ! ActionOnController(ReportAction())
+          controllerRef.get ! ActionOnController(ReportAction)
         } else {
-          controllerRef.get ! ActionOffController(ReportAction())
+          controllerRef.get ! ActionOffController(ReportAction)
         }
         alivePlayer match {
           case impostorAlive: ImpostorAlive =>
             impostorAlive.canVent(ventList) match {
-              case Some(_) => controllerRef.get ! ActionOnController(VentAction())
-              case None => controllerRef.get ! ActionOffController(VentAction())
+              case Some(_) => controllerRef.get ! ActionOnController(VentAction)
+              case None => controllerRef.get ! ActionOffController(VentAction)
             }
             if (impostorAlive.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
-              controllerRef.get ! ActionOnController(KillAction())
+              controllerRef.get ! ActionOnController(KillAction)
             } else if (!isTimerOn) {
-              controllerRef.get ! ActionOffController(KillAction())
+              controllerRef.get ! ActionOffController(KillAction)
             }
           case _ =>
         }
-      case _ => controllerRef.get ! ActionOffController(ReportAction())
+      case _ => controllerRef.get ! ActionOffController(ReportAction)
     }
     gamePlayers
   }

@@ -89,7 +89,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
       controllerActor ! UpdatedPlayersController(crewmateAlive, players, modelActor.gameCoins, Seq())
       uiActor.expectMsgType[PlayerUpdatedUi]
 
-      controllerActor ! ActionOnController(EmergencyAction())
+      controllerActor ! ActionOnController(EmergencyAction)
       uiActor.expectMsgType[ActionOnUi]
 
       controllerActor ! StartVotingClient(players)

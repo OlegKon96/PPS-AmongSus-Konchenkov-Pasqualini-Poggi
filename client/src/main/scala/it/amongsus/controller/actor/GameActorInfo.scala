@@ -88,11 +88,11 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
   val sabotageTimer: ActionTimer = new ActionTimerImpl(sabotageDuration, new TimerListener {
 
     override def onStart(): Unit = {
-      guiRef.get ! ActionOffUi(SabotageAction())
+      guiRef.get ! ActionOffUi(SabotageAction)
     }
 
     override def onEnd(): Unit = {
-      guiRef.get ! ActionOnUi(SabotageAction())
+      guiRef.get ! ActionOnUi(SabotageAction)
     }
 
     override def onTick(millis: Long): Unit = {
@@ -114,8 +114,8 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
   }
 
   override def checkButton(button: ActionType): Unit = button match{
-    case KillAction() => killTimer.start()
-    case SabotageAction() => sabotageTimer.start()
+    case KillAction => killTimer.start()
+    case SabotageAction => sabotageTimer.start()
     case _ =>
   }
 

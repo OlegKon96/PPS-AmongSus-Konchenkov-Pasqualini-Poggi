@@ -13,25 +13,25 @@ trait Player extends Entity[Player]{
    *
    * @param direction to move on
    * @param map of the game
-   * @return
+   * @return Option[Player]
    */
   def move(direction: Direction, map: Array[Array[Drawable[Tile]]]) : Option[Player]
   /**
    * Username of the player
    *
-   * @return
+   * @return String
    */
   def username: String
   /**
    * Id of the player
    *
-   * @return
+   * @return String
    */
   def clientId: String
   /**
    * Range of view of the player
    *
-   * @return
+   * @return String
    */
   def fieldOfView: Int
 }

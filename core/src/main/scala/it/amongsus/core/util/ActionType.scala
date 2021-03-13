@@ -9,21 +9,21 @@ object ActionType {
   /**
    * Tells that Player wants to move up
    */
-  case class VentAction() extends ActionType
+  case object VentAction extends ActionType
   /**
    * Tells that Player wants to move down
    */
-  case class KillAction() extends ActionType
+  case object KillAction extends ActionType
   /**
    * Tells that Player wants to move left
    */
-  case class EmergencyAction() extends ActionType
+  case object EmergencyAction extends ActionType
   /**
    * Tells that Player wants to move right
    */
-  case class ReportAction() extends ActionType
+  case object ReportAction extends ActionType
   /**
    * Tells that Impostor wants to sabotage Crewmate
    */
-  case class SabotageAction() extends ActionType
+  case object SabotageAction extends ActionType
 }

@@ -161,13 +161,13 @@ object GameFrame {
       _ <- reportButton.setFocusable(false)
       _ <- reportButton.setEnabled(false)
       _ <- reportButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(ReportAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(ReportAction))
       } yield ())
       _ <- crewmateButtonPanel.add(reportButton)
       _ <- emergencyButton.setFocusable(false)
       _ <- emergencyButton.setEnabled(false)
       _ <- emergencyButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(EmergencyAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(EmergencyAction))
       } yield ())
       _ <- crewmateButtonPanel.add(emergencyButton)
       _ <- crewmateButtonPanel.setSize(BUTTON_PANEL_WIDTH,GAME_HEIGHT)
@@ -179,31 +179,31 @@ object GameFrame {
       _ <- ventButton.setFocusable(false)
       _ <- ventButton.setEnabled(false)
       _ <- ventButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(VentAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(VentAction))
       } yield ())
       _ <- impostorButtonPanel.add(ventButton)
       _ <- sabotageButton.setFocusable(false)
       _ <- sabotageButton.setEnabled(false)
       _ <- sabotageButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(SabotageAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(SabotageAction))
       } yield ())
       _ <- impostorButtonPanel.add(sabotageButton)
       _ <- reportButton.setFocusable(false)
       _ <- reportButton.setEnabled(false)
       _ <- reportButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(ReportAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(ReportAction))
       } yield ())
       _ <- impostorButtonPanel.add(reportButton)
       _ <- emergencyButton.setFocusable(false)
       _ <- emergencyButton.setEnabled(false)
       _ <- emergencyButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(EmergencyAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(EmergencyAction))
       } yield ())
       _ <- impostorButtonPanel.add(emergencyButton)
       _ <- killButton.setFocusable(false)
       _ <- killButton.setEnabled(false)
       _ <- killButton.addActionListener(for {
-        _ <- IO(guiRef.get ! UiActionTypeUi(KillAction()))
+        _ <- IO(guiRef.get ! UiActionTypeUi(KillAction))
       } yield ())
       _ <- impostorButtonPanel.add(killButton)
       _ <- impostorButtonPanel.setSize(BUTTON_PANEL_WIDTH,GAME_HEIGHT)
@@ -212,21 +212,21 @@ object GameFrame {
     override def setButtonState(action: ActionType, boolean: Boolean): IO[Unit] = {
       myChar match {
         case _: Impostor => action match {
-          case _: KillAction => for {
+          case KillAction => for {
             _ <- killButton.setText("Kill")
             _ <- killButton.setEnabled(boolean)
           } yield()
-          case _: ReportAction => reportButton.setEnabled(boolean)
-          case _: EmergencyAction => emergencyButton.setEnabled(boolean)
-          case _: VentAction => ventButton.setEnabled(boolean)
-          case _: SabotageAction => for {
+          case ReportAction => reportButton.setEnabled(boolean)
+          case EmergencyAction => emergencyButton.setEnabled(boolean)
+          case VentAction => ventButton.setEnabled(boolean)
+          case SabotageAction => for {
             _ <- sabotageButton.setText("Sabotage")
             _ <- sabotageButton.setEnabled(boolean)
           } yield()
         }
         case _: Crewmate => action match {
-          case _: ReportAction => reportButton.setEnabled(boolean)
-          case _: EmergencyAction => emergencyButton.setEnabled(boolean)
+          case ReportAction => reportButton.setEnabled(boolean)
+          case EmergencyAction => emergencyButton.setEnabled(boolean)
         }
       }
     }

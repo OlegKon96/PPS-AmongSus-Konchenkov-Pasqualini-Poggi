@@ -6,6 +6,12 @@ package it.amongsus.core.player
 trait Impostor {
   self: Player =>
 
+  /**
+   * activates or disactivates a field of view sabotage
+   * @param players sequence of game players
+   * @param state Boolean inditating if sabotage is On or Off
+   * @return sequence of players whit modified field of view
+   */
   def sabotage(players: Seq[Player], state: Boolean): Seq[Player] = {
     var newPlayers: Seq[Player] = Seq.empty
     players.foreach {

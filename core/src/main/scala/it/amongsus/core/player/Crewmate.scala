@@ -15,7 +15,7 @@ trait Crewmate {
    * Method to collect the coin
    *
    * @param player of the game
-   * @return
+   * @return a new instance of a player whit updated coin number
    */
   def collect(player: Crewmate):  Player = {
     player match {
@@ -27,11 +27,11 @@ trait Crewmate {
   }
   /**
    * Method to check if a player can collect the coin of the game
-   * @param collectionables of the game
+   * @param coins of the game
    * @param player of the game
-   * @return
+   * @return a coin to collect if the player is on top of it, None otherwise
    */
-  def canCollect(collectionables: Seq[Coin], player: Player): Option[Coin] = {
-    collectionables.find(coin => coin.position == player.position)
+  def canCollect(coins: Seq[Coin], player: Player): Option[Coin] = {
+    coins.find(coin => coin.position == player.position)
   }
 }

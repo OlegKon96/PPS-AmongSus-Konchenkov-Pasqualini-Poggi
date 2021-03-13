@@ -14,7 +14,7 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    *
    * @param position of the player
    * @param players sequence of the players of the game
-   * @return boolean
+   * @return true if there is a player in range, else otherwise
    */
   def canKill(position: Point2D, players: Seq[Player]): Boolean
   /**
@@ -22,21 +22,21 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    *
    * @param position of the player
    * @param players sequence of the players of the game
-   * @return boolean
+   * @return a player that is in range to kill, None otherwise
    */
   def kill(position: Point2D, players: Seq[Player]): Option[Player]
   /**
    * Method that manages the use of the vent
    *
    * @param vent sequence of the vent couple of the game
-   * @return
+   * @return a player whit modified position if he can vent, None otherwise
    */
   def useVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Player]
   /**
    * Method that manages id player can use vent or not
    *
    * @param vent sequence of the vent couple of the game
-   * @return
+   * @return a new position if the player can vent, None otherwise
    */
   def canVent(vent: Seq[(Drawable[Tile], Drawable[Tile])]): Option[Point2D]
 }

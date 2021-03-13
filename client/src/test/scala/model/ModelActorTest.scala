@@ -46,7 +46,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
     controller.expectMsgType[UpdatedMyCharController]
     controller.expectMsgType[UpdatedPlayersController]
 
-    modelActor ! UiActionModel(EmergencyAction())
+    modelActor ! UiActionModel(EmergencyAction)
     controller.expectMsgType[ActionOffController]
     controller.expectMsgType[ActionOffController]
     controller.expectMsgType[BeginVotingController]

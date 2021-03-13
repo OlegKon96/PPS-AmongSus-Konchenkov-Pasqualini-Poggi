@@ -47,16 +47,16 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
         state.gameCoins, state.deadBodies)
 
     case UiActionModel(action: ActionType) => action match {
-      case _: VentAction => state.useVent()
-      case _: EmergencyAction => state.checkTimer(TimerEnded)
+      case VentAction => state.useVent()
+      case EmergencyAction => state.checkTimer(TimerEnded)
         state.callEmergency()
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
         context >>> voteBehaviour(state)
-      case _: KillAction => state.kill()
-      case _: ReportAction => state.checkTimer(TimerEnded)
+      case KillAction => state.kill()
+      case ReportAction => state.checkTimer(TimerEnded)
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
         context >>> voteBehaviour(state)
-      case _: SabotageAction => state.sabotage(true)
+      case SabotageAction => state.sabotage(true)
         ActorSystemManager.actorSystem.scheduler.scheduleOnce(5 seconds){
           state.sabotage(false)
         }
@@ -64,7 +64,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
     case KillTimerStatusModel(status: TimerStatus) => status match {
       case TimerStarted =>
-        state.controllerRef.get ! ActionOffController(KillAction())
+        state.controllerRef.get ! ActionOffController(KillAction)
         state.isTimerOn = true
       case TimerEnded => state.isTimerOn = false
     }
