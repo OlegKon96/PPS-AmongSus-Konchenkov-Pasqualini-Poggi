@@ -11,12 +11,26 @@ import scala.annotation.implicitNotFound
 import it.amongsus.core.util.RichPoint2D._
 
 trait MovePlayer[A] {
-  @implicitNotFound(s"No way to move a A." +
-    s"An implicit MovePLayer[A] must be in scope")
+  /**
+   * Updates a player's position given a direction and a game map.
+   * @param player to move.
+   * @param direction in which move the player.
+   * @param map game map.
+   * @return a new instance of the player whit modified position, None otherwise.
+   */
   def move(player: A, direction: Direction, map: Array[Array[Drawable[Tile]]]): Option[A]
 }
 
 object MovePlayer {
+  /**
+   * Updates a player's position given a direction, game map.
+   * @param player to move.
+   * @param direction in which move the player.
+   * @param map game map.
+   * @param movable implicit object.
+   * @tparam A player type.
+   * @return a new instance of the player whit modified position, None otherwise.
+   */
   def movePlayer[A](player: A,
                     direction: Direction,
                     map: Array[Array[Drawable[Tile]]])(implicit movable: MovePlayer[A]): Option[A] = {

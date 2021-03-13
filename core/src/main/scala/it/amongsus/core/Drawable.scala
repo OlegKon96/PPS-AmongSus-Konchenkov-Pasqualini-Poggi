@@ -7,7 +7,7 @@ trait Drawable[E <: Drawable[E]] {
   /**
    * Position of the drawable element
    *
-   * @return
+   * @return a point2D that represent a the position of the drawable
    */
   def position: Point2D
 }

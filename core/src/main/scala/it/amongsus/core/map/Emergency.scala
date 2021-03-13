@@ -3,7 +3,7 @@ package it.amongsus.core.map
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that manages the emergency button item of the game
+ * Trait that represents the emergency button item of the game
  */
 trait Emergency extends Wall
 

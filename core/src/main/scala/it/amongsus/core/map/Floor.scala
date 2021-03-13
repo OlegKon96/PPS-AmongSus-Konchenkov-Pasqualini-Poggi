@@ -3,7 +3,7 @@ package it.amongsus.core.map
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that manages the floor of the game
+ * Trait that represents the floor of the game map
  */
 trait Floor extends Tile
 
