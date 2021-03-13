@@ -2,14 +2,16 @@ package it.amongsus.view.frame
 
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
+
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.util.ChatMessage
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, VoteUi}
+import it.amongsus.view.frame.Constants.VoteFrame.Numbers._
+import it.amongsus.view.frame.Constants.VoteFrame.Strings._
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
 import it.amongsus.view.swingio.JTextFieldIO
-
 import javax.swing.JFrame
 
 /**
@@ -79,30 +81,20 @@ object VoteFrame {
   private class VoteFrameImpl(guiRef: Option[ActorRef], myPlayer: Player,
                               override val listUser: Seq[Player]) extends VoteFrame() {
 
-    final val spaceDimension10: Int = 10
-    final val spaceDimension20: Int = 10
-    final val spaceDimension50: Int = 50
-    final val spaceDimension60: Int = 60
-    final val spaceDimension65: Int = -65
-    final val spaceDimension180: Int = 200
-    final val spaceDimension230: Int = 230
-    final val gridRow4: Int = 4
-    val frame = new JFrameIO(new JFrame("Among Sus - Voting"))
+    val frame = new JFrameIO(new JFrame(TITLE_MAIN_FRAME))
     val buttonVote: Array[JButtonIO] = new Array[JButtonIO](listUser.length)
     val votePanel: JPanelIO = JPanelIO().unsafeRunSync()
-    val boxChat: JTextAreaIO = JTextAreaIO(spaceDimension20, spaceDimension20).unsafeRunSync()
+    val boxChat: JTextAreaIO = JTextAreaIO(SPACE_DIMENSION_20, SPACE_DIMENSION_20).unsafeRunSync()
     boxChat.focus()
     val scrollPane: JScrollPaneIO = JScrollPaneIO(boxChat).unsafeRunSync()
-    val boxChatGhost: JTextAreaIO = JTextAreaIO(spaceDimension20, spaceDimension20).unsafeRunSync()
+    val boxChatGhost: JTextAreaIO = JTextAreaIO(SPACE_DIMENSION_20, SPACE_DIMENSION_20).unsafeRunSync()
     boxChatGhost.focus()
     val scrollPaneGhost: JScrollPaneIO = JScrollPaneIO(boxChatGhost).unsafeRunSync()
-    val WIDTH: Int = 1000
-    val HEIGHT: Int = 800
 
     override def start(): IO[Unit] =
       for {
-        menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
-          spaceDimension10, spaceDimension10, spaceDimension10)
+        menuBorder <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_10,
+          SPACE_DIMENSION_10, SPACE_DIMENSION_10, SPACE_DIMENSION_10)
         _ <- votePanel.setBorder(menuBorder)
         _ <- votePanel.setLayout(new GridLayout(1, 2))
 
@@ -110,12 +102,12 @@ object VoteFrame {
         _ <- chooseVote.setLayout(new GridLayout(listUser.length + 2, 1))
 
         title <- JLabelIO()
-        _ <- title.setText("Vote Player to Eliminate")
-        borderTitle <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension180, 0, 0)
+        _ <- title.setText(TITLE_FRAME_VOTE_PLAYER)
+        borderTitle <- BorderFactoryIO.emptyBorderCreated(0, SPACE_DIMENSION_180, 0, 0)
         _ <- title.setBorder(borderTitle)
         _ <- chooseVote.add(title)
 
-        buttonSkipVote <- JButtonIO("Skip Vote")
+        buttonSkipVote <- JButtonIO(SKIP_VOTE)
 
         _ <- IO(for (user <- listUser.indices) {
           buttonVote(user) = JButtonIO(listUser(user).username).unsafeRunSync()
@@ -132,7 +124,7 @@ object VoteFrame {
 
         _ <- buttonSkipVote.addActionListener(for {
           _ <- IO(guiRef.get ! VoteUi(""))
-          _ <- IO(guiRef.get ! SendTextChatUi(ChatMessage(myPlayer.username, "Skip Vote"),
+          _ <- IO(guiRef.get ! SendTextChatUi(ChatMessage(myPlayer.username, SKIP_VOTE),
             listUser.find(p => p.username == myPlayer.username).get))
           _ <- boxChat.appendText(s"${myPlayer.username} Skip Vote\n")
           _ <- IO(buttonVote.foreach(p => p.setEnabled(false).unsafeRunSync()))
@@ -143,17 +135,17 @@ object VoteFrame {
         _ <- votePanel.add(chooseVote)
 
         chatPanel <- JPanelIO()
-        _ <- chatPanel.setLayout(new GridLayout(gridRow4, 1))
+        _ <- chatPanel.setLayout(new GridLayout(GRID_ROW_4, 1))
         titleChat <- JLabelIO()
-        _ <- titleChat.setText("Chat")
-        borderTitleChat <- BorderFactoryIO.emptyBorderCreated(spaceDimension65, spaceDimension230, 0, 0)
+        _ <- titleChat.setText(CHAT)
+        borderTitleChat <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_65, SPACE_DIMENSION_230, 0, 0)
         _ <- titleChat.setBorder(borderTitleChat)
         _ <- chatPanel.add(titleChat)
-        _ <- boxChat.appendText("Start Chatting!\n")
+        _ <- boxChat.appendText(START_CHATTING)
         _ <- chatPanel.add(scrollPane)
         chatField <- JTextFieldIO()
         _ <- chatPanel.add(chatField)
-        sendText <- JButtonIO("Send Text")
+        sendText <- JButtonIO(SEND_TEXT)
         _ <- sendText.addActionListener(for {
           checkChatText <- chatField.text
           _ <- IO(if (checkText(chatField)) {
@@ -170,7 +162,7 @@ object VoteFrame {
         cp <- frame.contentPane()
         _ <- cp.add(votePanel)
         _ <- frame.setResizable(false)
-        _ <- frame.setTitle("Among Sus - Voting")
+        _ <- frame.setTitle(TITLE_MAIN_FRAME)
         _ <- frame.setSize(WIDTH, HEIGHT)
         _ <- frame.setVisible(true)
         _ <- frame.addWindowListener(new WindowAdapter {
@@ -186,8 +178,8 @@ object VoteFrame {
 
     override def eliminated(username: String): IO[Unit] = {
       val role = listUser.find(p => p.username == username).get match {
-        case _: Crewmate => "Crewmate"
-        case _: Impostor => "Impostor"
+        case _: Crewmate => CREWMATE
+        case _: Impostor => IMPOSTOR
       }
       for {
         cp <- frame.contentPane()
@@ -195,13 +187,13 @@ object VoteFrame {
         eliminationPanel <- JPanelIO()
         _ <- eliminationPanel.setLayout(new BorderLayout())
         text <- JLabelIO()
-        borderText <- BorderFactoryIO.emptyBorderCreated(spaceDimension60, spaceDimension60, 0, 0)
+        borderText <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_60, SPACE_DIMENSION_60, 0, 0)
         _ <- text.setBorder(borderText)
         _ <- text.setText(s"The Eliminated Player is: $username and is an: $role")
         _ <- eliminationPanel.add(text, BorderLayout.NORTH)
         _ <- cp.add(eliminationPanel)
         _ <- frame.setResizable(false)
-        _ <- frame.setTitle("Among Sus - Eliminated Player")
+        _ <- frame.setTitle(TITLE_FRAME_ELIMINATED_PLAYER)
         _ <- frame.setSize(WIDTH/2, HEIGHT/4)
         _ <- frame.setVisible(true)
       } yield ()
@@ -217,8 +209,8 @@ object VoteFrame {
     } yield()
 
     override def waitVote(): IO[Unit] = for {
-      menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
-        spaceDimension10, spaceDimension10, spaceDimension10)
+      menuBorder <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_10,
+        SPACE_DIMENSION_10, SPACE_DIMENSION_10, SPACE_DIMENSION_10)
       _ <- votePanel.setBorder(menuBorder)
       _ <- votePanel.setLayout(new GridLayout(1, 2))
 
@@ -228,26 +220,26 @@ object VoteFrame {
       waitGhostPanel <- JPanelIO()
       _ <- waitGhostPanel.setLayout(new BorderLayout())
       text <- JLabelIO()
-      borderText <- BorderFactoryIO.emptyBorderCreated(spaceDimension60, spaceDimension60, 0, 0)
+      borderText <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_60, SPACE_DIMENSION_60, 0, 0)
       _ <- text.setBorder(borderText)
-      _ <- text.setText("Wait Vote from Other Players...")
+      _ <- text.setText(WAIT_VOTE_OTHER)
       _ <- waitGhostPanel.add(text, BorderLayout.NORTH)
       _ <- chooseVote.add(waitGhostPanel)
 
       _ <- votePanel.add(chooseVote)
 
       chatPanel <- JPanelIO()
-      _ <- chatPanel.setLayout(new GridLayout(gridRow4, 1))
+      _ <- chatPanel.setLayout(new GridLayout(GRID_ROW_4, 1))
       titleChat <- JLabelIO()
-      _ <- titleChat.setText("Chat")
-      borderTitleChat <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension230, 0, 0)
+      _ <- titleChat.setText(CHAT)
+      borderTitleChat <- BorderFactoryIO.emptyBorderCreated(0, SPACE_DIMENSION_230, 0, 0)
       _ <- titleChat.setBorder(borderTitleChat)
       _ <- chatPanel.add(titleChat)
-      _ <- boxChatGhost.appendText("Start Chatting!\n")
+      _ <- boxChatGhost.appendText(START_CHATTING)
       _ <- chatPanel.add(scrollPaneGhost)
       chatField <- JTextFieldIO()
       _ <- chatPanel.add(chatField)
-      sendText <- JButtonIO("Send Text")
+      sendText <- JButtonIO(SEND_TEXT)
       _ <- sendText.addActionListener(for {
         checkChatText <- chatField.text
         _ <- IO(if (checkText(chatField)) {
@@ -264,7 +256,7 @@ object VoteFrame {
       cp <- frame.contentPane()
       _ <- cp.add(votePanel)
       _ <- frame.setResizable(false)
-      _ <- frame.setTitle("Among Sus - Voting")
+      _ <- frame.setTitle(TITLE_MAIN_FRAME)
       _ <- frame.setSize(WIDTH, HEIGHT)
       _ <- frame.setVisible(true)
     } yield ()
@@ -280,13 +272,13 @@ object VoteFrame {
         waitGhostPanel <- JPanelIO()
         _ <- waitGhostPanel.setLayout(new BorderLayout())
         text <- JLabelIO()
-        borderText <- BorderFactoryIO.emptyBorderCreated(spaceDimension50, spaceDimension50, 0, 0)
+        borderText <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_50, SPACE_DIMENSION_50, 0, 0)
         _ <- text.setBorder(borderText)
-        _ <- text.setText("No One Was Ejected, Parity of Votes...")
+        _ <- text.setText(NO_ONE_EJECTED)
         _ <- waitGhostPanel.add(text, BorderLayout.NORTH)
         _ <- cp.add(waitGhostPanel)
         _ <- frame.setResizable(false)
-        _ <- frame.setTitle("Among Sus - Exit Pool")
+        _ <- frame.setTitle(TITLE_FRAME_EXIT_POOL)
         _ <- frame.setSize(WIDTH/3, HEIGHT/4)
         _ <- frame.setVisible(true)
       } yield ()
