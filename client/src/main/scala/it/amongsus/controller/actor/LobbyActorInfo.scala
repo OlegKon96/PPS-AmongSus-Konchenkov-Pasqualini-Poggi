@@ -10,33 +10,33 @@ import scala.concurrent.duration._
  */
 trait LobbyActorInfo {
   /**
-   * The ID of the Client
+   * The ID of the Client.
    */
   def clientId: String
   /**
-   * The reference of the Game Server
+   * The reference of the Game Server.
    *
-   * @return
+   * @return game server ref.
    */
   def serverRef: Option[ActorRef]
   /**
-   * The reference of the Actor's GUI
+   * The reference of the Actor's GUI.
    *
-   * @return
+   * @return Ui actor ref.
    */
   def guiRef: Option[ActorRef]
   /**
-   * Generates the Server Actor Path
+   * Generates the Server Actor Path.
    *
-   * @param address address of the server to connect
-   * @param port port of the server to connect
-   * @return
+   * @param address address of the server to connect.
+   * @param port port of the server to connect.
+   * @return connection string.
    */
   def generateServerActorPath(address: String, port: Int): String
   /**
    *
-   * @param actorPath the path of the actor
-   * @return
+   * @param actorPath the path of the actor.
+   * @return future containg an ActorRef.
    */
   def resolveRemoteActorPath(actorPath: String): Future[ActorRef]
 }
