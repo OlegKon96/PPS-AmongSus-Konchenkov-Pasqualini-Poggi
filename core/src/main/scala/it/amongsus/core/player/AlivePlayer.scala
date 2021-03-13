@@ -6,21 +6,21 @@ import it.amongsus.core.map.{DeadBody, Floor, Tile}
 import it.amongsus.core.util.Point2D
 
 /**
- * Trait that manages the Alive Player of the game
+ * Trait that manages the Alive Player of the game.
  */
 trait AlivePlayer {
   self: Player =>
   /**
-   * Field to check if the emergency was called previously or not
+   * Field to check if the emergency was called previously or not.
    *
-   * @return
+   * @return true if the player already called the emergency, false otherwise.
    */
   def emergencyCalled: Boolean
   /**
-   * Method to call an emergency
+   * Method to call an emergency.
    *
-   * @param player that calls the emergency
-   * @return a new instance of the same player but he will no longer be able to call an emergency
+   * @param player that calls the emergency.
+   * @return a new instance of the same player but he will no longer be able to call an emergency.
    */
   def callEmergency(player: Player): Player = {
     player match {
@@ -33,30 +33,30 @@ trait AlivePlayer {
   /**
    * Method to let player to report a dead body
    *
-   * @param pos         position of the player
-   * @param deadPlayers sequence of dead bodies of the game
-   * @return true if the player is near enought to a dead body, else otherwise
+   * @param position         position of the player.
+   * @param deadPlayers sequence of dead bodies of the game.
+   * @return true if the player is near enought to a dead body, else otherwise.
    */
-  def canReport(pos: Point2D, deadPlayers: Seq[DeadBody]): Boolean = {
-    deadPlayers.exists(player => player.position.distance(pos) < Constants.REPORT_DISTANCE)
+  def canReport(position: Point2D, deadPlayers: Seq[DeadBody]): Boolean = {
+    deadPlayers.exists(player => player.position.distance(position) < Constants.REPORT_DISTANCE)
   }
   /**
-   * Method to let player to call an emergency in the game
+   * Method to let player to call an emergency in the game.
    *
-   * @param player           game player
-   * @param emergencyButtons sequence of emergency buttons of the game
-   * @return true if the player if in the correct distance whit the emergency button else otherwise
+   * @param player           game player.
+   * @param emergencyButtons sequence of emergency buttons of the game.
+   * @return true if the player if in the correct distance whit the emergency button else otherwise.
    */
   def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Drawable[Tile]]): Boolean = {
     emergencyButtons.exists(button =>
       button.position.distance(player.position) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
   }
   /**
-   * Method to check collisions of the player
+   * Method to check collisions of the player.
    *
-   * @param pos position of the player
-   * @param map game map
-   * @return true if collides false otherwise
+   * @param pos position of the player.
+   * @param map game map.
+   * @return true if collides, false otherwise.
    */
   def checkCollision(pos: Point2D, map: Array[Array[Drawable[Tile]]]): Boolean = {
     map(pos.x)(pos.y) match {
@@ -65,9 +65,9 @@ trait AlivePlayer {
     }
   }
   /**
-   * Position of the player
+   * Position of the player.
    *
-   * @return
+   * @return player's position.
    */
   def position:Point2D = self.position
 }
