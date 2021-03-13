@@ -12,7 +12,7 @@ import it.amongsus.core.util.RichPoint2D._
 
 trait MovePlayer[A] {
   /**
-   * Updates a player's position given a direction and a game map.
+   * Updates a player's position.
    * @param player to move.
    * @param direction in which move the player.
    * @param map game map.
@@ -23,12 +23,12 @@ trait MovePlayer[A] {
 
 object MovePlayer {
   /**
-   * Updates a player's position given a direction, game map.
+   * Updates a player's position.
    * @param player to move.
    * @param direction in which move the player.
    * @param map game map.
    * @param movable implicit object.
-   * @tparam A player type.
+   * @tparam A Player type.
    * @return a new instance of the player whit modified position, None otherwise.
    */
   def movePlayer[A](player: A,
