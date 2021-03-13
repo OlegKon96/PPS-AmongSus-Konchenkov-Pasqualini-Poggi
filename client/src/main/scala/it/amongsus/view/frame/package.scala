@@ -20,7 +20,6 @@ package object frame {
         final val WAIT_VOTE_OTHER: String = "Wait Vote from Other Players..."
         final val NO_ONE_EJECTED: String = "No One Was Ejected, Parity of Votes..."
       }
-
       object Numbers {
         final val WIDTH: Int = 1000
         final val HEIGHT: Int = 800
@@ -36,7 +35,18 @@ package object frame {
     }
 
     object WinFrame {
-
+      object Strings {
+        final val TITLE_MAIN_FRAME: String = "Among Sus - Winner"
+        final val TITLE_RESULTS_FRAME: String = "Among Sus - Results"
+        final val CREWMATE: String = "Crewmate"
+        final val IMPOSTOR: String = "Impostor"
+      }
+      object Numbers {
+        final val WIDTH: Int = 2000
+        final val HEIGHT: Int = 800
+        final val SPACE_DIMENSION_10: Int = 10
+        final val SPACE_DIMENSION_60: Int = 60
+      }
     }
 
     object GameFrame {}

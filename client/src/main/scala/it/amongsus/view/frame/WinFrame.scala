@@ -1,11 +1,13 @@
 package it.amongsus.view.frame
 
 import java.awt.BorderLayout
+
 import cats.effect.IO
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.core.util.GameEnd
+import it.amongsus.view.frame.Constants.WinFrame.Numbers.{HEIGHT, SPACE_DIMENSION_10, SPACE_DIMENSION_60, WIDTH}
+import it.amongsus.view.frame.Constants.WinFrame.Strings.{CREWMATE, IMPOSTOR, TITLE_MAIN_FRAME, TITLE_RESULTS_FRAME}
 import it.amongsus.view.swingio.{BorderFactoryIO, JFrameIO, JLabelIO, JPanelIO}
-
 import javax.swing.JFrame
 
 /**
@@ -27,33 +29,29 @@ object WinFrame {
    */
   private class WinFrameImpl(gameEnd: GameEnd) extends WinFrame() {
 
-    final val spaceDimension10: Int = 10
-    final val spaceDimension60: Int = 60
-    val frame = new JFrameIO(new JFrame("Among Sus - Winner"))
+    val frame = new JFrameIO(new JFrame(TITLE_MAIN_FRAME))
     val votePanel: JPanelIO = JPanelIO().unsafeRunSync()
-    val WIDTH: Int = 2000
-    val HEIGHT: Int = 800
     val role: String = gameEnd match {
       case Win(_,_) => gameEnd.crew match {
-        case _: CrewmateCrew => "Crewmate"
-        case _: ImpostorCrew => "Impostor"
+        case _: CrewmateCrew => CREWMATE
+        case _: ImpostorCrew => IMPOSTOR
       }
       case Lost(_,_) => gameEnd.crew match {
-        case _: CrewmateCrew => "Crewmate"
-        case _: ImpostorCrew => "Impostor"
+        case _: CrewmateCrew => CREWMATE
+        case _: ImpostorCrew => IMPOSTOR
       }
     }
     var teamWinner: String = ""
 
     override def start(): IO[Unit] = {
       for {
-        menuBorder <- BorderFactoryIO.emptyBorderCreated(spaceDimension10,
-          spaceDimension10, spaceDimension10, spaceDimension10)
+        menuBorder <- BorderFactoryIO.emptyBorderCreated(SPACE_DIMENSION_10,
+          SPACE_DIMENSION_10, SPACE_DIMENSION_10, SPACE_DIMENSION_10)
         _ <- votePanel.setBorder(menuBorder)
         _ <- votePanel.setLayout(new BorderLayout())
 
         text <- JLabelIO()
-        borderText <- BorderFactoryIO.emptyBorderCreated(0, spaceDimension60, 0, 0)
+        borderText <- BorderFactoryIO.emptyBorderCreated(0, SPACE_DIMENSION_60, 0, 0)
         _ <- text.setBorder(borderText)
 
         _ <- IO(for (user <- gameEnd.players.indices) {
@@ -66,7 +64,7 @@ object WinFrame {
         cp <- frame.contentPane()
         _ <- cp.add(votePanel)
         _ <- frame.setResizable(false)
-        _ <- frame.setTitle("Among Sus - Results")
+        _ <- frame.setTitle(TITLE_RESULTS_FRAME)
         _ <- frame.setSize(WIDTH/3, HEIGHT/3)
         _ <- frame.setVisible(true)
       } yield ()
