@@ -6,7 +6,7 @@ import it.amongsus.core.util.Point2D
 
 /**
  * Method to manages the Dead Players
- */.
+ */
 trait DeadPlayer {
   self: Player =>
   /**
