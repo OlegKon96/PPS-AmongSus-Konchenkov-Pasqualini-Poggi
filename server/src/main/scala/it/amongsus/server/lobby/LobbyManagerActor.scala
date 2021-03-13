@@ -22,14 +22,14 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
 
   override def receive: Receive = {
-    case ConnectServer(clientRef) =>
+    case ConnectServer(clientRef: ActorRef) =>
       log.info(s"Server -> client $clientRef is asking for a connection")
       val clientId = generateId
       this.state.connectedPlayers = this.state.connectedPlayers + (clientId -> clientRef)
       context.watch(clientRef)
       clientRef ! Connected(clientId)
 
-    case JoinPublicLobbyServer(clientId, username, numberOfPlayers) =>
+    case JoinPublicLobbyServer(clientId: String, username: String, numberOfPlayers: Int) =>
       log.info(s"Server -> client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
@@ -40,14 +40,14 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
         this.checkAndCreateGame(lobbyType)
       }
 
-    case CreatePrivateLobbyServer(clientId, username, numberOfPlayers) =>
+    case CreatePrivateLobbyServer(clientId: String, username: String, numberOfPlayers: Int) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
         this.lobbyManager.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
         ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId,numberOfPlayers)
       }
 
-    case JoinPrivateLobbyServer(clientId, username, lobbyCode) =>
+    case JoinPrivateLobbyServer(clientId: String, username: String, lobbyCode: String) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
           case Some(lobbyType) =>
@@ -62,7 +62,7 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
         }
       }
 
-    case LeaveLobbyServer(userId) =>
+    case LeaveLobbyServer(userId: String) =>
       log.info(s"Server -> client $userId")
       val lobby = lobbyManager.getLobbyPlayer(userId).get
       this.lobbyManager.removePlayer(userId)
