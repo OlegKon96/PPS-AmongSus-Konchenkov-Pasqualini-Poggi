@@ -1,13 +1,17 @@
 package it.amongsus.controller.actor
 
-import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
 import it.amongsus.RichActor.RichContext
+import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.player.Player
+import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient._
-import it.amongsus.messages.GameMessageServer.{PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
+import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
@@ -34,7 +38,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
   override def receive: Receive = lobbyBehaviour(state)
 
   private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
-    case ConnectClient(address, port) =>
+    case ConnectClient(address: String, port: Int) =>
       state.guiRef.get ! Init
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
@@ -42,7 +46,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         case Failure(_) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
-    case Connected(id) => context >>> lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
+    case Connected(id: String) => context >>> lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
 
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
@@ -55,15 +59,17 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case LeaveLobbyClient => state.serverRef.get ! LeaveLobbyServer(state.clientId)
 
-    case UserAddedToLobbyClient(numPlayers, roomSize) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
+    case UserAddedToLobbyClient(numPlayers: Int, roomSize: Int) =>
+      state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
 
-    case UpdateLobbyClient(numPlayers) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
+    case UpdateLobbyClient(numPlayers: Int) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
 
-    case PrivateLobbyCreatedClient(lobbyCode,roomSize) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
+    case PrivateLobbyCreatedClient(lobbyCode: String,roomSize: Int) =>
+      state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
 
     case PlayerLeftController => self ! PoisonPill
 
-    case MatchFound(gameRoom) =>
+    case MatchFound(gameRoom: ActorRef) =>
       state.guiRef.get ! MatchFoundUi
       val model =
         ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelActorInfo(Option(self),
@@ -71,11 +77,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       context >>> gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
         Option(model), state.clientId))
 
-    case TestGameBehaviour(model, server) =>
+    case TestGameBehaviour(model: ActorRef, server: ActorRef) =>
       context >>> gameBehaviour(GameActorInfo(Option(server), state.guiRef,
         Option(model), state.clientId))
 
-    case LobbyErrorOccurred(error) => error match {
+    case LobbyErrorOccurred(error: LobbyError) => error match {
       case LobbyError.PrivateLobbyIdNotValid =>  log.info("Controller Actor -> Private Lobby id not valid" )
       case _ =>
     }
@@ -86,29 +92,30 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
   private def gameBehaviour(state: GameActorInfo): Receive = {
     case PlayerReadyClient => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
 
-    case GamePlayersClient(players) =>
+    case GamePlayersClient(players: Seq[Player]) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
-    case ModelReadyController(map, myChar, players, collectionables) =>
-      state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
+    case ModelReadyController(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
+    collectionables: Seq[Collectionable]) => state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
 
-    case KillTimerController(status) => state.manageKillTimer(status)
+    case KillTimerController(status: TimerStatus) => state.manageKillTimer(status)
 
-    case MyCharMovedController(direction) => state.modelRef.get ! MyCharMovedModel(direction)
+    case MyCharMovedController(direction: Direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
-    case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
+    case PlayerMovedClient(player: Player, deadBodys: Seq[Player]) =>
+      state.modelRef.get ! PlayerMovedModel(player, deadBodys)
 
-    case UpdatedMyCharController(player, gamePlayers, deadBodys) =>
+    case UpdatedMyCharController(player: Player, gamePlayers: Seq[Player], deadBodys: Seq[DeadBody]) =>
       state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodys)
 
-    case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
-      state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+    case UpdatedPlayersController(myChar: Player, players: Seq[Player],collectionables: Seq[Collectionable],
+    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
-    case ActionOnController(action) => state.guiRef.get ! ActionOnUi(action)
+    case ActionOnController(action: ActionType) => state.guiRef.get ! ActionOnUi(action)
 
-    case ActionOffController(action) => state.guiRef.get ! ActionOffUi(action)
+    case ActionOffController(action: ActionType) => state.guiRef.get ! ActionOffUi(action)
 
-    case UiActionController(action) => state.modelRef.get ! UiActionModel(action)
+    case UiActionController(action: ActionType) => state.modelRef.get ! UiActionModel(action)
       state.checkButton(action)
 
     case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
@@ -119,17 +126,17 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.guiRef.get ! BeginVotingUi(gamePlayers)
       context >>> voteBehaviour(state)
 
-    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
+    case GameEndController(end: GameEnd) => state.guiRef.get ! GameEndUi(end)
       context >>> lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
-    case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
+    case GameEndClient(end: GameEnd) => state.modelRef.get ! GameEndModel(end)
 
     case PlayerLeftController => state.modelRef.get ! MyPlayerLeftModel
       self ! PoisonPill
 
-    //case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
+    case LeaveGameClient => state.gameServerRef.get ! LeaveGameServer(state.clientId)
 
-    case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
+    case PlayerLeftClient(clientId: String) => state.modelRef.get ! PlayerLeftModel(clientId)
       state.guiRef.get ! PlayerLeftUi(clientId)
 
     case _ => log.info("Controller Actor -> game error" )
@@ -138,23 +145,23 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
   private def voteBehaviour(state: GameActorInfo): Receive = {
     case VoteClient(username) => state.gameServerRef.get ! VoteClient(username)
 
-    case EliminatedPlayer(username) =>
+    case EliminatedPlayer(username: String) =>
       state.modelRef.get ! KillPlayerModel(username)
       state.guiRef.get ! EliminatedPlayer(username)
 
     case NoOneEliminatedController => state.guiRef.get ! NoOneEliminatedUi
 
-    case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
-      state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+    case UpdatedPlayersController(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
+    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
 
-    case SendTextChatController(message, myChar) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
+    case SendTextChatController(message: ChatMessage, myChar: Player) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
 
-    case SendTextChatClient(message) => state.guiRef.get ! ReceiveTextChatUi(message)
+    case SendTextChatClient(message: ChatMessage) => state.guiRef.get ! ReceiveTextChatUi(message)
 
-    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
+    case GameEndController(end: GameEnd) => state.guiRef.get ! GameEndUi(end)
       context >>> lobbyBehaviour(LobbyActorInfo(state.guiRef))
 
-    case GameEndClient(end) =>
+    case GameEndClient(end: GameEnd) =>
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3.1 seconds){
         state.modelRef.get ! GameEndModel(end)
       }
@@ -166,7 +173,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case PlayerLeftController => state.modelRef.get ! MyPlayerLeftModel
       self ! PoisonPill
 
-    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
+    case PlayerLeftClient(clientId: String) => state.guiRef.get ! PlayerLeftUi(clientId)
 
     case _ => log.info("Controller Actor -> vote error" )
   }
