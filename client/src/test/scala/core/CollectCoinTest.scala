@@ -18,12 +18,12 @@ class CollectCoinTest extends AnyWordSpecLike with BeforeAndAfterAll {
     Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
   private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
-  modelActor.generateCollectionables(map)
+  modelActor.generateCoins(map)
 
   "A Crewmate Alive" should {
     "Can or Not Collect Coin" in {
       this.crewmateAlive match {
-        case crewmate : CrewmateAlive => crewmate.canCollect(modelActor.gameCollectionables, crewmate) match {
+        case crewmate : CrewmateAlive => crewmate.canCollect(modelActor.gameCoins, crewmate) match {
           case Some(_) => crewmate.collect(crewmate)
             assert(crewmate.numCoins == 4)
           case None => assert(crewmate.numCoins == 3)
@@ -35,7 +35,7 @@ class CollectCoinTest extends AnyWordSpecLike with BeforeAndAfterAll {
   "A Crewmate Ghost" should {
     "Can or Not Collect Coin" in {
       this.crewmateGhost match {
-        case crewmate : CrewmateGhost => crewmate.canCollect(modelActor.gameCollectionables, crewmate) match {
+        case crewmate : CrewmateGhost => crewmate.canCollect(modelActor.gameCoins, crewmate) match {
           case Some(_) => crewmate.collect(crewmate)
             assert(crewmate.numCoins == 4)
           case None => assert(crewmate.numCoins == 3)

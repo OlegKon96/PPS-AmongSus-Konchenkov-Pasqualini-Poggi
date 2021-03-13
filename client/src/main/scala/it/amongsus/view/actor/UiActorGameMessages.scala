@@ -1,6 +1,6 @@
 package it.amongsus.view.actor
 
-import it.amongsus.core.map.{Collectionable, DeadBody}
+import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.{ActionType, GameEnd, ChatMessage, Direction}
 
@@ -40,7 +40,7 @@ object UiActorGameMessages {
    * @param deadBodies of the game
    */
   case class PlayerUpdatedUi(myChar: Player, player: Seq[Player],
-                             collectionables: Seq[Collectionable], deadBodies: Seq[DeadBody])
+                             collectionables: Seq[Coin], deadBodies: Seq[DeadBody])
   /**
    * Tells to UI actor that a Button can be pressed
    *

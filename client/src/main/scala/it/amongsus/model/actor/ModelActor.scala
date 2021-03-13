@@ -33,20 +33,20 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
     case InitModel(map: Iterator[String], players: Seq[Player]) =>
       state.gamePlayers = players
       val gameMap = state.generateMap(map)
-      state.generateCollectionables(gameMap)
+      state.generateCoins(gameMap)
       state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, state.gamePlayers,
-        state.gameCollectionables)
+        state.gameCoins)
       state.checkTimer(TimerStarted)
       context >>> gameBehaviour(ModelActorInfo(state.controllerRef,
-        Option(gameMap), players, state.gameCollectionables, state.clientId))
+        Option(gameMap), players, state.gameCoins, state.clientId))
 
     case MyCharMovedModel(direction: Direction) => state.updateMyChar(direction)
 
-    case PlayerMovedModel(player: Player, deadBodys: Seq[DeadBody]) =>
-      state.deadBodies = deadBodys
+    case PlayerMovedModel(player: Player, deadBodiss: Seq[DeadBody]) =>
+      state.deadBodies = deadBodiss
       state.updatePlayer(player)
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodies)
+        state.gameCoins, state.deadBodies)
 
     case UiActionModel(action: ActionType) => action match {
       case _: VentAction => state.useVent()
@@ -91,7 +91,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
       state.killAfterVote(username)
       state.deadBodies = Seq()
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodies)
+        state.gameCoins, state.deadBodies)
 
     case RestartGameModel => state.checkTimer(TimerStarted)
       context >>> gameBehaviour(state)

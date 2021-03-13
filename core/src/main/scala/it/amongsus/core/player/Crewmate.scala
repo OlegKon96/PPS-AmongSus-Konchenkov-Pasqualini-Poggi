@@ -1,6 +1,6 @@
 package it.amongsus.core.player
 
-import it.amongsus.core.map.Collectionable
+import it.amongsus.core.map.Coin
 
 /**
  * Trait that manages Crewmate
@@ -31,7 +31,7 @@ trait Crewmate {
    * @param player of the game
    * @return
    */
-  def canCollect(collectionables: Seq[Collectionable], player: Player): Option[Collectionable] = {
+  def canCollect(collectionables: Seq[Coin], player: Player): Option[Coin] = {
     collectionables.find(coin => coin.position == player.position)
   }
 }

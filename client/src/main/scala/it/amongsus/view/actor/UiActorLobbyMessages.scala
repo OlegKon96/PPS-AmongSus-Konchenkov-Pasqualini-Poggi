@@ -1,7 +1,7 @@
 package it.amongsus.view.actor
 
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Collectionable, Tile}
+import it.amongsus.core.map.{Coin, Tile}
 import it.amongsus.core.player.Player
 
 object UiActorLobbyMessages {
@@ -57,7 +57,7 @@ object UiActorLobbyMessages {
    * @param collectionables of the game
    */
   case class GameFoundUi(map: Array[Array[Drawable[Tile]]], myChar: Player,
-                         players: Seq[Player], collectionables: Seq[Collectionable])
+                         players: Seq[Player], collectionables: Seq[Coin])
   /**
    * Notify the User that there's a match to a Lobby
    */

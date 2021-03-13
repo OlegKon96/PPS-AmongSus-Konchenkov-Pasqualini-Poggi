@@ -18,9 +18,9 @@ trait ModelActorInfo {
    */
   var gamePlayers: Seq[Player]
   /**
-   * Sequence of Collectionables of the game
+   * Sequence of Coins of the game
    */
-  var gameCollectionables: Seq[Collectionable]
+  var gameCoins: Seq[Coin]
   /**
    * Sequence of a players' DeadBody
    */
@@ -58,11 +58,11 @@ trait ModelActorInfo {
   def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]]
 
   /**
-   * Method that generates the collectionables of the game
+   * Method that generates the coins of the game
    *
    * @param map of the game
    */
-  def generateCollectionables(map: Array[Array[Drawable[Tile]]]): Unit
+  def generateCoins(map: Array[Array[Drawable[Tile]]]): Unit
 
   /**
    * Method that finds my characters
@@ -130,14 +130,14 @@ object ModelActorInfo {
   def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "", isTimerOn = false)
 
   def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Drawable[Tile]]]],
-            playersList: Seq[Player], gameCollectionables: Seq[Collectionable], clientId: String): ModelActorInfo =
-    ModelActorInfoData(controllerRef, map, playersList, gameCollectionables, clientId, isTimerOn = false)
+            playersList: Seq[Player], gameCoins: Seq[Coin], clientId: String): ModelActorInfo =
+    ModelActorInfoData(controllerRef, map, playersList, gameCoins, clientId, isTimerOn = false)
 }
 
 case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override val gameMap: Option[Array[Array[Drawable[Tile]]]],
                               override var gamePlayers: Seq[Player],
-                              override var gameCollectionables: Seq[Collectionable],
+                              override var gameCoins: Seq[Coin],
                               override val clientId: String,
                               override var isTimerOn: Boolean) extends ModelActorInfo {
 
@@ -161,11 +161,11 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       case "66" => tileMatrix(j)(k) = Vent(Point2D(j, k))
       case "222" => tileMatrix(j)(k) = Emergency(Point2D(j, k))
     }
-    generateCollectionables(tileMatrix)
+    generateCoins(tileMatrix)
     tileMatrix
   }
 
-  override def generateCollectionables(gameMap: Array[Array[Drawable[Tile]]]): Unit = {
+  override def generateCoins(gameMap: Array[Array[Drawable[Tile]]]): Unit = {
     var tiles: Seq[Drawable[Tile]] = for {
       map <- gameMap
       tile <- map.filter { case _: Floor => true case _ => false }
@@ -173,7 +173,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
     for (_ <- 0 until 10) {
       val rand = Random.nextInt(tiles.length)
-      this.gameCollectionables = gameCollectionables :+ Collectionable(tiles(rand).position)
+      this.gameCoins = gameCoins :+ Coin(tiles(rand).position)
       tiles = tiles.take(rand) ++ tiles.drop(rand + 1)
     }
   }
@@ -183,9 +183,9 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       case Some(player) =>
         playerUpdated(player match {
           case crewmate: Crewmate =>
-            crewmate.canCollect(gameCollectionables, crewmate) match {
+            crewmate.canCollect(gameCoins, crewmate) match {
               case Some(toCollect) =>
-                gameCollectionables = gameCollectionables.filter(collectionable => collectionable != toCollect)
+                gameCoins = gameCoins.filter(coin => coin != toCollect)
                 crewmate.collect(crewmate)
               case None => crewmate
             }
@@ -222,7 +222,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
             deadBodies = deadBodies :+ map.DeadBody(player.color, dead.position)
             updatePlayer(dead)
             controllerRef.get ! UpdatedMyCharController(dead, gamePlayers, deadBodies)
-            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
+            controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCoins, deadBodies)
           case None =>
         }
       case _ =>
@@ -290,7 +290,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def removePlayer(clientId: String): Unit = {
     gamePlayers = gamePlayers.filter(player => player.clientId != clientId)
-    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCoins, deadBodies)
   }
 
   private def generateVentLinks(): Seq[(Drawable[Tile], Drawable[Tile])] = {
@@ -322,6 +322,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   private def playerUpdated(player: Player): Unit = {
     updatePlayer(player)
     controllerRef.get ! UpdatedMyCharController(myCharacter, gamePlayers, deadBodies)
-    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCollectionables, deadBodies)
+    controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCoins, deadBodies)
   }
 }

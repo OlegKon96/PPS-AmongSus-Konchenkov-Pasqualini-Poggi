@@ -20,7 +20,7 @@ class KillTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
   private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
-  modelActor.generateCollectionables(map)
+  modelActor.generateCoins(map)
 
   "An Impostor Alive" should {
     "Can Kill Crewmate" in {

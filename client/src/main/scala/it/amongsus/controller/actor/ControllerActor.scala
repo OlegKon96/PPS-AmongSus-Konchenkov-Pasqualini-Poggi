@@ -7,7 +7,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
+import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient._
@@ -96,20 +96,20 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
     case ModelReadyController(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
-    collectionables: Seq[Collectionable]) => state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
+    coins: Seq[Coin]) => state.guiRef.get ! GameFoundUi(map, myChar, players, coins)
 
     case KillTimerController(status: TimerStatus) => state.manageKillTimer(status)
 
     case MyCharMovedController(direction: Direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
-    case PlayerMovedClient(player: Player, deadBodys: Seq[Player]) =>
-      state.modelRef.get ! PlayerMovedModel(player, deadBodys)
+    case PlayerMovedClient(player: Player, deadBodies: Seq[Player]) =>
+      state.modelRef.get ! PlayerMovedModel(player, deadBodies)
 
-    case UpdatedMyCharController(player: Player, gamePlayers: Seq[Player], deadBodys: Seq[DeadBody]) =>
-      state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodys)
+    case UpdatedMyCharController(player: Player, gamePlayers: Seq[Player], deadBodies: Seq[DeadBody]) =>
+      state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodies)
 
-    case UpdatedPlayersController(myChar: Player, players: Seq[Player],collectionables: Seq[Collectionable],
-    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+    case UpdatedPlayersController(myChar: Player, players: Seq[Player],coins: Seq[Coin],
+    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, coins, deadBodies)
 
     case ActionOnController(action: ActionType) => state.guiRef.get ! ActionOnUi(action)
 
@@ -151,8 +151,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case NoOneEliminatedController => state.guiRef.get ! NoOneEliminatedUi
 
-    case UpdatedPlayersController(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
-    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+    case UpdatedPlayersController(myChar: Player, players: Seq[Player], coins: Seq[Coin],
+    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, coins, deadBodies)
 
     case SendTextChatController(message: ChatMessage, myChar: Player) =>
       state.gameServerRef.get ! SendTextChatServer(message, myChar)

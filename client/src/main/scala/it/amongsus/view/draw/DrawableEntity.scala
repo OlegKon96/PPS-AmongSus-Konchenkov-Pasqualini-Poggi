@@ -1,6 +1,6 @@
 package it.amongsus.view.draw
 
-import it.amongsus.core.map.{Collectionable, DeadBody}
+import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player._
 
 import java.awt.Graphics
@@ -8,19 +8,19 @@ import java.awt.image.BufferedImage
 
 trait DrawableEntity[E] {
   def drawEntity(entity : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                 gameCollectionables : Seq[Collectionable])
+                 gameCollectionables : Seq[Coin])
 }
 
 object DrawableEntity {
 
   def drawEntity[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                                     gameCollectionables : Seq[Collectionable]) : Unit =
+                                     gameCollectionables : Seq[Coin]) : Unit =
     implicitly[DrawableEntity[E]].drawEntity(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
 
   implicit object drawCrewmateAlive extends DrawableEntity[CrewmateAlive] {
     override def drawEntity(entity: CrewmateAlive, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Collectionable]): Unit = {
+                            gameCollectionables : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
       drawCollectionables(g,gameCollectionables,entity)
       gamePlayers.filter(player => player.position.distance(entity.position) < entity.fieldOfView).foreach {
@@ -34,7 +34,7 @@ object DrawableEntity {
   implicit object drawImpostorAlive extends DrawableEntity[ImpostorAlive] {
     override def drawEntity(entity: ImpostorAlive, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Collectionable]): Unit = {
+                            gameCollectionables : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
       gamePlayers.filter(player => player.position.distance(entity.position) < entity.fieldOfView).foreach {
         case impostorAlive: ImpostorAlive =>
@@ -51,7 +51,7 @@ object DrawableEntity {
   implicit object drawImpostorGhost extends DrawableEntity[ImpostorGhost] {
     override def drawEntity(entity: ImpostorGhost, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Collectionable]): Unit = {
+                            gameCollectionables : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
       gamePlayers.foreach {
         case impostorAlive: ImpostorAlive => drawPlayer(g, impostorAlive, getImageAlive(impostorAlive.color),
@@ -69,7 +69,7 @@ object DrawableEntity {
   implicit object drawCrewmateGhost extends DrawableEntity[CrewmateGhost] {
     override def drawEntity(entity: CrewmateGhost, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Collectionable]): Unit = {
+                            gameCollectionables : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
       drawCollectionables(g,gameCollectionables,entity)
       gamePlayers.foreach {
@@ -90,7 +90,7 @@ object DrawableEntity {
       deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
   }
 
-  private def drawCollectionables(g : Graphics, gameCollectionables : Seq[Collectionable], entity: Player): Unit = {
+  private def drawCollectionables(g : Graphics, gameCollectionables : Seq[Coin], entity: Player): Unit = {
     for {
       collectionable <- gameCollectionables
       if collectionable.position.distance(entity.position) < entity.fieldOfView

@@ -25,7 +25,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
     Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
   private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
-  modelActor.generateCollectionables(map)
+  modelActor.generateCoins(map)
 
   "A Crewmate Alive" should {
     "Move" in {
@@ -37,7 +37,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
     "Can or Not Collect Coin" in {
       this.crewmateAlive match {
-        case crewmate :Crewmate => crewmate.canCollect(modelActor.gameCollectionables, crewmate) match {
+        case crewmate :Crewmate => crewmate.canCollect(modelActor.gameCoins, crewmate) match {
           case Some(_) => crewmate.collect(crewmate)
             assert(crewmate.numCoins == 4)
           case None => assert(crewmate.numCoins == 3)
