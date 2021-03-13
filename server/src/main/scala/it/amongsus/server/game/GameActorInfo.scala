@@ -134,11 +134,6 @@ case class GameActorInfoData(override var players: Seq[GamePlayer], override var
     playersRole
   }
 
-  /**
-   * Broadcast a generic message to all game players
-   *
-   * @param message a generic message
-   */
   override def broadcastMessageToPlayers(message: Any): Unit = {
     players.foreach(p => p.actorRef ! message)
   }

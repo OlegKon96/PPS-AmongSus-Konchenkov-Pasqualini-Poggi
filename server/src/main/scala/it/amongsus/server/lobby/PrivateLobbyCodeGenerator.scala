@@ -20,6 +20,11 @@ trait PrivateLobbyCodeGenerator extends IdGenerator {
     }
   }
 
+  /**
+   * Method to remove an ID
+   *
+   * @param id to remove
+   */
   def removeId(id: String): Unit = {
     this.generatedIds = this.generatedIds.filter(_ != id)
   }

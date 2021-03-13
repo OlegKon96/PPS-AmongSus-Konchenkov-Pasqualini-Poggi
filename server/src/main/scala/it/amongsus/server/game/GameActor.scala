@@ -31,7 +31,6 @@ object GameActor {
  */
 class GameActor(private val state: GameActorInfo) extends Actor with ActorLogging with Stash {
   import context.dispatcher
-
   override def receive: Receive = idle
 
   private def idle: Receive = {
@@ -83,6 +82,12 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
       context >>> voting(gamePlayers)
   }
 
+  /**
+   * Method of the actor to manage the vote phase
+   *
+   * @param gamePlayers sequence of the players of the game
+   * @return
+   */
   private def voting(gamePlayers: Seq[Player]): Receive = {
     case VoteClient(username: String) => manageVote(username, gamePlayers)
 
@@ -139,6 +144,9 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
 
   /**
    * Notify termination to next player if one of them terminates during the game loading
+   *
+   * @param clientId reference of the actor
+   * @return
    */
   private def gameEndedWithErrorBeforeStarts(clientId: String): Receive = {
     case PlayerReadyServer(_, ref) => ref ! PlayerLeftClient(clientId)
@@ -167,6 +175,12 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
     context >>> (inGame() orElse terminationAfterGameStarted())
   }
 
+  /**
+   * Method to manage the vote phase
+   *
+   * @param username of the voted player
+   * @param gamePlayer of the game
+   */
   private def manageVote(username: String, gamePlayer: Seq[Player]): Unit = {
     this.state.totalVotes = this.state.totalVotes - 1
     if(username != "") {

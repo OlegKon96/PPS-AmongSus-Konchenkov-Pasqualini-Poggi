@@ -1,6 +1,5 @@
 package it.amongsus.server.lobby
 
-import akka.japi.Pair
 import it.amongsus.server.common.Player
 
 object Lobby {

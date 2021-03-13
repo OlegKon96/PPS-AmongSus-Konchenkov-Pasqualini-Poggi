@@ -74,6 +74,11 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
       removeClient(actorRef)
   }
 
+  /**
+   * Method to check if all setup are correct and start the game
+   *
+   * @param lobbyType type of the lobby
+   */
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
     this.lobbyManager.attemptExtractPlayerForMatch(lobbyType) match {
       case Some(players) => this.generateAndStartGameActor(lobbyType)(players)
@@ -81,6 +86,12 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
     }
   }
 
+  /**
+   * Method to generate and starts game actor
+   *
+   * @param lobbyType type of the lobby
+   * @param players sequence of the players of the lobby
+   */
   private def generateAndStartGameActor(lobbyType: LobbyType)(players: Seq[GamePlayer]): Unit = {
     val gameActor = context.actorOf(GameActor.props(GameActorInfo(lobbyType.numberOfPlayers)))
     players.foreach(p => {
@@ -93,6 +104,12 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
     gameActor ! GamePlayers(players)
   }
 
+  /**
+   * Method to execute an action to a player
+   *
+   * @param clientId of the player
+   * @param action to do
+   */
   private def executeOnClientRefPresent(clientId: String)(action: ActorRef => Unit): Unit = {
     this.getClientRef(clientId) match {
       case Some(ref) => action(ref)
@@ -100,10 +117,21 @@ class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with 
     }
   }
 
+  /**
+   * Method to get a client references
+   *
+   * @param clientId of the player
+   * @return
+   */
   private def getClientRef(clientId: String): Option[ActorRef] = {
     this.state.connectedPlayers.get(clientId)
   }
 
+  /**
+   * Method to remove the client from the lobby
+   *
+   * @param actorRef of the player
+   */
   private def removeClient(actorRef: ActorRef): Unit = {
     this.state.connectedPlayers.find(_._2 == actorRef) match {
       case Some((userId, _)) =>
