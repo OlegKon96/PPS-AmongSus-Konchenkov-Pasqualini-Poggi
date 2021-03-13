@@ -6,7 +6,7 @@ import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
 
 /**
- * Class of the Controller that manages the Client Actor and the Server Actor
+ * Class of the Controller that manages the Client Actor and the Server Actor.
  */
 class MainControllerImpl() extends MainController {
   private lazy val guiRef =
