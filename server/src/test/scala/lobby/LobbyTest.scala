@@ -10,8 +10,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
  * Class that tests the lobby.
  */
 class LobbyTest extends AnyWordSpecLike with MockFactory {
-
-  private val NUM_PLAYERS = 4
+  private final val NUM_PLAYERS = 4
 
   "The lobby" should {
     "create an empty lobby" in {

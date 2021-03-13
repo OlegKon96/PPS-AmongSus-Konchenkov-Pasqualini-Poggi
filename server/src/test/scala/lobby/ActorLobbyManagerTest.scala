@@ -18,7 +18,7 @@ class ActorLobbyManagerTest extends TestKit(ActorSystem("test", ConfigFactory.lo
   with BeforeAndAfterAll {
 
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
-  private val NUM_PLAYERS = 4
+  private final val NUM_PLAYERS = 4
 
   "The lobby actor" should {
     "successfully connected to the server" in {

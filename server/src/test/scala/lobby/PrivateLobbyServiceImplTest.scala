@@ -7,8 +7,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
  * Class that tests the private lobby service impl.
  */
 class PrivateLobbyServiceImplTest extends AnyWordSpecLike {
-
-  private val NUM_PLAYER = 4
+  private final val NUM_PLAYER = 4
 
   "The private lobby service" should {
     "create a new private lobby" in {

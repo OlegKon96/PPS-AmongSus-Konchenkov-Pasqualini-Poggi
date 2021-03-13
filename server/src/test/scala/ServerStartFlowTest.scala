@@ -15,8 +15,9 @@ class ServerStartFlowTest extends TestKit(ActorSystem("test", ConfigFactory.load
   with AnyWordSpecLike
   with BeforeAndAfterAll {
 
-  private val NUM_PLAYERS = 2
+  private final val NUM_PLAYERS = 2
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
+
   "The correct process" should {
     "add users to the lobby, and if there are enough players, start the game and notify the players" in {
       val actorOfLobby = TestActorRef[LobbyManagerActor](LobbyManagerActor.props(LobbyManagerInfo(Map())))
