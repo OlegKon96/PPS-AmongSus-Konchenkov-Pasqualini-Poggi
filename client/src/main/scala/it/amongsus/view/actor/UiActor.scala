@@ -84,7 +84,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case LobbyErrorOccurredUi => state.lobbyError()
 
-    case _ => log.info("Ui Actor lobby error")
+    case _ => log.info("Ui Actor -> lobby error" )
   }
 
   private def gameBehaviour(state: UiGameActorInfo): Receive = {
@@ -124,7 +124,7 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case PlayerLeftUi(clientId) => log.info("Player -> " + clientId + " left the game.")
 
-    case _ => log.info("Ui Actor game error")
+    case _ => log.info("Ui Actor -> game error" )
   }
 
   private def voteBehaviour(state: UiGameActorInfo, voteFrame : VoteFrame): Receive = {
@@ -160,6 +160,6 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case ReceiveTextChatUi(message) => voteFrame.appendTextToChat(message.text, message.username).unsafeRunSync()
 
-    case _ => log.info("Error vote behaviour")
+    case _ => log.info("Ui Actor -> vote error" )
   }
 }

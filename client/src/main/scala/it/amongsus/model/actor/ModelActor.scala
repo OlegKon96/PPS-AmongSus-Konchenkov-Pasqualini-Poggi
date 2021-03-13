@@ -79,7 +79,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
     case PlayerLeftModel(clientId) => state.removePlayer(clientId)
 
-    case _ => println("error model game")
+    case _ => log.info("Model Actor -> game error" )
   }
 
   private def voteBehaviour(state: ModelActorInfo): Receive = {
@@ -98,6 +98,6 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
     case MyPlayerLeftModel => self ! PoisonPill
 
-    case _ => println("ERROR VOTE")
+    case _ => log.info("Model Actor -> vote error" )
   }
 }

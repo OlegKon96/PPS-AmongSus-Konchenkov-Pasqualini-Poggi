@@ -76,11 +76,11 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         Option(model), state.clientId))
 
     case LobbyErrorOccurred(error) => error match {
-      case LobbyError.PrivateLobbyIdNotValid => ???
+      case LobbyError.PrivateLobbyIdNotValid =>  log.info("Controller Actor -> Private Lobby id not valid" )
       case _ =>
     }
 
-    case _ => println("lobby error" + _)
+    case _ => log.info("Controller Actor -> lobby error" )
   }
 
   private def gameBehaviour(state: GameActorInfo): Receive = {
@@ -131,6 +131,8 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
       state.guiRef.get ! PlayerLeftUi(clientId)
+
+    case _ => log.info("Controller Actor -> game error" )
   }
 
   private def voteBehaviour(state: GameActorInfo): Receive = {
@@ -166,6 +168,6 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
 
-    case _ => println("Error Controller Vote")
+    case _ => log.info("Controller Actor -> vote error" )
   }
 }
