@@ -35,7 +35,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
   override def receive: Receive = idle
 
   private def idle: Receive = {
-    case GamePlayers(players) =>
+    case GamePlayers(players: Seq[Player]) =>
       log.info(s"Server -> initial players $players")
       this.state.players = players
       this.state.players.foreach(p => context.watch(p.actorRef))

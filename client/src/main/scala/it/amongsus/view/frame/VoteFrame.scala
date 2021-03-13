@@ -7,7 +7,6 @@ import cats.effect.IO
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.util.ChatMessage
 import it.amongsus.view.actor.UiActorGameMessages.{SendTextChatUi, VoteUi}
-import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi
 import it.amongsus.view.swingio.{BorderFactoryIO, JButtonIO, JFrameIO, JLabelIO, JPanelIO, JScrollPaneIO, JTextAreaIO}
 import it.amongsus.view.swingio.JTextFieldIO
 

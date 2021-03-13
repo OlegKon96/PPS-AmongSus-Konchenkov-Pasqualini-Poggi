@@ -7,7 +7,10 @@ import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
 import it.amongsus.controller.actor.ControllerActorMessages.UiActionController
+import it.amongsus.core.Drawable
+import it.amongsus.core.map.{Collectionable, DeadBody, Tile}
 import it.amongsus.core.player.{AlivePlayer, Player}
+import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient}
 import it.amongsus.messages.GameMessageClient.VoteClient
 import it.amongsus.messages.LobbyMessagesClient._
@@ -38,24 +41,24 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       frame.start().unsafeRunSync()
       context >>> defaultBehaviour(UiActorInfo(Option(sender), Option(frame)))
 
-    case PublicGameSubmitUi(username, playersNumber) =>
+    case PublicGameSubmitUi(username: String, playersNumber: Int) =>
       state.clientRef.get ! JoinPublicLobbyClient(username, playersNumber)
 
-    case PrivateGameSubmitUi(username, privateCode) =>
+    case PrivateGameSubmitUi(username: String, privateCode: String) =>
       state.clientRef.get ! JoinPrivateLobbyClient(username, privateCode)
 
-    case CreatePrivateGameSubmitUi(username, playersNumber) =>
+    case CreatePrivateGameSubmitUi(username: String, playersNumber: Int) =>
       state.clientRef.get ! CreatePrivateLobbyClient(username, playersNumber)
 
-    case UserAddedToLobbyUi(numPlayers,roomSize) =>
+    case UserAddedToLobbyUi(numPlayers: Int, roomSize: Int) =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val lobby = LobbyFrame(self,roomSize)
       lobby.start(numPlayers, state.getCode).unsafeRunSync()
       context >>> defaultBehaviour(UiActorInfo(state.clientRef, Option(lobby)))
 
-    case UpdateLobbyClient(numPlayers) => state.updateLobby(numPlayers)
+    case UpdateLobbyClient(numPlayers: Int) => state.updateLobby(numPlayers)
 
-    case PrivateLobbyCreatedUi(lobbyCode, roomSize) =>
+    case PrivateLobbyCreatedUi(lobbyCode: String, roomSize: Int) =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val lobby = LobbyFrame(self,roomSize)
       lobby.start(1, lobbyCode).unsafeRunSync()
@@ -76,7 +79,8 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
 
     case PlayerReadyUi => state.clientRef.get ! PlayerReadyClient
 
-    case GameFoundUi(map, myChar, players, collectionables) =>
+    case GameFoundUi(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
+                      collectionables: Seq[Collectionable]) =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val game = GameFrame(Option(self),map,myChar,players,collectionables)
       game.start().unsafeRunSync()
@@ -93,26 +97,27 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
     case PlayerCloseUi => state.clientRef.get ! PlayerLeftController
       self ! PoisonPill
 
-    case MyCharMovedUi(direction) => state.clientRef.get ! MyCharMovedController(direction)
+    case MyCharMovedUi(direction: Direction) => state.clientRef.get ! MyCharMovedController(direction)
 
-    case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
+    case PlayerUpdatedUi(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
+                          deadBodies: Seq[DeadBody]) =>
       state.updatePlayer(myChar,players,collectionables, deadBodies)
 
-    case ActionOnUi(action) => state.setButtonState(action,boolean = true)
+    case ActionOnUi(action: ActionType) => state.setButtonState(action,boolean = true)
 
-    case ActionOffUi(action) => state.setButtonState(action, boolean = false)
+    case ActionOffUi(action: ActionType) => state.setButtonState(action, boolean = false)
 
     case KillTimerUpdateUi(_: Long, seconds: Long) => state.updateKillButton(seconds)
 
     case SabotageTimerUpdateUi(_: Long, seconds: Long) => state.updateSabotageButton(seconds)
 
-    case GameEndUi(end) =>
+    case GameEndUi(end: GameEnd) =>
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
       context >>> defaultBehaviour(UiActorInfo())
 
-    case UiActionTypeUi(button) => state.clientRef.get ! UiActionController(button)
+    case UiActionTypeUi(button: ActionType) => state.clientRef.get ! UiActionController(button)
 
     case BeginVotingUi(gamePlayers: Seq[Player]) =>  val voteFrame = VoteFrame(Option(self), state.gameFrame.get.myChar,
       gamePlayers.filter(p => p.isInstanceOf[AlivePlayer]))
@@ -122,15 +127,15 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       }
       context >>> voteBehaviour(state, voteFrame)
 
-    case PlayerLeftUi(clientId) => log.info("Player -> " + clientId + " left the game.")
+    case PlayerLeftUi(clientId: String) => log.info("Player -> " + clientId + " left the game.")
 
     case _ => log.info("Ui Actor -> game error" )
   }
 
   private def voteBehaviour(state: UiGameActorInfo, voteFrame : VoteFrame): Receive = {
-    case VoteUi(username) => state.clientRef.get ! VoteClient(username)
+    case VoteUi(username: String) => state.clientRef.get ! VoteClient(username)
 
-    case EliminatedPlayer(username) =>
+    case EliminatedPlayer(username: String) =>
       voteFrame.eliminated(username).unsafeRunSync()
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3 seconds){
         self ! RestartGameUi
@@ -142,7 +147,8 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
         self ! RestartGameUi
       }
 
-    case PlayerUpdatedUi(myChar, players, collectionables, deadBodies) =>
+    case PlayerUpdatedUi(myChar: Player, players: Seq[Player], collectionables: Seq[Collectionable],
+                          deadBodies: Seq[DeadBody]) =>
       state.updatePlayer(myChar,players,collectionables, deadBodies)
 
     case RestartGameUi =>
@@ -150,15 +156,17 @@ class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor wi
       state.clientRef.get ! RestartGameController
       context >>> gameBehaviour(state)
 
-    case GameEndUi(end) =>
+    case GameEndUi(end: GameEnd) =>
       state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
       context >>> defaultBehaviour(UiActorInfo())
 
-    case SendTextChatUi(message, myChar) => state.clientRef.get ! SendTextChatController(message, myChar)
+    case SendTextChatUi(message: ChatMessage, myChar: Player) =>
+      state.clientRef.get ! SendTextChatController(message, myChar)
 
-    case ReceiveTextChatUi(message) => voteFrame.appendTextToChat(message.text, message.username).unsafeRunSync()
+    case ReceiveTextChatUi(message: ChatMessage) =>
+      voteFrame.appendTextToChat(message.text, message.username).unsafeRunSync()
 
     case _ => log.info("Ui Actor -> vote error" )
   }
