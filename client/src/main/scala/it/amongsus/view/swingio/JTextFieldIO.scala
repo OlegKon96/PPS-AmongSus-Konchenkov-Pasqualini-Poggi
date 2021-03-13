@@ -7,6 +7,7 @@ import javax.swing.JTextField
 /**
  * A class that provides a monadic description of the operations supplied by Swing's [[JTextField]] in the form
  * of IO monad in a purely functional style.
+ *
  * @param component the JTextField that this class wraps.
  */
 class JTextFieldIO(override val component: JTextField) extends ComponentIO(component){

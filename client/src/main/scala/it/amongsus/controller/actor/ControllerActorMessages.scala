@@ -77,6 +77,11 @@ object ControllerActorMessages {
    * Tells to the Ui Actor that Players left the game
    */
   case object PlayerLeftController
-
+  /**
+   * Tells to the Ui Actor to change the behaviour
+   *
+   * @param model references to the model actor
+   * @param server references to the server actor
+   */
   case class TestGameBehaviour(model: ActorRef, server: ActorRef)
 }

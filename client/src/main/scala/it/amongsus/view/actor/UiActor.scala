@@ -18,7 +18,6 @@ import it.amongsus.view.actor.UiActorGameMessages.KillTimerUpdateUi
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
@@ -32,7 +31,6 @@ object UiActor {
  * @param serverResponsesListener the server response listener
  */
 class UiActor(private val serverResponsesListener: UiActorInfo) extends Actor with ActorLogging {
-
   override def receive: Receive = defaultBehaviour(serverResponsesListener)
 
   private def defaultBehaviour(state: UiActorInfo): Receive = {

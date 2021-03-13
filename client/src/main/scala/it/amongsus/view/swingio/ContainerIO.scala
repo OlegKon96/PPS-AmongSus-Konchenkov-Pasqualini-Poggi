@@ -5,8 +5,9 @@ import java.awt.{Component, Container, LayoutManager}
 
 /**
  * A class that provides a monadic description of the operations supplied by awt's [[Container]] in the form
- * of IO monad in a purely functional style.
- * This package provided some ad-hoc factory utilities for the most popular Swing's containers.
+ * of IO monad in a purely functional style. This package provided some ad-hoc factory utilities for the most
+ * popular Swing's containers.
+ *
  * @param component the container that this class wraps.
  * @tparam T the type of the component to be wrapped. and whose methods are to be enhanced with IO description.
  */

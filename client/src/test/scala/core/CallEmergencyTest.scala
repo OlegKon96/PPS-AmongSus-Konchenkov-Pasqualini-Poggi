@@ -12,7 +12,6 @@ import org.scalatest.wordspec.AnyWordSpecLike
 class CallEmergencyTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   private final val positionDefault35 = 35
-
   private var crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private var impostorAlive: Player = ImpostorAlive("green", emergencyCalled = false,

@@ -3,7 +3,6 @@ package it.amongsus.view.panel
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Boundary, Coin, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
-
 import java.awt.Graphics
 import javax.swing.JPanel
 import it.amongsus.view.draw.DrawableEntity.drawEntity

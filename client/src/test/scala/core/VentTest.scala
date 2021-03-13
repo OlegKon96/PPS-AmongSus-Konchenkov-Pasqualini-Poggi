@@ -12,7 +12,6 @@ import org.scalatest.wordspec.AnyWordSpecLike
 class VentTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   private final val positionDefault35 = 35
-
   private var impostorAlive: Player = ImpostorAlive("green", emergencyCalled = true,
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()

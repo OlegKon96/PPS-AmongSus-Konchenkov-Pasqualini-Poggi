@@ -3,11 +3,9 @@ package view
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.messages.GameMessageClient.PlayerReadyClient
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.actor.{UiActor, UiActorInfo}
-import it.amongsus.view.frame.MenuFrame
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -20,7 +18,7 @@ class UiActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test")
   with BeforeAndAfterAll {
 
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
-  private val NUM_PLAYERS = 4
+  private final val NUM_PLAYERS = 4
 
   "The UiActor" should {
     "Successfully connected to the server" in {

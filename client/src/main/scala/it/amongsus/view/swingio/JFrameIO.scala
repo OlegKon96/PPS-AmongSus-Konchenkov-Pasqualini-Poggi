@@ -8,6 +8,7 @@ import javax.swing.JFrame
 /**
  * A class that provides a monadic description of the operations supplied by Swing's [[JFrame]] in the form
  * of IO monad in a purely functional style.
+ *
  * @param component the jFrame that this class wraps.
  */
 class JFrameIO(override val component: JFrame) extends ContainerIO(component) {

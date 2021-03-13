@@ -36,14 +36,12 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
   private val modelActor: ModelActorInfo = ModelActorInfo()
   private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
   modelActor.generateCoins(map)
-
-  val client: TestProbe = TestProbe()
-  val serverActor: TestProbe = TestProbe()
-  val model: TestProbe = TestProbe()
-  val uiActor: TestProbe = TestProbe()
+  private final val client: TestProbe = TestProbe()
+  private final val serverActor: TestProbe = TestProbe()
+  private final val model: TestProbe = TestProbe()
+  private final val uiActor: TestProbe = TestProbe()
   val controllerActor: ActorRef =
     system.actorOf(ControllerActor.props(LobbyActorInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
-
   val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
 
   "The Controller Actor" should {

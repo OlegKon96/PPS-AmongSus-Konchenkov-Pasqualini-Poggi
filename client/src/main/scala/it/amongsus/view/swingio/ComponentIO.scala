@@ -6,8 +6,9 @@ import java.awt.{Component, Dimension, Font}
 
 /**
  * A class that provides a monadic description of the operations supplied by awt's [[Component]] in the form
- * of IO monad in a purely functional style.
- * This package provided some ad-hoc factory utilities for the most popular Swing's components
+ * of IO monad in a purely functional style. This package provided some ad-hoc factory utilities for the most
+ * popular Swing's components.
+ *
  * @param component the component that this class wraps.
  * @tparam T the type of the component to be wrapped. and whose methods are to be enhanced with IO description.
  */

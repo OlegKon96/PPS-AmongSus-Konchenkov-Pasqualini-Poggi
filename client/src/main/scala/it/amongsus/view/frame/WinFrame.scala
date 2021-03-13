@@ -1,7 +1,6 @@
 package it.amongsus.view.frame
 
 import java.awt.BorderLayout
-
 import cats.effect.IO
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.core.util.GameEnd

@@ -2,16 +2,18 @@ package it.amongsus.view.draw
 
 import it.amongsus.core.map.{Boundary, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.player.Player
-
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 
+/**
+ *
+ * @tparam T
+ */
 trait DrawableTile[T] {
   def drawTile(tile : T,g : Graphics,player : Player)
 }
 
 object DrawableTile {
-
   def drawTile[T: DrawableTile](tile: T, g: Graphics, player : Player): Unit =
     implicitly[DrawableTile[T]].drawTile(tile, g, player)
 

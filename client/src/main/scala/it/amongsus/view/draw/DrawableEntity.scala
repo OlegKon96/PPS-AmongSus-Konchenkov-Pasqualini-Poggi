@@ -2,17 +2,19 @@ package it.amongsus.view.draw
 
 import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player._
-
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 
+/**
+ *
+ * @tparam E
+ */
 trait DrawableEntity[E] {
   def drawEntity(entity : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
                  gameCollectionables : Seq[Coin])
 }
 
 object DrawableEntity {
-
   def drawEntity[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
                                      gameCollectionables : Seq[Coin]) : Unit =
     implicitly[DrawableEntity[E]].drawEntity(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
@@ -104,5 +106,4 @@ object DrawableEntity {
     g.drawString(username, player.position.y * DRAWABLE_SCALING - 10,
       player.position.x * DRAWABLE_SCALING - 5)
   }
-
 }

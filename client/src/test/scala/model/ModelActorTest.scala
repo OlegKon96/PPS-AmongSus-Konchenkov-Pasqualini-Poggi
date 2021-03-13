@@ -4,14 +4,14 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.ActionTimer.TimerStarted
-import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController, UpdatedMyCharController, UpdatedPlayersController}
+import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.CrewmateAlive
 import it.amongsus.core.util.ActionType.EmergencyAction
 import it.amongsus.core.util.Direction.Up
-import it.amongsus.core.util.{GameEnd, Point2D}
-import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, KillPlayerModel, KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel, PlayerLeftModel, RestartGameModel, UiActionModel}
+import it.amongsus.core.util.Point2D
+import it.amongsus.model.actor.ModelActorMessages._
 import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike

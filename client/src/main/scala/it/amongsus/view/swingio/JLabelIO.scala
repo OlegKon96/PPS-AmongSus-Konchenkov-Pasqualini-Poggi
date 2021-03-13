@@ -7,6 +7,7 @@ import javax.swing.JLabel
 /**
  * A class that provides a monadic description of the operations supplied by Swing's [[JLabel]] in the form
  * of IO monad in a purely functional style.
+ *
  * @param component the jLabel that this class wraps.
  */
 class JLabelIO(override val component: JLabel) extends ComponentIO[JLabel](component) {

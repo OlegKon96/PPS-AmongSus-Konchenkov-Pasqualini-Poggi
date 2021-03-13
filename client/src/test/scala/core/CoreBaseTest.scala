@@ -14,7 +14,6 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   private final val positionDefault34 = 34
   private final val positionDefault35 = 35
-
   private var crewmateAlive: Player = CrewmateAlive("green", emergencyCalled = true, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private var crewmateGhost: Player = CrewmateGhost("green", "zxcvb", "imCrewmateGhost", 3,

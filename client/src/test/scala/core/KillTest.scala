@@ -12,7 +12,6 @@ import org.scalatest.wordspec.AnyWordSpecLike
 class KillTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
   private final val positionDefault35 = 35
-
   private val crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = true, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private val deadCrewmate: DeadBody = amongsus.core.map.DeadBody("green", Point2D(positionDefault35, positionDefault35))

@@ -8,7 +8,6 @@ import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
 import it.amongsus.core.util.{Direction, Point2D}
 import it.amongsus.core.{Drawable, map}
-
 import scala.Array.ofDim
 import scala.util.Random
 

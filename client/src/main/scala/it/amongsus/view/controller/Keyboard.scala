@@ -4,16 +4,17 @@ import it.amongsus.core.util.Direction._
 import it.amongsus.view.frame.GameFrame
 import java.awt.event.{KeyEvent, KeyListener}
 
+/**
+ *
+ */
 trait Keyboard extends KeyListener {
   def gameFrame: GameFrame
 }
 
 object Keyboard {
-
   def apply(gameFrame: GameFrame): Keyboard = new KeyboardImpl(gameFrame)
 
   private[view] class KeyboardImpl(override val gameFrame: GameFrame) extends Keyboard {
-
     private val UP = KeyEvent.VK_UP
     private val DOWN = KeyEvent.VK_DOWN
     private val RIGHT = KeyEvent.VK_RIGHT

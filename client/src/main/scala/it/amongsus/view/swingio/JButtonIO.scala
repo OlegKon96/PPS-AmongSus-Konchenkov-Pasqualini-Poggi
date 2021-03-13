@@ -7,6 +7,7 @@ import javax.swing.JButton
 /**
  * A class that provides a monadic description of the operations supplied by Swing's [[JButton]] in the form
  * of IO monad in a purely functional style.
+ *
  * @param component the jButton that this class wraps.
  */
 class JButtonIO(override val component: JButton) extends ComponentIO(component){
