@@ -5,7 +5,10 @@ import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.actor.UiActorGameMessages.PlayerReadyUi
 import it.amongsus.view.actor.UiActorLobbyMessages.{LeaveLobbyUi, PlayerCloseUi}
+import it.amongsus.view.frame.Constants.LobbyFrame.Numbers._
+import it.amongsus.view.frame.Constants.LobbyFrame.Strings._
 import it.amongsus.view.swingio._
+
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.JFrame
 
@@ -49,19 +52,13 @@ object LobbyFrame {
    */
   private class LobbyFrameImpl(guiRef: ActorRef, roomSize : Int) extends LobbyFrame {
 
-    final val LOBBY_WIDTH: Int = 400
-    final val LOBBY_HEIGHT: Int = 300
-    final val LOBBY_COLS_NUMBER : Int = 1
-    final val ROWS_NUMBER : Int = 4
-    final val BASIC_BORDER : Int = 10
-    final val RL_BORDER : Int = 120
-    final val TB_BORDER : Int = 0
 
-    val lobbyFrame = new JFrameIO(new JFrame("Among Sus"))
+
+    val lobbyFrame = new JFrameIO(new JFrame(TITLE))
     val players: JLabelIO = JLabelIO().unsafeRunSync()
-    val startButton : JButtonIO = JButtonIO("Start game").unsafeRunSync()
+    val startButton : JButtonIO = JButtonIO(START_GAME).unsafeRunSync()
     val size: Int = roomSize
-    val backButton : JButtonIO = JButtonIO("<").unsafeRunSync()
+    val backButton : JButtonIO = JButtonIO(BACK).unsafeRunSync()
 
     override def start(numPlayers: Int, code: String): IO[Unit] =
       for {
@@ -78,16 +75,16 @@ object LobbyFrame {
           _ <- IO(guiRef ! LeaveLobbyUi)
         } yield ())
         _ <- topPanel.add(backButton, BorderLayout.WEST)
-        _ <- players.setText("Players" + numPlayers.toString + "/" + size.toString)
+        _ <- players.setText(PLAYERS + numPlayers.toString + OF + size.toString)
         _ <- controlPanel.add(players, BorderLayout.EAST)
         mainPanel <- JPanelIO()
         _ <- mainPanel.setLayout(new BorderLayout())
         mainBorder <- BorderFactoryIO.emptyBorderCreated(TB_BORDER, RL_BORDER, TB_BORDER, RL_BORDER)
         _ <- mainPanel.setBorder(mainBorder)
-        codeLabel <- JLabelIO(if (code == "") "Wait other players" else "Your code is : " + code)
+        codeLabel <- JLabelIO(if (code == "") WAIT_PLAYERS else CODE_LABEL + code)
         _ <- mainPanel.add(codeLabel, BorderLayout.CENTER)
         _ <- startButton.setVisible(false)
-        startLabel <- JLabelIO("Waiting..")
+        startLabel <- JLabelIO(WAITING)
         _ <- startLabel.setVisible(false)
         _ <- startLabel.setBorder(mainBorder)
         _ <- startButton.addActionListener(for {
@@ -115,7 +112,7 @@ object LobbyFrame {
       } yield ()
 
     override def updatePlayers(numPlayers: Int): IO[Unit] =
-      players.setText("Players" + numPlayers.toString + "/" + size.toString)
+      players.setText(PLAYERS + numPlayers.toString + OF + size.toString)
 
     override def dispose(): IO[Unit] = lobbyFrame.dispose()
 

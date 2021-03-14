@@ -4,7 +4,10 @@ import java.awt.{BorderLayout, Color, GridLayout}
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.view.actor.UiActorLobbyMessages._
+import it.amongsus.view.frame.Constants.MenuFrame.Numbers._
+import it.amongsus.view.frame.Constants.MenuFrame.Strings._
 import it.amongsus.view.swingio._
+
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.JFrame
 
@@ -45,14 +48,10 @@ object MenuFrame {
    */
   private class MenuFrameImpl(guiRef: Option[ActorRef]) extends MenuFrame() {
 
-    final val BASIC_BORDER : Int = 10
-    final val MENU_COLS_NUMBER : Int = 2
-    final val ROWS_NUMBER : Int = 4
+
 
     val menuFrame = new JFrameIO(new JFrame("Among Sus"))
     val values : Seq[Int] = Seq(4,5,6,7,8,9,10)
-    val WIDTH: Int = 600
-    val HEIGHT: Int = 300
     var code: String = ""
 
     override def start(): IO[Unit] =
@@ -65,17 +64,17 @@ object MenuFrame {
         inputPanel <- JPanelIO()
         _ <- inputPanel.setLayout(new GridLayout(ROWS_NUMBER, MENU_COLS_NUMBER))
         nameLabel <- JLabelIO()
-        _ <- nameLabel.setText("Insert your name")
+        _ <- nameLabel.setText(INSERT_NAME)
         _ <- inputPanel.add(nameLabel)
         nameField <- JTextFieldIO()
         _ <- inputPanel.add(nameField)
         playersLabel <- JLabelIO()
-        _ <- playersLabel.setText("Insert the number of players")
+        _ <- playersLabel.setText(INSERT_NUMBER)
         _ <- inputPanel.add(playersLabel)
         comboBoxPlayers <- JComboBoxIO()
         _ <- IO(values.foreach(value => comboBoxPlayers.addItem(value).unsafeRunSync()))
         _ <- inputPanel.add(comboBoxPlayers)
-        joinPublic <- JButtonIO("Join public game")
+        joinPublic <- JButtonIO(JOIN_PUBLIC)
         _ <- joinPublic.addActionListener(for {
           nameText <- nameField.text
           _ <- IO(if (checkName(nameField)) {
@@ -83,7 +82,7 @@ object MenuFrame {
           })
         } yield ())
         _ <- inputPanel.add(joinPublic)
-        startPrivate <- JButtonIO("Create private game")
+        startPrivate <- JButtonIO(CREATE_PRIVATE)
         _ <- startPrivate.addActionListener(for {
           nameText <- nameField.text
           _ <- IO(if (checkName(nameField)) {
@@ -92,11 +91,11 @@ object MenuFrame {
         } yield ())
         _ <- inputPanel.add(startPrivate)
         codeLabel <- JLabelIO()
-        _ <- codeLabel.setText("Insert code of private game")
+        _ <- codeLabel.setText(INSERT_CODE)
         _ <- inputPanel.add(codeLabel)
         codeField <- JTextFieldIO()
         _ <- inputPanel.add(codeField)
-        joinPrivate <- JButtonIO("Join private game")
+        joinPrivate <- JButtonIO(JOIN_PRIVATE)
         _ <- joinPrivate.addActionListener(for {
           codeText <- codeField.text
           nameText <- nameField.text
@@ -113,7 +112,7 @@ object MenuFrame {
         _ <- inputPanel.background(Color.LIGHT_GRAY)
         _ <- cp.add(menuPanel)
         _ <- menuFrame.setResizable(false)
-        _ <- menuFrame.setTitle("Among Sus")
+        _ <- menuFrame.setTitle(TITLE)
         _ <- menuFrame.setSize(WIDTH, HEIGHT)
         _  <- menuFrame.setLocationRelativeToInvokingAndWaiting(menuFrame.component)
         _ <- menuFrame.setVisible(true)

@@ -49,10 +49,68 @@ package object frame {
       }
     }
 
-    object GameFrame {}
+    object GameFrame {
+      object Numbers {
+        final val GAME_FRAME_WIDTH : Int = 1230
+        final val GAME_PANEL_WIDTH : Int = 1080
+        final val GAME_HEIGHT : Int = 775
+        final val BUTTON_PANEL_WIDTH : Int = 150
+        final val IMPOSTOR_ROWS_NUMBER : Int = 5
+        final val CREWMATE_ROWS_NUMBER : Int = 2
+        final val COLS_NUMBER : Int = 1
+      }
+      object Strings {
+        final val TITLE : String = "Among Sus"
+        final val REPORT : String = "Report"
+        final val KILL : String = "Kill"
+        final val VENT : String = "Vent"
+        final val EMERGENCY : String = "Call Emergency"
+        final val SABOTAGE : String = "Sabotage"
+        final val COUNTDOWN : String = "Countdown: "
+      }
+    }
 
-    object  LobbyFrame {}
+    object  LobbyFrame {
+      object Numbers {
+        final val LOBBY_WIDTH: Int = 400
+        final val LOBBY_HEIGHT: Int = 300
+        final val LOBBY_COLS_NUMBER : Int = 1
+        final val ROWS_NUMBER : Int = 4
+        final val BASIC_BORDER : Int = 10
+        final val RL_BORDER : Int = 120
+        final val TB_BORDER : Int = 0
+      }
+      object Strings {
+        final val TITLE : String = "Among Sus"
+        final val START_GAME : String = "Start game"
+        final val BACK : String = "<"
+        final val OF : String = "/"
+        final val PLAYERS : String = "Players"
+        final val WAIT_PLAYERS : String = "Wait other players"
+        final val CODE_LABEL : String = "Your code is : "
+        final val WAITING : String = "Waiting..."
+      }
+    }
 
-    object MenuFrame {}
+    object MenuFrame {
+      object Numbers {
+        final val BASIC_BORDER : Int = 10
+        final val MENU_COLS_NUMBER : Int = 2
+        final val ROWS_NUMBER : Int = 4
+        final val WIDTH: Int = 600
+        final val HEIGHT: Int = 300
+      }
+      object Strings {
+        final val TITLE : String = "Among Sus"
+        final val INSERT_NAME : String = "Insert your name"
+        final val INSERT_NUMBER : String = "Insert the number of players"
+        final val JOIN_PUBLIC : String = "Join public game"
+        final val CREATE_PRIVATE : String = "Create private game"
+        final val INSERT_CODE : String = "Insert code of private game"
+        final val JOIN_PRIVATE : String = "Join private game"
+
+
+      }
+    }
   }
 }

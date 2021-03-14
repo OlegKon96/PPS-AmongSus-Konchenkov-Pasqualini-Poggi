@@ -15,6 +15,8 @@ import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{BorderLayout, GridLayout}
 import it.amongsus.core.player.{Crewmate, Impostor, Player}
 import it.amongsus.core.util.{ActionType, Direction}
+import it.amongsus.view.frame.Constants.GameFrame.Numbers._
+import it.amongsus.view.frame.Constants.GameFrame.Strings._
 
 import javax.swing.JFrame
 
@@ -106,21 +108,15 @@ object GameFrame {
                               override val players : Seq[Player],
                               override val coins : Seq[Coin]) extends GameFrame {
 
-    final val GAME_FRAME_WIDTH : Int = 1230
-    final val GAME_PANEL_WIDTH : Int = 1080
-    final val GAME_HEIGHT : Int = 775
-    final val BUTTON_PANEL_WIDTH : Int = 150
-    final val IMPOSTOR_ROWS_NUMBER : Int = 5
-    final val CREWMATE_ROWS_NUMBER : Int = 2
-    final val COLS_NUMBER : Int = 1
 
-    val gameFrame = new JFrameIO(new JFrame("Among Sus"))
+
+    val gameFrame = new JFrameIO(new JFrame(TITLE))
     val gamePanel: GamePanel = GamePanel(map,myChar,players,coins,Seq.empty)
-    val reportButton : JButtonIO = JButtonIO("Report").unsafeRunSync()
-    val killButton: JButtonIO = JButtonIO("Kill").unsafeRunSync()
-    val emergencyButton: JButtonIO = JButtonIO("Call Emergency").unsafeRunSync()
-    val ventButton: JButtonIO = JButtonIO("Vent").unsafeRunSync()
-    val sabotageButton: JButtonIO = JButtonIO("Sabotage").unsafeRunSync()
+    val reportButton : JButtonIO = JButtonIO(REPORT).unsafeRunSync()
+    val killButton: JButtonIO = JButtonIO(KILL).unsafeRunSync()
+    val emergencyButton: JButtonIO = JButtonIO(EMERGENCY).unsafeRunSync()
+    val ventButton: JButtonIO = JButtonIO(VENT).unsafeRunSync()
+    val sabotageButton: JButtonIO = JButtonIO(SABOTAGE).unsafeRunSync()
 
     override def start(): IO[Unit] = for {
       _ <- gameFrame.addKeyListener(Keyboard(this))
@@ -213,14 +209,14 @@ object GameFrame {
       myChar match {
         case _: Impostor => action match {
           case KillAction => for {
-            _ <- killButton.setText("Kill")
+            _ <- killButton.setText(KILL)
             _ <- killButton.setEnabled(boolean)
           } yield()
           case ReportAction => reportButton.setEnabled(boolean)
           case EmergencyAction => emergencyButton.setEnabled(boolean)
           case VentAction => ventButton.setEnabled(boolean)
           case SabotageAction => for {
-            _ <- sabotageButton.setText("Sabotage")
+            _ <- sabotageButton.setText(SABOTAGE)
             _ <- sabotageButton.setEnabled(boolean)
           } yield()
         }
@@ -232,11 +228,11 @@ object GameFrame {
     }
 
     override def updateKillButton(seconds: Long): IO[Unit] = for {
-      _ <- killButton.setText("Countdown: " + seconds.toString)
+      _ <- killButton.setText(COUNTDOWN + seconds.toString)
     } yield()
 
     override def updateSabotageButton(seconds: Long): IO[Unit] = for {
-      _ <- sabotageButton.setText("Countdown: " + seconds.toString)
+      _ <- sabotageButton.setText(COUNTDOWN + seconds.toString)
     } yield()
   }
 }
