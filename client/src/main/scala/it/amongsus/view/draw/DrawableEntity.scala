@@ -11,20 +11,20 @@ import java.awt.image.BufferedImage
  */
 trait DrawableEntity[E] {
   def drawEntity(entity : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                 gameCollectionables : Seq[Coin])
+                 gameCoins : Seq[Coin])
 }
 
 object DrawableEntity {
   def drawEntity[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                                     gameCollectionables : Seq[Coin]) : Unit =
-    implicitly[DrawableEntity[E]].drawEntity(elem,g,gamePlayers,gameDeadBodies,gameCollectionables)
+                                     gameCoins : Seq[Coin]) : Unit =
+    implicitly[DrawableEntity[E]].drawEntity(elem,g,gamePlayers,gameDeadBodies,gameCoins)
 
   implicit object drawCrewmateAlive extends DrawableEntity[CrewmateAlive] {
     override def drawEntity(entity: CrewmateAlive, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Coin]): Unit = {
+                            gameCoins : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
-      drawCollectionables(g,gameCollectionables,entity)
+      drawCoins(g,gameCoins,entity)
       gamePlayers.filter(player => player.position.distance(entity.position) < entity.fieldOfView).foreach {
         case alivePlayer: AlivePlayer => drawPlayer(g, alivePlayer, getImageAlive(alivePlayer.color),
           alivePlayer.username.toLowerCase())
@@ -36,7 +36,7 @@ object DrawableEntity {
   implicit object drawImpostorAlive extends DrawableEntity[ImpostorAlive] {
     override def drawEntity(entity: ImpostorAlive, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Coin]): Unit = {
+                            gameCoins : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
       gamePlayers.filter(player => player.position.distance(entity.position) < entity.fieldOfView).foreach {
         case impostorAlive: ImpostorAlive =>
@@ -53,7 +53,7 @@ object DrawableEntity {
   implicit object drawImpostorGhost extends DrawableEntity[ImpostorGhost] {
     override def drawEntity(entity: ImpostorGhost, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Coin]): Unit = {
+                            gameCoins : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
       gamePlayers.foreach {
         case impostorAlive: ImpostorAlive => drawPlayer(g, impostorAlive, getImageAlive(impostorAlive.color),
@@ -71,9 +71,9 @@ object DrawableEntity {
   implicit object drawCrewmateGhost extends DrawableEntity[CrewmateGhost] {
     override def drawEntity(entity: CrewmateGhost, g : Graphics, gamePlayers : Seq[Player],
                             gameDeadBodies : Seq[DeadBody],
-                            gameCollectionables : Seq[Coin]): Unit = {
+                            gameCoins : Seq[Coin]): Unit = {
       drawDeadBodies(g,gameDeadBodies,entity)
-      drawCollectionables(g,gameCollectionables,entity)
+      drawCoins(g,gameCoins,entity)
       gamePlayers.foreach {
         case alivePlayer: AlivePlayer => drawPlayer(g, alivePlayer, getImageAlive(alivePlayer.color),
           alivePlayer.username.toLowerCase())
@@ -92,12 +92,12 @@ object DrawableEntity {
       deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
   }
 
-  private def drawCollectionables(g : Graphics, gameCollectionables : Seq[Coin], entity: Player): Unit = {
+  private def drawCoins(g : Graphics, gameCoins : Seq[Coin], entity: Player): Unit = {
     for {
-      collectionable <- gameCollectionables
-      if collectionable.position.distance(entity.position) < entity.fieldOfView
-    } g.drawImage(COIN, collectionable.position.y * DRAWABLE_SCALING + 1,
-      collectionable.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
+      coin <- gameCoins
+      if coin.position.distance(entity.position) < entity.fieldOfView
+    } g.drawImage(COIN, coin.position.y * DRAWABLE_SCALING + 1,
+      coin.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
   }
 
   private def drawPlayer(g : Graphics, player : Player, image : BufferedImage, username : String): Unit = {
