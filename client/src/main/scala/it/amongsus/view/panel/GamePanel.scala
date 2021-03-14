@@ -3,10 +3,12 @@ package it.amongsus.view.panel
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Boundary, Coin, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
+
 import java.awt.Graphics
 import javax.swing.JPanel
 import it.amongsus.view.draw.DrawableEntity.drawEntity
 import it.amongsus.view.draw.DrawableTile.drawTile
+import it.amongsus.view.panel.Constants._
 
 trait GamePanel extends JPanel {
   /**
@@ -35,8 +37,7 @@ object GamePanel {
                               coins : Seq[Coin],
                               deadBodies : Seq[DeadBody]) extends GamePanel {
 
-    final val WIDTH : Int = 1080
-    final val HEIGHT : Int = 750
+
 
     private var gamePlayers = players
     private var gameCoins = coins
@@ -45,7 +46,7 @@ object GamePanel {
     private val gameMap = map
 
     override def paintComponent(g : Graphics): Unit = {
-      g.clearRect(0, 0, WIDTH, HEIGHT)
+      g.clearRect(ZERO, ZERO, WIDTH, HEIGHT)
       drawTiles(g)
       drawEntities(g)
     }
