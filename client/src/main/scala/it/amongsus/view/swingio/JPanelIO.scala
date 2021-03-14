@@ -14,11 +14,8 @@ import javax.swing.plaf.PanelUI
  * @param component the jPanel that this class wraps.
  */
 class JPanelIO (override val component: JPanel) extends ContainerIO(component) {
-  def setUI(ui:PanelUI): IO[Unit] = IO {component.setUI(ui)}
-  def UI(): IO[PanelUI] = IO {component.getUI}
   def setBorder(border : Border) : IO[Unit] = IO {component.setBorder(border)}
   def setSize(width: Int, height: Int) : IO[Unit] = IO{component.setSize(width,height)}
-  def setUIInvokingAndWaiting(ui:PanelUI): IO[Unit] = invokeAndWaitIO(component.setUI(ui))
   def addKeyListener(k : KeyListener) : IO[Unit] = IO(component.addKeyListener(k))
   def requestFocusInWindow() : IO[Unit] = IO(component.requestFocusInWindow())
   def setFocusable(boolean: Boolean): IO[Unit] = IO {component.setFocusable(boolean)}
