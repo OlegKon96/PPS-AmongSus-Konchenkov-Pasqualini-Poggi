@@ -21,7 +21,7 @@ object Keyboard {
     private val LEFT = KeyEvent.VK_LEFT
 
     /**
-     * For each event panel will draw entities in different way.
+     * For each event my player moves in different way.
      *
      * @param keyEvent a key event happened in panel.
      */

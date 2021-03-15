@@ -37,7 +37,7 @@ trait LobbyFrame extends Frame {
    */
   def updatePlayers(numPlayers: Int): IO[Unit]
   /**
-   * Method that shows a button on the GUI
+   * Method that shows a start button on the GUI
    *
    * @param boolean true or false
    * @return

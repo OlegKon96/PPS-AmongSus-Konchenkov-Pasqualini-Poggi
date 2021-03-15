@@ -20,7 +20,7 @@ trait UiActorInfo {
    */
   def currentFrame: Option[Frame]
   /**
-   * Open the lobby panel
+   * Update the label of players in LobbyFrame
    *
    * @param numPlayers the numbers of the players
    */

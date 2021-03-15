@@ -25,14 +25,14 @@ import javax.swing.JFrame
  */
 trait GameFrame extends Frame {
   /**
-   * Method that updates the player
+   * Method that updates the state of the game
    *
    * @param myChar my character of the game
    * @param players of the game
    * @param coins of the game
    * @param deadBodies of the game
    */
-  def updatePlayers(myChar: Player, players: Seq[Player], coins : Seq[Coin],
+  def updateGame(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                     deadBodies : Seq[DeadBody]) :Unit
   /**
    * Method to start the Game Frame
@@ -67,7 +67,7 @@ trait GameFrame extends Frame {
    */
   def players : Seq[Player]
   /**
-   * Method that manages the coin of the game
+   * Coins sequence of the game
    *
    * @return
    */
@@ -145,7 +145,7 @@ object GameFrame {
 
     override def movePlayer(direction : Direction): Unit = guiRef.get ! MyCharMovedUi(direction)
 
-    override def updatePlayers(myChar: Player,
+    override def updateGame(myChar: Player,
                                players: Seq[Player],
                                coins : Seq[Coin],
                                deadBodies : Seq[DeadBody]): Unit =

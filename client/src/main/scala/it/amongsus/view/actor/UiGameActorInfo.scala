@@ -30,14 +30,14 @@ trait UiGameActorInfo {
    */
   def setButtonState(button : ActionType, boolean: Boolean): Unit
   /**
-   * Method that updates a character
+   * Method that change the state of the game to draw
    *
-   * @param myChar to update
+   * @param myChar my character of the game
    * @param players of the game
    * @param coins of the game
    * @param deadBodies of the game
    */
-  def updatePlayer(myChar: Player, players: Seq[Player], coins : Seq[Coin],
+  def updateGame(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                    deadBodies : Seq[DeadBody]): Unit
   /**
    * Method to updates the kill button of the GUI
@@ -69,9 +69,9 @@ object UiGameActorInfo {
 case class UiGameActorData(override val clientRef: Option[ActorRef],
                            override val gameFrame: Option[GameFrame]) extends UiGameActorInfo {
 
-  override def updatePlayer(myChar: Player, players: Seq[Player], coins : Seq[Coin],
+  override def updateGame(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                             deadBodies : Seq[DeadBody]): Unit =
-    gameFrame.get.updatePlayers(myChar, players, coins, deadBodies)
+    gameFrame.get.updateGame(myChar, players, coins, deadBodies)
 
   override def setButtonState(action: ActionType, boolean: Boolean): Unit =
     gameFrame.get.setButtonState(action, boolean).unsafeRunSync()

@@ -99,7 +99,7 @@ class UiActor(private val state: UiActorInfo) extends Actor with ActorLogging {
 
     case PlayerUpdatedUi(myChar: Player, players: Seq[Player], coins: Seq[Coin],
                           deadBodies: Seq[DeadBody]) =>
-      state.updatePlayer(myChar,players,coins, deadBodies)
+      state.updateGame(myChar,players,coins, deadBodies)
 
     case ActionOnUi(action: ActionType) => state.setButtonState(action,boolean = true)
 
@@ -147,7 +147,7 @@ class UiActor(private val state: UiActorInfo) extends Actor with ActorLogging {
 
     case PlayerUpdatedUi(myChar: Player, players: Seq[Player], coins: Seq[Coin],
                           deadBodies: Seq[DeadBody]) =>
-      state.updatePlayer(myChar,players,coins, deadBodies)
+      state.updateGame(myChar,players,coins, deadBodies)
 
     case RestartGameUi =>
       voteFrame.dispose().unsafeRunSync()
