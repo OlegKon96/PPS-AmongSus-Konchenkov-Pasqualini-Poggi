@@ -3,15 +3,12 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.core.MapHelper.{generateEmergencyButtons, generateVentLinks}
+import it.amongsus.core.map.MapHelper.{generateEmergencyButtons, generateVentLinks}
 import it.amongsus.core.map._
 import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
-import it.amongsus.core.util.{Direction, Point2D}
+import it.amongsus.core.util.Direction
 import it.amongsus.core.{Drawable, map}
-
-import scala.Array.ofDim
-import scala.util.Random
 
 trait ModelActorInfo {
   /**

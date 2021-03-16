@@ -8,8 +8,8 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
-import it.amongsus.core.MapHelper.{generateCoins, generateMap}
 import it.amongsus.core.map.DeadBody
+import it.amongsus.core.map.MapHelper.{generateCoins, generateMap}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.core.util.{ActionType, Direction, GameEnd}
@@ -31,6 +31,7 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
   private def gameBehaviour(state: ModelActorInfo): Receive = {
     case InitModel(map: Iterator[String], players: Seq[Player]) =>
+      state.gamePlayers = players
       val gameMap = generateMap(map)
       state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, players,
         generateCoins(gameMap))

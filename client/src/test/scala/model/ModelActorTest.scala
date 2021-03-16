@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.ActionTimer.TimerStarted
 import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.generateMap
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.CrewmateAlive
 import it.amongsus.core.util.ActionType.EmergencyAction
@@ -25,8 +26,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
 
   private final val positionInTheMap: Int = 35
   private val modelActorInfo: ModelActorInfo = ModelActorInfo()
-  private val map: Array[Array[Drawable[Tile]]] = modelActorInfo.generateMap(loadMap())
-  modelActorInfo.generateCoins(map)
+  private val map: Array[Array[Drawable[Tile]]] = generateMap(loadMap())
   val players = Seq(CrewmateAlive("green", emergencyCalled = false, "test", "test", 0, Point2D(positionInTheMap,
     positionInTheMap)))
 

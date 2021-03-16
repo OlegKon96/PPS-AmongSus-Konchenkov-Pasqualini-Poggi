@@ -103,7 +103,7 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
   })
 
   override def loadMap(): Iterator[String] = {
-    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/images/gameMap.csv"))
+    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/map/gameMap.csv"))
     bufferedSource.getLines
   }
 

@@ -5,6 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
+import it.amongsus.core.map.MapHelper.generateMap
 import it.amongsus.core.map.Tile
 import it.amongsus.core.{Drawable, player}
 import it.amongsus.core.player.{ImpostorAlive, Player}
@@ -34,8 +35,7 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
   private val crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
-  private val map: Array[Array[Drawable[Tile]]] = modelActor.generateMap(loadMap())
-  modelActor.generateCoins(map)
+
   private final val client: TestProbe = TestProbe()
   private final val serverActor: TestProbe = TestProbe()
   private final val model: TestProbe = TestProbe()
