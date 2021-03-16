@@ -55,12 +55,12 @@ trait AlivePlayer {
   /**
    * Method to check collisions of the player.
    *
-   * @param pos position of the player.
+   * @param position position of the player.
    * @param map game map.
    * @return true if collides, false otherwise.
    */
-  def checkCollision(pos: Point2D, map: GameMap): Boolean = {
-    map(pos.x)(pos.y) match {
+  def checkCollision(position: Point2D, map: GameMap): Boolean = {
+    map(position.x)(position.y) match {
       case _: Floor => false
       case _ => true
     }
