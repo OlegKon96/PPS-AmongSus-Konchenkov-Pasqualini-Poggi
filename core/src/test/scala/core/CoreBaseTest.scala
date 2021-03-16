@@ -16,13 +16,10 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
   private final val positionDefault35 = 35
   private var crewmateAlive: Player = CrewmateAlive("green", emergencyCalled = true, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
-  private var crewmateGhost: Player = CrewmateGhost("green", "zxcvb", "imCrewmateGhost", 3,
-    Point2D(positionDefault35, positionDefault35))
   private var impostorAlive: Player = ImpostorAlive("green", emergencyCalled = true,
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
   private var impostorGhost: Player = ImpostorGhost("green", "lol", "imImpostorGhost",
     Point2D(positionDefault35, positionDefault35))
-
   private val map: Array[Array[Drawable[Tile]]] = generateMap(loadMap())
   private val gameCoins = generateCoins(map)
 

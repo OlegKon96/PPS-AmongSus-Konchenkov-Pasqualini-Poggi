@@ -1,7 +1,6 @@
 package core
 
 import it.amongsus
-
 import it.amongsus.core.map.Emergency
 import it.amongsus.core.player.{CrewmateAlive, ImpostorAlive, Player}
 import it.amongsus.core.util.Point2D

@@ -1,6 +1,5 @@
 package core
 
-
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.MapHelper.{generateCoins, generateMap}
 import it.amongsus.core.map.Tile
@@ -16,7 +15,6 @@ class CollectCoinTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private val crewmateGhost: Player = CrewmateGhost("green", "zxcvb", "imCrewmateGhost", 3,
     Point2D(positionDefault35, positionDefault35))
-
   private val map: Array[Array[Drawable[Tile]]] = generateMap(loadMap())
   private val gameCoins = generateCoins(map)
 
