@@ -17,7 +17,6 @@ import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndMode
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
 import it.amongsus.model.actor.ModelActorMessages.UiActionModel
-
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -34,9 +34,10 @@ trait LobbyActorInfo {
    */
   def generateServerActorPath(address: String, port: Int): String
   /**
+   * Obtains the ActorRef of the corresponding remote actor
    *
    * @param actorPath the path of the actor.
-   * @return future containg an ActorRef.
+   * @return future contains an ActorRef.
    */
   def resolveRemoteActorPath(actorPath: String): Future[ActorRef]
 }
@@ -56,9 +57,6 @@ case class LobbyActorInfoData(override val serverRef: Option[ActorRef],
     s"akka.tcp://${Constants.Remote.SERVER_ACTOR_SYSTEM_NAME}" +
       s"@$address:$port/user/${Constants.Remote.SERVER_LOBBY_ACTOR_NAME}"
 
-  /**
-   * Obtains the ActorRef of the corresponding remote actor
-   */
   override def resolveRemoteActorPath(actorPath: String): Future[ActorRef] = {
     ActorSystemManager.actorSystem.actorSelection(actorPath).resolveOne()(10.seconds)
   }

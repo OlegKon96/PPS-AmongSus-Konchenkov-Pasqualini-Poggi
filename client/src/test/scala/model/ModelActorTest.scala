@@ -27,7 +27,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
   private final val positionInTheMap: Int = 35
   private val modelActorInfo: ModelActorInfo = ModelActorInfo()
   private val map: Array[Array[Drawable[Tile]]] = generateMap(loadMap())
-  val players = Seq(CrewmateAlive("green", emergencyCalled = false, "test", "test", 0, Point2D(positionInTheMap,
+  private val players = Seq(CrewmateAlive("green", emergencyCalled = false, "test", "test", 0, Point2D(positionInTheMap,
     positionInTheMap)))
 
   "Start Game, Check Timer, Moved Character, Call Emergency, Vote Player and Leave Game" in {

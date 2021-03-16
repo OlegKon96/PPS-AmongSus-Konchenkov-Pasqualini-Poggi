@@ -5,9 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
-import it.amongsus.core.map.MapHelper.generateMap
-import it.amongsus.core.map.Tile
-import it.amongsus.core.{Drawable, player}
+import it.amongsus.core.player
 import it.amongsus.core.player.{ImpostorAlive, Player}
 import it.amongsus.core.util.ActionType.EmergencyAction
 import it.amongsus.core.util.GameEnd.{CrewmateCrew, Win}
@@ -35,14 +33,13 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
   private val crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
   private val modelActor: ModelActorInfo = ModelActorInfo()
-
   private final val client: TestProbe = TestProbe()
   private final val serverActor: TestProbe = TestProbe()
   private final val model: TestProbe = TestProbe()
   private final val uiActor: TestProbe = TestProbe()
-  val controllerActor: ActorRef =
+  private val controllerActor: ActorRef =
     system.actorOf(ControllerActor.props(LobbyActorInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
-  val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
+  private val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
 
   "The Controller Actor" should {
 

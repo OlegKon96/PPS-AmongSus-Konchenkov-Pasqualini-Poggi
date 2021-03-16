@@ -27,41 +27,35 @@ trait ModelActorInfo {
    * Check if timer is running or not.
    */
   var isTimerOn: Boolean
-
   /**
    * The ID of the Client.
    * @return client id.
    */
   def clientId: String
-
   /**
    * The reference of the Game Server.
    *
    * @return controller actor ref.
    */
   def controllerRef: Option[ActorRef]
-
   /**
    * The map of the game
    *
    * @return game map.
    */
   def gameMap: Option[Array[Array[Drawable[Tile]]]]
-
   /**
    * Method that finds my characters.
    *
    * @return my player.
    */
   def myCharacter: Player
-
   /**
    * Method that updates position of the characters.
    *
    * @param direction to move on.
    */
   def updateMyChar(direction: Direction): Unit
-
   /**
    * Method that updates buttons of the characters.
    *
@@ -69,44 +63,39 @@ trait ModelActorInfo {
    * @return a sequence of updated players.
    */
   def updatePlayer(player: Player): Seq[Player]
-
   /**
    * Method of the Impostor to use vent.
    */
   def useVent(): Unit
-
   /**
    * Method of an Alive player that allows him one time per game to call an emergency.
    */
   def callEmergency(): Unit
-
   /**
    * Method of the Impostor to kill a player.
    */
   def kill(): Unit
-
   /**
    * Check the status of the timer.
    *
    * @param status of the timer.
    */
   def checkTimer(status: TimerStatus): Unit
-
   /**
    * Method that kills a player during a vote session.
+   *
    * @param username player username.
    */
   def killAfterVote(username: String): Unit
-
   /**
    * Method that remove a player.
    *
    * @param clientId of the player to remove.
    */
   def removePlayer(clientId: String): Unit
-
   /**
    * Method of the impostor that allows him to reduce crewmate field of view.
+   *
    * @param state on/off.
    */
   def sabotage(state: Boolean): Unit
@@ -131,12 +120,13 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
     case Some(map) => generateVentLinks(map)
     case None => Seq()
   }
+
   private val emergencyButtons: Seq[Drawable[Tile]] = gameMap match {
     case Some(map) => generateEmergencyButtons(map)
     case None => Seq()
   }
-  override var deadBodies: Seq[DeadBody] = Seq()
 
+  override var deadBodies: Seq[DeadBody] = Seq()
 
   override def updateMyChar(direction: Direction): Unit = {
     myCharacter.move(direction, gameMap.get) match {
