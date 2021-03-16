@@ -2,6 +2,7 @@ package it.amongsus.core.player
 
 import it.amongsus.core
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.{DeadBody, Floor, Tile}
 import it.amongsus.core.util.Point2D
 
@@ -54,12 +55,12 @@ trait AlivePlayer {
   /**
    * Method to check collisions of the player.
    *
-   * @param pos position of the player.
+   * @param position position of the player.
    * @param map game map.
    * @return true if collides, false otherwise.
    */
-  def checkCollision(pos: Point2D, map: Array[Array[Drawable[Tile]]]): Boolean = {
-    map(pos.x)(pos.y) match {
+  def checkCollision(position: Point2D, map: GameMap): Boolean = {
+    map(position.x)(position.y) match {
       case _: Floor => false
       case _ => true
     }
