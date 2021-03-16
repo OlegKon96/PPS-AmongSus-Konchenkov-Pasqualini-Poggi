@@ -1,9 +1,7 @@
 package core
 
 import it.amongsus
-import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.generateMap
-import it.amongsus.core.map.{Tile, Vent}
+import it.amongsus.core.map.Vent
 import it.amongsus.core.player.{ImpostorAlive, Player}
 import it.amongsus.core.util.Point2D
 import org.scalatest.BeforeAndAfterAll

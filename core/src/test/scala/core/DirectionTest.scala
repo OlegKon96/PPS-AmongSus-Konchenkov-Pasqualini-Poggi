@@ -1,7 +1,7 @@
 package core
 
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.generateMap
+import it.amongsus.core.map.MapHelper.{GameMap, generateMap}
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.Direction.{Down, Up}
@@ -24,7 +24,7 @@ class DirectionTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
   private var impostorGhost: Player = ImpostorGhost("green", "lol", "imImpostorGhost",
     Point2D(positionDefault35, positionDefault35))
-  private val map: Array[Array[Drawable[Tile]]] = generateMap(loadMap())
+  private val map: GameMap = generateMap(loadMap())
 
   "A Crewmate Alive" should {
     "Normally Move" in {

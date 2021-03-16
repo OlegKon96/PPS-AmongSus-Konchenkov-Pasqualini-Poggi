@@ -1,6 +1,7 @@
 package it.amongsus.view.panel
 
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.{Boundary, Coin, DeadBody, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 
@@ -24,14 +25,14 @@ trait GamePanel extends JPanel {
 }
 
 object GamePanel {
-  def apply(map : Array[Array[Drawable[Tile]]],
+  def apply(map : GameMap,
             myChar: Player,
             players : Seq[Player],
             coins : Seq[Coin],
             deadBodies : Seq[DeadBody]): GamePanel =
     new GamePanelImpl(map,myChar, players,coins,deadBodies)
 
-  private class GamePanelImpl(map : Array[Array[Drawable[Tile]]],
+  private class GamePanelImpl(map : GameMap,
                               myChar: Player,
                               players : Seq[Player],
                               coins : Seq[Coin],

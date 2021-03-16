@@ -3,15 +3,16 @@ package it.amongsus.controller.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.player.Player
-import it.amongsus.core.util.{ActionType, GameEnd, ChatMessage, Direction}
+import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 
 object ControllerActorMessages {
   /**
    * Tells to the controller that the model is ready.
    */
-  case class ModelReadyController(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
+  case class ModelReadyController(map: GameMap, myChar: Player, players: Seq[Player],
                                   collectionables: Seq[Coin])
   /**
    * Tells to the controller that his character is moved.

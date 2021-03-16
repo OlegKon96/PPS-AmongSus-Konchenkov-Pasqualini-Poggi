@@ -3,6 +3,7 @@ package it.amongsus.view.frame
 import akka.actor.ActorRef
 import cats.effect.IO
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiActionTypeUi}
@@ -45,7 +46,7 @@ trait GameFrame extends Frame {
    *
    * @return
    */
-  def map: Array[Array[Drawable[Tile]]]
+  def map: GameMap
   /**
    * My players of the game
    *
@@ -96,14 +97,14 @@ trait GameFrame extends Frame {
 
 object GameFrame {
   def apply(guiRef: Option[ActorRef],
-            map : Array[Array[Drawable[Tile]]],
+            map : GameMap,
             myChar: Player,
             players : Seq[Player],
             coins : Seq[Coin]): GameFrame =
     new GameFrameImpl(guiRef,map,myChar,players,coins)
 
   private class GameFrameImpl(guiRef: Option[ActorRef],
-                              override val map : Array[Array[Drawable[Tile]]],
+                              override val map : GameMap,
                               override val myChar : Player,
                               override val players : Seq[Player],
                               override val coins : Seq[Coin]) extends GameFrame {

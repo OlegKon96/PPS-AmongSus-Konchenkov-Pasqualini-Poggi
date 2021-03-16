@@ -3,7 +3,7 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.core.map.MapHelper.{generateEmergencyButtons, generateVentLinks}
+import it.amongsus.core.map.MapHelper.{GameMap, generateEmergencyButtons, generateVentLinks}
 import it.amongsus.core.map._
 import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
@@ -43,7 +43,7 @@ trait ModelActorInfo {
    *
    * @return game map.
    */
-  def gameMap: Option[Array[Array[Drawable[Tile]]]]
+  def gameMap: Option[GameMap]
   /**
    * Method that finds my characters.
    *
@@ -99,18 +99,20 @@ trait ModelActorInfo {
    * @param state on/off.
    */
   def sabotage(state: Boolean): Unit
+
+
 }
 
 object ModelActorInfo {
   def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "", isTimerOn = false)
 
-  def apply(controllerRef: Option[ActorRef], map: Option[Array[Array[Drawable[Tile]]]],
+  def apply(controllerRef: Option[ActorRef], map: Option[GameMap],
             playersList: Seq[Player], gameCoins: Seq[Coin], clientId: String): ModelActorInfo =
     ModelActorInfoData(controllerRef, map, playersList, gameCoins, clientId, isTimerOn = false)
 }
 
 case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
-                              override val gameMap: Option[Array[Array[Drawable[Tile]]]],
+                              override val gameMap: Option[GameMap],
                               override var gamePlayers: Seq[Player],
                               override var gameCoins: Seq[Coin],
                               override val clientId: String,

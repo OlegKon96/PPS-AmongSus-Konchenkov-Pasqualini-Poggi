@@ -7,6 +7,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
@@ -18,6 +19,7 @@ import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
 import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationDouble
 import scala.util.{Failure, Success}
@@ -93,7 +95,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case GamePlayersClient(players: Seq[Player]) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
-    case ModelReadyController(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
+    case ModelReadyController(map: GameMap, myChar: Player, players: Seq[Player],
     coins: Seq[Coin]) => state.guiRef.get ! GameFoundUi(map, myChar, players, coins)
 
     case KillTimerController(status: TimerStatus) => state.manageKillTimer(status)

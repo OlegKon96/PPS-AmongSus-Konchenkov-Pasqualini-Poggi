@@ -1,6 +1,7 @@
 package it.amongsus.core.map
 
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.util.Point2D
 
 import scala.Array.ofDim
@@ -13,35 +14,37 @@ trait MapHelper {
    * @param map of the game.
    * @return game map.
    */
-  def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]]
+  def generateMap(map: Iterator[String]): GameMap
 
   /**
    * Method that generates the coins of the game.
    *
    * @param map of the game.
    */
-  def generateCoins(map: Array[Array[Drawable[Tile]]]): Seq[Coin]
+  def generateCoins(map: GameMap): Seq[Coin]
 
   /**
    *
    * @param gameMap
    * @return
    */
-  def generateVentLinks(gameMap: Array[Array[Drawable[Tile]]]): Seq[(Drawable[Tile], Drawable[Tile])]
+  def generateVentLinks(gameMap: GameMap): Seq[(Drawable[Tile], Drawable[Tile])]
 
   /**
    *
    * @param gameMap
    * @return
    */
-  def generateEmergencyButtons(gameMap: Array[Array[Drawable[Tile]]]): Seq[Drawable[Tile]]
+  def generateEmergencyButtons(gameMap: GameMap): Seq[Drawable[Tile]]
 }
 
 object MapHelper extends MapHelper{
   private final val ROWS: Int = 50
   private final val COLS: Int = 72
 
-  override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
+  type GameMap = Array[Array[Drawable[Tile]]]
+
+  override def generateMap(map: Iterator[String]): GameMap = {
     val tileMatrix = ofDim[Drawable[Tile]](ROWS, COLS)
     for {
       (line, j) <- map.zipWithIndex
@@ -57,7 +60,7 @@ object MapHelper extends MapHelper{
     tileMatrix
   }
 
-  override def generateCoins(gameMap: Array[Array[Drawable[Tile]]]): Seq[Coin] = {
+  override def generateCoins(gameMap: GameMap): Seq[Coin] = {
     var tiles: Seq[Drawable[Tile]] = for {
       map <- gameMap
       tile <- map.filter { case _: Floor => true case _ => false }
@@ -72,7 +75,7 @@ object MapHelper extends MapHelper{
     gameCoins
   }
 
-  override def generateVentLinks(gameMap: Array[Array[Drawable[Tile]]]): Seq[(Drawable[Tile], Drawable[Tile])] = {
+  override def generateVentLinks(gameMap: GameMap): Seq[(Drawable[Tile], Drawable[Tile])] = {
     val vents: Seq[Drawable[Tile]] = for {
         map <- gameMap
         tile <- map.filter { case _: Vent => true case _ => false }
@@ -85,7 +88,7 @@ object MapHelper extends MapHelper{
     ventTuples
   }
 
-  override def generateEmergencyButtons(gameMap: Array[Array[Drawable[Tile]]]): Seq[Drawable[Tile]] = {
+  override def generateEmergencyButtons(gameMap: GameMap): Seq[Drawable[Tile]] = {
     for {
         map <- gameMap
         tile <- map.filter { case _: Emergency => true case _ => false }

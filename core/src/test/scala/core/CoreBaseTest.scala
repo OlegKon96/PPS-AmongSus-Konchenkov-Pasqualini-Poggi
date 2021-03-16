@@ -2,7 +2,7 @@ package core
 
 import it.amongsus
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.{generateCoins, generateMap}
+import it.amongsus.core.map.MapHelper.{GameMap, generateCoins, generateMap}
 import it.amongsus.core.map.{Tile, Vent}
 import it.amongsus.core.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.Direction.{Down, Up}
@@ -20,7 +20,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "qwerty", "imImpostor", Point2D(positionDefault35, positionDefault35))
   private var impostorGhost: Player = ImpostorGhost("green", "lol", "imImpostorGhost",
     Point2D(positionDefault35, positionDefault35))
-  private val map: Array[Array[Drawable[Tile]]] = generateMap(loadMap())
+  private val map: GameMap = generateMap(loadMap())
   private val gameCoins = generateCoins(map)
 
   "A Crewmate Alive" should {
