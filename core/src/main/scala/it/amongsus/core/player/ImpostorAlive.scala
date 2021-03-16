@@ -1,6 +1,7 @@
 package it.amongsus.core.player
 
 import it.amongsus.core.Drawable
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.Tile
 import it.amongsus.core.util.MovePlayer._
 import it.amongsus.core.util.{Direction, Point2D}
@@ -53,7 +54,7 @@ object ImpostorAlive {
                                        override val fieldOfView: Int,
                                        override val position: Point2D) extends ImpostorAlive {
 
-    override def move(direction: Direction, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
+    override def move(direction: Direction, map: GameMap): Option[Player] = {
       movePlayer(ImpostorAlive(color, emergencyCalled, clientId, username, position), direction, map)
     }
 

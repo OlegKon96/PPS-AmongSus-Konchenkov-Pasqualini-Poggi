@@ -1,7 +1,6 @@
 package it.amongsus.core.player
 
-import it.amongsus.core.Drawable
-import it.amongsus.core.map.Tile
+import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.util.MovePlayer.movePlayer
 import it.amongsus.core.util.{Direction, Point2D}
 
@@ -29,7 +28,7 @@ object CrewmateAlive {
                                        override val numCoins: Int,
                                        override val position: Point2D) extends CrewmateAlive {
 
-    override def move(direction: Direction, map: Array[Array[Drawable[Tile]]]): Option[Player] = {
+    override def move(direction: Direction, map: GameMap): Option[Player] = {
       movePlayer(CrewmateAlive(color, emergencyCalled, fieldOfView, clientId, username, numCoins, position),
         direction, map)
     }
