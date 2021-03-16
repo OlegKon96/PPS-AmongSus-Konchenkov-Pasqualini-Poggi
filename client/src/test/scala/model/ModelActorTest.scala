@@ -60,7 +60,7 @@ class ModelActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("tes
   }
 
   def loadMap(): Iterator[String] = {
-    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/images/gameMap.csv"))
+    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/map/gameMap.csv"))
     bufferedSource.getLines
   }
 }
