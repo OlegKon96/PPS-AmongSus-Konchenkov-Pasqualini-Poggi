@@ -8,6 +8,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
+import it.amongsus.core.MapHelper.{generateCoins, generateMap}
 import it.amongsus.core.map.DeadBody
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
@@ -16,6 +17,7 @@ import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndMode
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
 import it.amongsus.model.actor.ModelActorMessages.UiActionModel
+
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -29,14 +31,12 @@ class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
 
   private def gameBehaviour(state: ModelActorInfo): Receive = {
     case InitModel(map: Iterator[String], players: Seq[Player]) =>
-      state.gamePlayers = players
-      val gameMap = state.generateMap(map)
-      state.generateCoins(gameMap)
-      state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, state.gamePlayers,
-        state.gameCoins)
+      val gameMap = generateMap(map)
+      state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, players,
+        generateCoins(gameMap))
       state.checkTimer(TimerStarted)
       context >>> gameBehaviour(ModelActorInfo(state.controllerRef,
-        Option(gameMap), players, state.gameCoins, state.clientId))
+        Option(gameMap), players, generateCoins(gameMap), state.clientId))
 
     case MyCharMovedModel(direction: Direction) => state.updateMyChar(direction)
 

@@ -3,11 +3,13 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.core.MapHelper.{generateEmergencyButtons, generateVentLinks}
 import it.amongsus.core.map._
 import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
 import it.amongsus.core.util.{Direction, Point2D}
 import it.amongsus.core.{Drawable, map}
+
 import scala.Array.ofDim
 import scala.util.Random
 
@@ -48,21 +50,6 @@ trait ModelActorInfo {
    * @return game map.
    */
   def gameMap: Option[Array[Array[Drawable[Tile]]]]
-
-  /**
-   * Method that generates the map of the game.
-   *
-   * @param map of the game.
-   * @return game map.
-   */
-  def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]]
-
-  /**
-   * Method that generates the coins of the game.
-   *
-   * @param map of the game.
-   */
-  def generateCoins(map: Array[Array[Drawable[Tile]]]): Unit
 
   /**
    * Method that finds my characters.
@@ -143,42 +130,16 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
                               override val clientId: String,
                               override var isTimerOn: Boolean) extends ModelActorInfo {
 
-  private final val ROWS: Int = 50
-  private final val COLS: Int = 72
-
-  private val ventList: Seq[(Drawable[Tile], Drawable[Tile])] = generateVentLinks()
-  private val emergencyButtons: Seq[Drawable[Tile]] = generateEmergencyButtons()
+  private val ventList: Seq[(Drawable[Tile], Drawable[Tile])] = gameMap match {
+    case Some(map) => generateVentLinks(map)
+    case None => Seq()
+  }
+  private val emergencyButtons: Seq[Drawable[Tile]] = gameMap match {
+    case Some(map) => generateEmergencyButtons(map)
+    case None => Seq()
+  }
   override var deadBodies: Seq[DeadBody] = Seq()
 
-  override def generateMap(map: Iterator[String]): Array[Array[Drawable[Tile]]] = {
-    val tileMatrix = ofDim[Drawable[Tile]](ROWS, COLS)
-    for {
-      (line, j) <- map.zipWithIndex
-      (tile, k) <- line.split(",").map(_.trim).zipWithIndex
-    } tile match {
-      case "189" => tileMatrix(j)(k) = Wall(Point2D(j, k))
-      case "0" => tileMatrix(j)(k) = Other(Point2D(j, k))
-      case "40" => tileMatrix(j)(k) = Floor(Point2D(j, k))
-      case "1" => tileMatrix(j)(k) = Boundary(Point2D(j, k))
-      case "66" => tileMatrix(j)(k) = Vent(Point2D(j, k))
-      case "222" => tileMatrix(j)(k) = Emergency(Point2D(j, k))
-    }
-    generateCoins(tileMatrix)
-    tileMatrix
-  }
-
-  override def generateCoins(gameMap: Array[Array[Drawable[Tile]]]): Unit = {
-    var tiles: Seq[Drawable[Tile]] = for {
-      map <- gameMap
-      tile <- map.filter { case _: Floor => true case _ => false }
-    } yield tile
-
-    for (_ <- 0 until 10) {
-      val rand = Random.nextInt(tiles.length)
-      this.gameCoins = gameCoins :+ Coin(tiles(rand).position)
-      tiles = tiles.take(rand) ++ tiles.drop(rand + 1)
-    }
-  }
 
   override def updateMyChar(direction: Direction): Unit = {
     myCharacter.move(direction, gameMap.get) match {
@@ -293,32 +254,6 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   override def removePlayer(clientId: String): Unit = {
     gamePlayers = gamePlayers.filter(player => player.clientId != clientId)
     controllerRef.get ! UpdatedPlayersController(myCharacter, gamePlayers, gameCoins, deadBodies)
-  }
-
-  private def generateVentLinks(): Seq[(Drawable[Tile], Drawable[Tile])] = {
-    val vents: Seq[Drawable[Tile]] = gameMap match {
-      case Some(gameMap) => for {
-        map <- gameMap
-        tile <- map.filter { case _: Vent => true case _ => false }
-      } yield tile
-      case None => Seq()
-    }
-
-    var ventTuples: Seq[(Drawable[Tile], Drawable[Tile])] = Seq()
-    for (i <- 0 until vents.length / 2) {
-      ventTuples = ventTuples :+ (vents(i), vents(vents.length - i - 1))
-    }
-    ventTuples
-  }
-
-  private def generateEmergencyButtons(): Seq[Drawable[Tile]] = {
-    gameMap match {
-      case Some(_) => for {
-        map <- gameMap.get
-        tile <- map.filter { case _: Emergency => true case _ => false }
-      } yield tile
-      case _ => Seq()
-    }
   }
 
   private def playerUpdated(player: Player): Unit = {
