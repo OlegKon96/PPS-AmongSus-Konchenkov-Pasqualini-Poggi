@@ -39,12 +39,6 @@ trait ModelActorInfo {
    */
   def controllerRef: Option[ActorRef]
   /**
-   * The map of the game
-   *
-   * @return game map.
-   */
-  def gameMap: Option[GameMap]
-  /**
    * Method that finds my characters.
    *
    * @return my player.
@@ -112,7 +106,7 @@ object ModelActorInfo {
 }
 
 case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
-                              override val gameMap: Option[GameMap],
+                              private val gameMap: Option[GameMap],
                               override var gamePlayers: Seq[Player],
                               override var gameCoins: Seq[Coin],
                               override val clientId: String,

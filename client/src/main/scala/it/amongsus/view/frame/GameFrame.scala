@@ -42,12 +42,6 @@ trait GameFrame extends Frame {
    */
   def start(): IO[Unit]
   /**
-   *  The Map of the game
-   *
-   * @return
-   */
-  def map: GameMap
-  /**
    * My players of the game
    *
    * @return
@@ -61,18 +55,6 @@ trait GameFrame extends Frame {
    * @return
    */
   def setButtonState(button: ActionType, boolean: Boolean) : IO[Unit]
-  /**
-   * Sequence of the players of the game
-   *
-   * @return
-   */
-  def players : Seq[Player]
-  /**
-   * Coins sequence of the game
-   *
-   * @return
-   */
-  def coins : Seq[Coin]
   /**
    * Method that moves the player
    *
@@ -104,10 +86,10 @@ object GameFrame {
     new GameFrameImpl(guiRef,map,myChar,players,coins)
 
   private class GameFrameImpl(guiRef: Option[ActorRef],
-                              override val map : GameMap,
+                              private val map : GameMap,
                               override val myChar : Player,
-                              override val players : Seq[Player],
-                              override val coins : Seq[Coin]) extends GameFrame {
+                              private val players : Seq[Player],
+                              private val coins : Seq[Coin]) extends GameFrame {
 
 
 
