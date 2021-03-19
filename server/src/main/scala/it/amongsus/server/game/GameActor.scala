@@ -34,7 +34,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
   override def receive: Receive = idle
 
   private def idle: Receive = {
-    case GamePlayers(players: Seq[Player]) =>
+    case GamePlayers(players: Seq[GamePlayer]) =>
       log.info(s"Server -> initial players $players")
       this.state.players = players
       this.state.players.foreach(p => context.watch(p.actorRef))
@@ -134,6 +134,7 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
         this.state.players = this.state.players.filter(_.actorRef != ref)
         log.info(s"Server -> Player ${player.username} left the game")
         this.state.broadcastMessageToPlayers(PlayerLeftClient(player.id))
+      case _ => log.info(s"Server -> Can't find the player that left the game")
     }
     case LeaveGameServer(playerId) => this.state.withPlayer(playerId) { player =>
       this.state.players = this.state.players.filter(_.id != playerId)

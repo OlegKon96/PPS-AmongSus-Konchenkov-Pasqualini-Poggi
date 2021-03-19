@@ -25,7 +25,7 @@ object ModelActor {
     Props(new ModelActor(state))
 }
 
-class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
+class ModelActor(private val state: ModelActorInfo) extends Actor  with ActorLogging{
   override def receive: Receive = gameBehaviour(state)
 
   private def gameBehaviour(state: ModelActorInfo): Receive = {

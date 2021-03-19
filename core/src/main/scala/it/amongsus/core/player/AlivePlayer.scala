@@ -50,7 +50,7 @@ trait AlivePlayer {
    */
   def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Drawable[Tile]]): Boolean = {
     emergencyButtons.exists(button =>
-      button.position.distance(player.position) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
+      button.position.distance(player.getPosition) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
   }
   /**
    * Method to check collisions of the player.
@@ -70,5 +70,5 @@ trait AlivePlayer {
    *
    * @return player's position.
    */
-  def position:Point2D = self.position
+  def getPosition:Point2D = self.position
 }

@@ -37,7 +37,7 @@ object ControllerActor {
 class ControllerActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
   override def receive: Receive = lobbyBehaviour(state)
 
-  private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
+    private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
     case ConnectClient(address: String, port: Int) =>
       state.guiRef.get ! Init
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
@@ -102,7 +102,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
 
     case MyCharMovedController(direction: Direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
-    case PlayerMovedClient(player: Player, deadBodies: Seq[Player]) =>
+    case PlayerMovedClient(player: Player, deadBodies: Seq[DeadBody]) =>
       state.modelRef.get ! PlayerMovedModel(player, deadBodies)
 
     case UpdatedMyCharController(player: Player, gamePlayers: Seq[Player], deadBodies: Seq[DeadBody]) =>
