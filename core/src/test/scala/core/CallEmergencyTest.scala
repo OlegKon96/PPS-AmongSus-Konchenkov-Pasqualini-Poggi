@@ -2,6 +2,7 @@ package core
 
 import it.amongsus
 import it.amongsus.core.map.Emergency
+import it.amongsus.core.player.PlayerHelper.{checkPosition, emergencyDistance}
 import it.amongsus.core.player.{CrewmateAlive, ImpostorAlive, Player}
 import it.amongsus.core.util.Point2D
 import org.scalatest.BeforeAndAfterAll
@@ -18,8 +19,8 @@ class CallEmergencyTest extends AnyWordSpecLike with BeforeAndAfterAll {
   "A Crewmate Alive" should {
     "Can Call Emergency" in {
       this.crewmateAlive match {
-        case crewmate : CrewmateAlive => assert(crewmate.canCallEmergency(crewmate,
-          Seq(Emergency(Point2D(positionDefault35, positionDefault35)))))
+        case crewmate : CrewmateAlive => assert(crewmate.canCallEmergency(
+          Seq(Emergency(Point2D(positionDefault35, positionDefault35))), emergencyDistance))
           this.crewmateAlive = CrewmateAlive("green", emergencyCalled = true, "asdasdasd", "imCrewmate",
             3, Point2D(positionDefault35, positionDefault35))
       }
@@ -35,8 +36,8 @@ class CallEmergencyTest extends AnyWordSpecLike with BeforeAndAfterAll {
   "An Impostor Alive" should {
     "Can Call Emergency" in {
       this.impostorAlive match {
-        case impostor : ImpostorAlive => assert(impostor.canCallEmergency(impostor,
-          Seq(amongsus.core.map.Emergency(Point2D(positionDefault35, positionDefault35)))))
+        case impostor : ImpostorAlive => assert(impostor.canCallEmergency(
+          Seq(amongsus.core.map.Emergency(Point2D(positionDefault35, positionDefault35))), emergencyDistance))
           this.impostorAlive = ImpostorAlive("green", emergencyCalled = true, "qwerty", "imImpostor",
             Point2D(positionDefault35, positionDefault35))
       }

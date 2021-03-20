@@ -41,7 +41,7 @@ object MovePlayer {
                       gameMap: GameMap): Option[CrewmateAlive] = {
       val newPlayer = CrewmateAlive(player.color, player.emergencyCalled, player.fieldOfView, player.clientId,
           player.username, player.numCoins, player.position.movePoint(direction))
-      if (newPlayer.checkCollision(newPlayer.position, gameMap)) None else Option(newPlayer)
+      if (newPlayer.checkCollision(gameMap)) None else Option(newPlayer)
     }
   }
 
@@ -51,7 +51,7 @@ object MovePlayer {
                       gameMap: GameMap): Option[CrewmateGhost] = {
       val newPlayer = CrewmateGhost(player.color, player.clientId, player.username, player.numCoins,
         player.position.movePoint(direction))
-      if (newPlayer.checkCollision(newPlayer.position, gameMap)) None else Option(newPlayer)
+      if (newPlayer.checkCollision(gameMap)) None else Option(newPlayer)
     }
   }
 
@@ -61,7 +61,7 @@ object MovePlayer {
                       gameMap: GameMap): Option[ImpostorAlive] = {
       val newPlayer = ImpostorAlive(player.color, player.emergencyCalled, player.clientId, player.username,
         player.position.movePoint(direction))
-      if (newPlayer.checkCollision(newPlayer.position, gameMap)) None else Option(newPlayer)
+      if (newPlayer.checkCollision(gameMap)) None else Option(newPlayer)
     }
   }
 
@@ -71,7 +71,7 @@ object MovePlayer {
                       gameMap: GameMap): Option[ImpostorGhost] = {
       val newPlayer = ImpostorGhost(player.color, player.clientId, player.username,
         player.position.movePoint(direction))
-      if (newPlayer.checkCollision(newPlayer.position, gameMap)) None else Option(newPlayer)
+      if (newPlayer.checkCollision(gameMap)) None else Option(newPlayer)
     }
   }
 }

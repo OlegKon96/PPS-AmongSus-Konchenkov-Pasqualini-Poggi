@@ -4,6 +4,7 @@ import it.amongsus
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.MapHelper.{GameMap, generateCoins, generateMap}
 import it.amongsus.core.map.{Tile, Vent}
+import it.amongsus.core.player.PlayerHelper.checkPosition
 import it.amongsus.core.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.Direction.{Down, Up}
 import it.amongsus.core.util.Point2D
@@ -33,7 +34,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
     "Can or Not Collect Coin" in {
       this.crewmateAlive match {
-        case crewmate :Crewmate => crewmate.canCollect(gameCoins, crewmate) match {
+        case crewmate :Crewmate => crewmate.canCollect(gameCoins, checkPosition) match {
           case Some(_) => crewmate.collect(crewmate)
             assert(crewmate.numCoins == 4)
           case None => assert(crewmate.numCoins == 3)

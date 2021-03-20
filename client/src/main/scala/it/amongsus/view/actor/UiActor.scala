@@ -3,6 +3,7 @@ package it.amongsus.view.actor
 import it.amongsus.ActorSystemManager
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.Constants
+import it.amongsus.Constants.Remote.{SERVER_ADDRESS, SERVER_PORT}
 import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.actor.ControllerActorMessages.{MyCharMovedController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{RestartGameController, SendTextChatController}
@@ -18,6 +19,7 @@ import it.amongsus.view.actor.UiActorGameMessages.KillTimerUpdateUi
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
@@ -110,7 +112,7 @@ class UiActor(private val state: UiActorInfo) extends Actor with ActorLogging {
     case SabotageTimerUpdateUi(_: Long, seconds: Long) => state.updateSabotageButton(seconds)
 
     case GameEndUi(end: GameEnd) =>
-      state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
+      state.clientRef.get ! ConnectClient(SERVER_ADDRESS, SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
       context >>> defaultBehaviour(UiActorInfo())
@@ -155,7 +157,7 @@ class UiActor(private val state: UiActorInfo) extends Actor with ActorLogging {
       context >>> gameBehaviour(state)
 
     case GameEndUi(end: GameEnd) =>
-      state.clientRef.get ! ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT)
+      state.clientRef.get ! ConnectClient(SERVER_ADDRESS, SERVER_PORT)
       state.gameFrame.get.dispose().unsafeRunSync()
       state.endGame(state.gameFrame.get.myChar, end)
       context >>> defaultBehaviour(UiActorInfo())

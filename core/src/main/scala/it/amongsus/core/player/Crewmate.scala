@@ -1,6 +1,7 @@
 package it.amongsus.core.player
 
 import it.amongsus.core.map.Coin
+import it.amongsus.core.util.Point2D
 
 /**
  * Trait that manages Crewmate.
@@ -31,7 +32,7 @@ trait Crewmate {
    * @param player of the game.
    * @return a coin to collect if the player is on top of it, None otherwise.
    */
-  def canCollect(coins: Seq[Coin], player: Player): Option[Coin] = {
-    coins.find(coin => coin.position == player.position)
+  def canCollect(coins: Seq[Coin], checkPosition: (Coin, Player) => Boolean): Option[Coin] = {
+    coins.find(coin => checkPosition(coin, self))
   }
 }

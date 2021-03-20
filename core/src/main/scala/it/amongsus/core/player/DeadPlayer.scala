@@ -16,8 +16,8 @@ trait DeadPlayer {
    * @param map game map.
    * @return true if collides whit a boundary, false otherwise.
    */
-  def checkCollision(position: Point2D, map: GameMap): Boolean = {
-    map(position.x)(position.y) match {
+  def checkCollision(map: GameMap): Boolean = {
+    map(self.position.x)(self.position.y) match {
       case _: Boundary => true
       case _ => false
     }

@@ -1,5 +1,6 @@
 package it.amongsus.controller
 
+import it.amongsus.Constants.Remote.{SERVER_ADDRESS, SERVER_PORT}
 import it.amongsus.{ActorSystemManager, Constants}
 import it.amongsus.messages.LobbyMessagesClient.ConnectClient
 import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
@@ -19,6 +20,6 @@ class ControllerImpl() extends Controller {
   }
 
   private def connect(): Unit = {
-    this.lobbyActorRef.tell(ConnectClient(Constants.Remote.SERVER_ADDRESS, Constants.Remote.SERVER_PORT), lobbyActorRef)
+    this.lobbyActorRef.tell(ConnectClient(SERVER_ADDRESS, SERVER_PORT), lobbyActorRef)
   }
 }

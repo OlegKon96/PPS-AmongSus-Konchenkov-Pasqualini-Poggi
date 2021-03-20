@@ -4,6 +4,7 @@ import it.amongsus.core
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.{DeadBody, Floor, Tile}
+import it.amongsus.core.player.Constants.{EMERGENCY_DISTANCE, REPORT_DISTANCE}
 import it.amongsus.core.util.Point2D
 
 /**
@@ -38,8 +39,8 @@ trait AlivePlayer {
    * @param deadPlayers sequence of dead bodies of the game.
    * @return true if the player is near enought to a dead body, else otherwise.
    */
-  def canReport(position: Point2D, deadPlayers: Seq[DeadBody]): Boolean = {
-    deadPlayers.exists(player => player.position.distance(position) < Constants.REPORT_DISTANCE)
+  def canReport(deadPlayers: Seq[DeadBody], distance: (DeadBody, Player) => Int): Boolean = {
+    deadPlayers.exists(deadPlayer => distance(deadPlayer, self) < REPORT_DISTANCE)
   }
   /**
    * Method to let player to call an emergency in the game.
@@ -48,9 +49,8 @@ trait AlivePlayer {
    * @param emergencyButtons sequence of emergency buttons of the game.
    * @return true if the player if in the correct distance whit the emergency button else otherwise.
    */
-  def canCallEmergency(player: AlivePlayer, emergencyButtons: Seq[Drawable[Tile]]): Boolean = {
-    emergencyButtons.exists(button =>
-      button.position.distance(player.getPosition) < Constants.EMERGENCY_DISTANCE) && ! player.emergencyCalled
+  def canCallEmergency(emergencyButtons: Seq[Drawable[Tile]], distance: (Drawable[Tile], Player) => Int): Boolean = {
+    emergencyButtons.exists(button => distance(button, self) < EMERGENCY_DISTANCE) && ! self.emergencyCalled
   }
   /**
    * Method to check collisions of the player.
@@ -59,16 +59,10 @@ trait AlivePlayer {
    * @param map game map.
    * @return true if collides, false otherwise.
    */
-  def checkCollision(position: Point2D, map: GameMap): Boolean = {
-    map(position.x)(position.y) match {
+  def checkCollision(map: GameMap): Boolean = {
+    map(self.position.x)(self.position.y) match {
       case _: Floor => false
       case _ => true
     }
   }
-  /**
-   * Position of the player.
-   *
-   * @return player's position.
-   */
-  def getPosition:Point2D = self.position
 }

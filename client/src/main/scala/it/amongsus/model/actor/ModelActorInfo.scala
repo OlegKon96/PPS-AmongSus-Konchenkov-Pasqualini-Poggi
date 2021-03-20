@@ -5,6 +5,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.map.MapHelper.{GameMap, generateEmergencyButtons, generateVentLinks}
 import it.amongsus.core.map._
+import it.amongsus.core.player.PlayerHelper.{checkPosition, emergencyDistance, reportDistance}
 import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
 import it.amongsus.core.util.Direction
@@ -129,7 +130,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
       case Some(player) =>
         playerUpdated(player match {
           case crewmate: Crewmate =>
-            crewmate.canCollect(gameCoins, crewmate) match {
+            crewmate.canCollect(gameCoins, checkPosition) match {
               case Some(toCollect) =>
                 gameCoins = gameCoins.filter(coin => coin != toCollect)
                 crewmate.collect(crewmate)
@@ -181,12 +182,12 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
     myCharacter match {
       case alivePlayer: AlivePlayer =>
-        if (alivePlayer.canCallEmergency(alivePlayer, emergencyButtons)) {
+        if (alivePlayer.canCallEmergency(emergencyButtons, emergencyDistance)) {
           controllerRef.get ! ActionOnController(EmergencyAction)
         } else {
           controllerRef.get ! ActionOffController(EmergencyAction)
         }
-        if (alivePlayer.canReport(myCharacter.position, deadBodies)) {
+        if (alivePlayer.canReport(deadBodies, reportDistance)) {
           controllerRef.get ! ActionOnController(ReportAction)
         } else {
           controllerRef.get ! ActionOffController(ReportAction)
