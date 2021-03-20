@@ -88,21 +88,18 @@ object DrawableEntity {
     for {
       deadBody <- gameDeadBodies
       if deadBody.position.distance(entity.position) < entity.fieldOfView
-    } g.drawImage(getImageDead(deadBody.color), deadBody.position.y * DRAWABLE_SCALING + 1,
-      deadBody.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
+    } paintDeadBody(g, deadBody)
   }
 
   private def drawCoins(g : Graphics, gameCoins : Seq[Coin], entity: Player): Unit = {
     for {
       coin <- gameCoins
       if coin.position.distance(entity.position) < entity.fieldOfView
-    } g.drawImage(COIN, coin.position.y * DRAWABLE_SCALING + 1,
-      coin.position.x * DRAWABLE_SCALING + 1, DRAWABLE_SCALING, DRAWABLE_SCALING, null)
+    } paintCoin(g, coin)
   }
 
   private def drawPlayer(g : Graphics, player : Player, image : BufferedImage, username : String): Unit = {
-    g.drawImage(image, player.position.y * DRAWABLE_SCALING + 1, player.position.x * DRAWABLE_SCALING + 1,
-      PLAYER_SCALING, PLAYER_SCALING, null)
+    paintPlayer(g, player, image)
     g.drawString(username, player.position.y * DRAWABLE_SCALING - 10,
       player.position.x * DRAWABLE_SCALING - 5)
   }

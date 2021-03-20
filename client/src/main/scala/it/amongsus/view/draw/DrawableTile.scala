@@ -20,9 +20,9 @@ object DrawableTile {
   implicit object drawWall extends DrawableTile[Wall] {
     override def drawTile(tile: Wall, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g, tile, WALL)
+        paintTile(g, tile, WALL)
       } else {
-        paint(g, tile, WALL_OFF)
+        paintTile(g, tile, WALL_OFF)
       }
     }
   }
@@ -30,9 +30,9 @@ object DrawableTile {
   implicit object drawVent extends DrawableTile[Vent] {
     override def drawTile(tile: Vent, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g, tile, VENT)
+        paintTile(g, tile, VENT)
       } else {
-        paint(g, tile, VENT_OFF)
+        paintTile(g, tile, VENT_OFF)
       }
     }
   }
@@ -40,9 +40,9 @@ object DrawableTile {
   implicit object drawEmergency extends DrawableTile[Emergency] {
     override def drawTile(tile: Emergency, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g, tile, EMERGENCY)
+        paintTile(g, tile, EMERGENCY)
       } else {
-        paint(g, tile, EMERGENCY_OFF)
+        paintTile(g, tile, EMERGENCY_OFF)
       }
     }
   }
@@ -50,27 +50,22 @@ object DrawableTile {
   implicit object drawFloor extends DrawableTile[Floor] {
     override def drawTile(tile: Floor, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g, tile, FLOOR)
+        paintTile(g, tile, FLOOR)
       } else {
-        paint(g, tile, FLOOR_OFF)
+        paintTile(g, tile, FLOOR_OFF)
       }
     }
   }
 
   implicit object drawBoundary extends DrawableTile[Boundary] {
     override def drawTile(tile: Boundary, g: Graphics, player : Player): Unit = {
-      paint(g, tile, SPACE)
+      paintTile(g, tile, SPACE)
     }
   }
 
   implicit object drawOther extends DrawableTile[Other] {
     override def drawTile(tile: Other, g: Graphics, player : Player): Unit = {
-      paint(g, tile, SPACE)
+      paintTile(g, tile, SPACE)
     }
-  }
-
-  private def paint(g: Graphics, tile: Tile, image : BufferedImage): Unit = {
-    g.drawImage(image,tile.position.y * DRAWABLE_SCALING + 1, tile.position.x * DRAWABLE_SCALING + 1,
-      DRAWABLE_SCALING, DRAWABLE_SCALING, null)
   }
 }
