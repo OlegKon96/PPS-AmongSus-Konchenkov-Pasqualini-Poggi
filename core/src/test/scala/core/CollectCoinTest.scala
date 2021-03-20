@@ -1,10 +1,8 @@
 package core
 
-import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.{GameMap, generateCoins, generateMap}
-import it.amongsus.core.map.Tile
-import it.amongsus.core.player.PlayerHelper.checkPosition
+import it.amongsus.core.util.PlayerHelper.checkPosition
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, Player}
+import it.amongsus.core.util.MapHelper.{GameMap, generateCoins, generateMap}
 import it.amongsus.core.util.Point2D
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike

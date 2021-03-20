@@ -1,11 +1,10 @@
 package core
 
 import it.amongsus
-import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.{GameMap, generateCoins, generateMap}
-import it.amongsus.core.map.{Tile, Vent}
-import it.amongsus.core.player.PlayerHelper.checkPosition
-import it.amongsus.core.player.{Crewmate, CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
+import it.amongsus.core.util.MapHelper.{GameMap, generateCoins, generateMap}
+import it.amongsus.core.map.Vent
+import it.amongsus.core.util.PlayerHelper.checkPosition
+import it.amongsus.core.player.{Crewmate, CrewmateAlive, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.Direction.{Down, Up}
 import it.amongsus.core.util.Point2D
 import org.scalatest.BeforeAndAfterAll

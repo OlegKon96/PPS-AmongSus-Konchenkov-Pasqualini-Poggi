@@ -1,7 +1,7 @@
 package core
 
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.{GameMap, generateMap}
+import it.amongsus.core.util.MapHelper.{GameMap, generateMap}
 import it.amongsus.core.map.Tile
 import it.amongsus.core.player.{CrewmateAlive, CrewmateGhost, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.Direction.{Down, Up}

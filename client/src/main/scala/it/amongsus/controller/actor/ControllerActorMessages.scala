@@ -2,10 +2,9 @@ package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
-import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.GameMap
-import it.amongsus.core.map.{Coin, DeadBody, Tile}
+import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player.Player
+import it.amongsus.core.util.MapHelper.GameMap
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 
 object ControllerActorMessages {

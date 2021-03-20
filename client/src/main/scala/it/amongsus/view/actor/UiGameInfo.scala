@@ -9,7 +9,7 @@ import it.amongsus.view.frame.{GameFrame, WinFrame}
 /**
  * Trait that manages the Actor of the game
  */
-trait UiGameActorInfo {
+trait UiGameInfo {
   /**
    * The reference of the server actor
    *
@@ -60,14 +60,14 @@ trait UiGameActorInfo {
   def endGame(myChar: Player, gameEnd: GameEnd): Unit
 }
 
-object UiGameActorInfo {
-  def apply() : UiGameActorData = UiGameActorData(None, None)
-  def apply(clientRef: Option[ActorRef], gameFrame: Option[GameFrame]) : UiGameActorData =
-    UiGameActorData(clientRef, gameFrame)
+object UiGameInfo {
+  def apply() : UiGameData = UiGameData(None, None)
+  def apply(clientRef: Option[ActorRef], gameFrame: Option[GameFrame]) : UiGameData =
+    UiGameData(clientRef, gameFrame)
 }
 
-case class UiGameActorData(override val clientRef: Option[ActorRef],
-                           override val gameFrame: Option[GameFrame]) extends UiGameActorInfo {
+case class UiGameData(override val clientRef: Option[ActorRef],
+                      override val gameFrame: Option[GameFrame]) extends UiGameInfo {
 
   override def updateGame(myChar: Player, players: Seq[Player], coins : Seq[Coin],
                             deadBodies : Seq[DeadBody]): Unit =

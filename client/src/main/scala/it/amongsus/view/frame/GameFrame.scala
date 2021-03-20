@@ -2,9 +2,8 @@ package it.amongsus.view.frame
 
 import akka.actor.ActorRef
 import cats.effect.IO
-import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.GameMap
-import it.amongsus.core.map.{Coin, DeadBody, Tile}
+import it.amongsus.core.util.MapHelper.GameMap
+import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.view.actor.UiActorGameMessages.{MyCharMovedUi, UiActionTypeUi}
 import it.amongsus.view.actor.UiActorLobbyMessages.PlayerCloseUi

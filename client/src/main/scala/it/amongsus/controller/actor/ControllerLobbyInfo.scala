@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 /**
  * Trait that contains all the callback functions of the messages to be sent to the server
  */
-trait LobbyActorInfo {
+trait ControllerLobbyInfo {
   /**
    * The ID of the Client.
    */
@@ -42,16 +42,16 @@ trait LobbyActorInfo {
   def resolveRemoteActorPath(actorPath: String): Future[ActorRef]
 }
 
-object LobbyActorInfo {
-  def apply(guiRef: Option[ActorRef]): LobbyActorInfoData = LobbyActorInfoData(None, guiRef, "")
+object ControllerLobbyInfo {
+  def apply(guiRef: Option[ActorRef]): ControllerLobbyInfoData = ControllerLobbyInfoData(None, guiRef, "")
 
-  def apply(serverRef: Option[ActorRef], guiRef: Option[ActorRef], clientId: String): LobbyActorInfoData =
-    LobbyActorInfoData(serverRef, guiRef, clientId)
+  def apply(serverRef: Option[ActorRef], guiRef: Option[ActorRef], clientId: String): ControllerLobbyInfoData =
+    ControllerLobbyInfoData(serverRef, guiRef, clientId)
 }
 
-case class LobbyActorInfoData(override val serverRef: Option[ActorRef],
-                              override val guiRef: Option[ActorRef],
-                              override val clientId: String) extends LobbyActorInfo {
+case class ControllerLobbyInfoData(override val serverRef: Option[ActorRef],
+                                   override val guiRef: Option[ActorRef],
+                                   override val clientId: String) extends ControllerLobbyInfo {
 
   override def generateServerActorPath(address: String, port: Int): String =
     s"akka.tcp://${Constants.Remote.SERVER_ACTOR_SYSTEM_NAME}" +

@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo}
+import it.amongsus.controller.actor.{ControllerActor, ControllerLobbyInfo}
 import it.amongsus.core.player
 import it.amongsus.core.player.{ImpostorAlive, Player}
 import it.amongsus.core.util.ActionType.EmergencyAction
@@ -16,7 +16,7 @@ import it.amongsus.messages.GameMessageServer.{PlayerReadyServer, SendTextChatSe
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.model.actor.ModelActorMessages._
-import it.amongsus.model.actor.ModelActorInfo
+import it.amongsus.model.actor.ModelGameInfo
 import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import org.scalatest.BeforeAndAfterAll
@@ -32,13 +32,13 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
   private final val positionDefault35 = 35
   private val crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
     "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
-  private val modelActor: ModelActorInfo = ModelActorInfo()
+  private val modelActor: ModelGameInfo = ModelGameInfo()
   private final val client: TestProbe = TestProbe()
   private final val serverActor: TestProbe = TestProbe()
   private final val model: TestProbe = TestProbe()
   private final val uiActor: TestProbe = TestProbe()
   private val controllerActor: ActorRef =
-    system.actorOf(ControllerActor.props(LobbyActorInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
+    system.actorOf(ControllerActor.props(ControllerLobbyInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
   private val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
 
   "The Controller Actor" should {
@@ -116,28 +116,28 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
     "Add a User to a Lobby Client" in {
       val controllerActor =
-        system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! UserAddedToLobbyClient(NUM_PLAYERS,NUM_PLAYERS)
       client.expectMsgType[UserAddedToLobbyUi]
     }
 
     "Update the Lobby Client" in {
       val controllerActor =
-        system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! UpdateLobbyClient(NUM_PLAYERS)
       client.expectMsgType[UpdateLobbyClient]
     }
 
     "Create a Private Lobby Client" in {
       val controllerActor =
-        system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! PrivateLobbyCreatedClient("asdasdasd",NUM_PLAYERS)
       client.expectMsgType[PrivateLobbyCreatedUi]
     }
 
     "Match Found" in {
       val controllerActor =
-        system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! MatchFound(client.ref)
       client.expectMsg(MatchFoundUi)
     }

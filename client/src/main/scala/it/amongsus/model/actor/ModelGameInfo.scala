@@ -3,15 +3,15 @@ package it.amongsus.model.actor
 import akka.actor.ActorRef
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
-import it.amongsus.core.map.MapHelper.{GameMap, generateEmergencyButtons, generateVentLinks}
+import it.amongsus.core.util.MapHelper.{GameMap, generateEmergencyButtons, generateVentLinks}
 import it.amongsus.core.map._
-import it.amongsus.core.player.PlayerHelper.{checkPosition, emergencyDistance, reportDistance}
+import it.amongsus.core.util.PlayerHelper.{checkPosition, emergencyDistance, reportDistance}
 import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
 import it.amongsus.core.util.Direction
 import it.amongsus.core.{Drawable, map}
 
-trait ModelActorInfo {
+trait ModelGameInfo {
   /**
    * Sequence of Players of the game.
    */
@@ -98,20 +98,20 @@ trait ModelActorInfo {
 
 }
 
-object ModelActorInfo {
-  def apply(): ModelActorInfo = ModelActorInfoData(None, None, Seq(), Seq(), "", isTimerOn = false)
+object ModelGameInfo {
+  def apply(): ModelGameInfo = ModelGameInfoData(None, None, Seq(), Seq(), "", isTimerOn = false)
 
   def apply(controllerRef: Option[ActorRef], map: Option[GameMap],
-            playersList: Seq[Player], gameCoins: Seq[Coin], clientId: String): ModelActorInfo =
-    ModelActorInfoData(controllerRef, map, playersList, gameCoins, clientId, isTimerOn = false)
+            playersList: Seq[Player], gameCoins: Seq[Coin], clientId: String): ModelGameInfo =
+    ModelGameInfoData(controllerRef, map, playersList, gameCoins, clientId, isTimerOn = false)
 }
 
-case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
-                              private val gameMap: Option[GameMap],
-                              override var gamePlayers: Seq[Player],
-                              override var gameCoins: Seq[Coin],
-                              override val clientId: String,
-                              override var isTimerOn: Boolean) extends ModelActorInfo {
+case class ModelGameInfoData(override val controllerRef: Option[ActorRef],
+                             private val gameMap: Option[GameMap],
+                             override var gamePlayers: Seq[Player],
+                             override var gameCoins: Seq[Coin],
+                             override val clientId: String,
+                             override var isTimerOn: Boolean) extends ModelGameInfo {
 
   private val ventList: Seq[(Drawable[Tile], Drawable[Tile])] = gameMap match {
     case Some(map) => generateVentLinks(map)

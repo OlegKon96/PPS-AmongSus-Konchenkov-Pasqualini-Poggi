@@ -9,7 +9,7 @@ import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
 import it.amongsus.core.map.DeadBody
-import it.amongsus.core.map.MapHelper.{generateCoins, generateMap}
+import it.amongsus.core.util.MapHelper.{generateCoins, generateMap}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
 import it.amongsus.core.util.{ActionType, Direction, GameEnd}
@@ -21,21 +21,21 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ModelActor {
-  def props(state: ModelActorInfo): Props =
+  def props(state: ModelGameInfo): Props =
     Props(new ModelActor(state))
 }
 
-class ModelActor(private val state: ModelActorInfo) extends Actor  with ActorLogging{
+class ModelActor(private val state: ModelGameInfo) extends Actor  with ActorLogging{
   override def receive: Receive = gameBehaviour(state)
 
-  private def gameBehaviour(state: ModelActorInfo): Receive = {
+  private def gameBehaviour(state: ModelGameInfo): Receive = {
     case InitModel(map: Iterator[String], players: Seq[Player]) =>
       state.gamePlayers = players
       val gameMap = generateMap(map)
       state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, players,
         generateCoins(gameMap))
       state.checkTimer(TimerStarted)
-      context >>> gameBehaviour(ModelActorInfo(state.controllerRef,
+      context >>> gameBehaviour(ModelGameInfo(state.controllerRef,
         Option(gameMap), players, generateCoins(gameMap), state.clientId))
 
     case MyCharMovedModel(direction: Direction) => state.updateMyChar(direction)
@@ -84,7 +84,7 @@ class ModelActor(private val state: ModelActorInfo) extends Actor  with ActorLog
     case _ => log.info("Model Actor -> game error" )
   }
 
-  private def voteBehaviour(state: ModelActorInfo): Receive = {
+  private def voteBehaviour(state: ModelGameInfo): Receive = {
     case KillPlayerModel(username: String) =>
       state.killAfterVote(username)
       state.deadBodies = Seq()

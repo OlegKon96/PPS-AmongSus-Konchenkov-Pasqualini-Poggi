@@ -1,8 +1,8 @@
-package it.amongsus.core.map
+package it.amongsus.core.util
 
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.GameMap
-import it.amongsus.core.util.Point2D
+import it.amongsus.core.map._
+import it.amongsus.core.util.MapHelper.GameMap
 
 import scala.Array.ofDim
 import scala.util.Random

@@ -7,7 +7,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
 import it.amongsus.controller.actor.ErrorEvent.LobbyJoinErrorEvent
-import it.amongsus.core.map.MapHelper.GameMap
+import it.amongsus.core.util.MapHelper.GameMap
 import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
@@ -15,7 +15,7 @@ import it.amongsus.messages.GameMessageClient._
 import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
+import it.amongsus.model.actor.{ModelActor, ModelGameInfo}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
 import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
@@ -25,7 +25,7 @@ import scala.concurrent.duration.DurationDouble
 import scala.util.{Failure, Success}
 
 object ControllerActor {
-  def props(state: LobbyActorInfo): Props =
+  def props(state: ControllerLobbyInfo): Props =
     Props(new ControllerActor(state))
 }
 
@@ -34,10 +34,10 @@ object ControllerActor {
  *
  * @param state state of the lobbyActorInfo that represents the function that notify the user about the received event
  */
-class ControllerActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
+class ControllerActor(private val state: ControllerLobbyInfo) extends Actor  with ActorLogging {
   override def receive: Receive = lobbyBehaviour(state)
 
-    private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
+    private def lobbyBehaviour(state: ControllerLobbyInfo): Receive = {
     case ConnectClient(address: String, port: Int) =>
       state.guiRef.get ! Init
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
@@ -46,7 +46,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
         case Failure(_) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
-    case Connected(id: String) => context >>> lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
+    case Connected(id: String) => context >>> lobbyBehaviour(ControllerLobbyInfoData(Option(sender), state.guiRef, id))
 
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
@@ -72,7 +72,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case MatchFound(gameRoom: ActorRef) =>
       state.guiRef.get ! MatchFoundUi
       val model =
-        ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelActorInfo(Option(self),
+        ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelGameInfo(Option(self),
           None, Seq(), Seq(), state.clientId)), "model")
       context >>> gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
         Option(model), state.clientId))
@@ -127,7 +127,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
       context >>> voteBehaviour(state)
 
     case GameEndController(end: GameEnd) => state.guiRef.get ! GameEndUi(end)
-      context >>> lobbyBehaviour(LobbyActorInfo(state.guiRef))
+      context >>> lobbyBehaviour(ControllerLobbyInfo(state.guiRef))
 
     case GameEndClient(end: GameEnd) => state.modelRef.get ! GameEndModel(end)
 
@@ -160,7 +160,7 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case SendTextChatClient(message: ChatMessage) => state.guiRef.get ! ReceiveTextChatUi(message)
 
     case GameEndController(end: GameEnd) => state.guiRef.get ! GameEndUi(end)
-      context >>> lobbyBehaviour(LobbyActorInfo(state.guiRef))
+      context >>> lobbyBehaviour(ControllerLobbyInfo(state.guiRef))
 
     case GameEndClient(end: GameEnd) =>
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3.1 seconds){

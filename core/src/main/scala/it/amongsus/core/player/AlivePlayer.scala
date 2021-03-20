@@ -2,10 +2,9 @@ package it.amongsus.core.player
 
 import it.amongsus.core
 import it.amongsus.core.Drawable
-import it.amongsus.core.map.MapHelper.GameMap
+import it.amongsus.core.util.MapHelper.GameMap
 import it.amongsus.core.map.{DeadBody, Floor, Tile}
 import it.amongsus.core.player.Constants.{EMERGENCY_DISTANCE, REPORT_DISTANCE}
-import it.amongsus.core.util.Point2D
 
 /**
  * Trait that manages the Alive Player of the game.

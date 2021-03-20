@@ -1,6 +1,6 @@
 package it.amongsus.core.player
 
-import it.amongsus.core.map.MapHelper.GameMap
+import it.amongsus.core.util.MapHelper.GameMap
 import it.amongsus.core.player.CrewmateAlive.CrewmateAliveImpl
 import it.amongsus.core.util.MovePlayer._
 import it.amongsus.core.util.{Direction, Point2D}

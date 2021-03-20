@@ -6,7 +6,7 @@ import it.amongsus.view.frame.{Frame, LobbyFrame, MenuFrame}
 /**
  * Trait that contains all Callback functions of UiActor
  */
-trait UiActorInfo {
+trait UiLobbyInfo {
   /**
    * The reference of the server actor
    *
@@ -47,15 +47,15 @@ trait UiActorInfo {
   def showStartButton(): Unit
 }
 
-object UiActorInfo {
-  def apply(): UiActorData = UiActorData(None, None)
+object UiLobbyInfo {
+  def apply(): UiLobbyData = UiLobbyData(None, None)
 
-  def apply(clientRef: Option[ActorRef], currentFrame: Option[Frame]): UiActorData =
-    UiActorData(clientRef, currentFrame)
+  def apply(clientRef: Option[ActorRef], currentFrame: Option[Frame]): UiLobbyData =
+    UiLobbyData(clientRef, currentFrame)
 }
 
-case class UiActorData(override val clientRef: Option[ActorRef],
-                       override val currentFrame: Option[Frame]) extends UiActorInfo {
+case class UiLobbyData(override val clientRef: Option[ActorRef],
+                       override val currentFrame: Option[Frame]) extends UiLobbyInfo {
 
   override def updateLobby(numPlayers: Int): Unit =
     currentFrame.get.asInstanceOf[LobbyFrame].updatePlayers(numPlayers).unsafeRunSync()
