@@ -12,7 +12,7 @@ object ControllerActorMessages {
    * Tells to the controller that the model is ready.
    */
   case class ModelReadyController(map: GameMap, myChar: Player, players: Seq[Player],
-                                  collectionables: Seq[Coin])
+                                  coins: Seq[Coin])
   /**
    * Tells to the controller that his character is moved.
    */
@@ -24,7 +24,7 @@ object ControllerActorMessages {
   /**
    * Tells to the controller that the model has updated a player status.
    */
-  case class UpdatedPlayersController(myChar: Player, player: Seq[Player], collectionables: Seq[Coin],
+  case class UpdatedPlayersController(myChar: Player, player: Seq[Player], coins: Seq[Coin],
                                       deadBodies: Seq[DeadBody])
   /**
    * Tells to the controller that the Ui Button is pressed.

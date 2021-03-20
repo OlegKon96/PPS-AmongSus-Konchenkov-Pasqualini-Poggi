@@ -1,7 +1,9 @@
 package it.amongsus.controller.actor
 
 import akka.actor.ActorRef
+import it.amongsus.Constants.Remote.{SERVER_ACTOR_SYSTEM_NAME, SERVER_LOBBY_ACTOR_NAME}
 import it.amongsus.{ActorSystemManager, Constants}
+
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -54,10 +56,10 @@ case class ControllerLobbyInfoData(override val serverRef: Option[ActorRef],
                                    override val clientId: String) extends ControllerLobbyInfo {
 
   override def generateServerActorPath(address: String, port: Int): String =
-    s"akka.tcp://${Constants.Remote.SERVER_ACTOR_SYSTEM_NAME}" +
-      s"@$address:$port/user/${Constants.Remote.SERVER_LOBBY_ACTOR_NAME}"
+    s"akka.tcp://${SERVER_ACTOR_SYSTEM_NAME}" +
+      s"@$address:$port/user/${SERVER_LOBBY_ACTOR_NAME}"
 
   override def resolveRemoteActorPath(actorPath: String): Future[ActorRef] = {
-    ActorSystemManager.actorSystem.actorSelection(actorPath).resolveOne()(10.seconds)
+    ActorSystemManager.actorSystem.actorSelection(actorPath).resolveOne()(10 seconds)
   }
 }

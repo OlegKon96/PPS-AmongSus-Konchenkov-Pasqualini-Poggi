@@ -69,10 +69,8 @@ class ControllerActor(private val state: ControllerLobbyInfo) extends Actor  wit
 
     case PlayerLeftController => self ! PoisonPill
 
-    case MatchFound(gameRoom: ActorRef) =>
-      state.guiRef.get ! MatchFoundUi
-      val model =
-        ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelGameInfo(Option(self),
+    case MatchFound(gameRoom: ActorRef) => state.guiRef.get ! MatchFoundUi
+      val model = ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelGameInfo(Option(self),
           None, Seq(), Seq(), state.clientId)), "model")
       context >>> gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
         Option(model), state.clientId))
@@ -116,7 +114,7 @@ class ControllerActor(private val state: ControllerLobbyInfo) extends Actor  wit
     case ActionOffController(action: ActionType) => state.guiRef.get ! ActionOffUi(action)
 
     case UiActionController(action: ActionType) => state.modelRef.get ! UiActionModel(action)
-      state.checkButton(action)
+      state.checkAction(action)
 
     case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
       state.guiRef.get ! BeginVotingUi(gamePlayers)

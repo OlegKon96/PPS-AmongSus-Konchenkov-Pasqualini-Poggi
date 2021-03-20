@@ -2,6 +2,7 @@ package it.amongsus.controller.actor
 
 import java.util.concurrent.TimeUnit
 import akka.actor.ActorRef
+import it.amongsus.Constants.Client.GAME_MAP
 import it.amongsus.controller.ActionTimer.{ActionTimerImpl, TimerEnded, TimerStarted}
 import it.amongsus.controller.{ActionTimer, TimerListener, TimerStatus}
 import it.amongsus.core.util.ActionType.{KillAction, SabotageAction}
@@ -46,7 +47,7 @@ trait GameActorInfo {
    *
    * @param action to check.
    */
-  def checkButton(action: ActionType): Unit
+  def checkAction(action: ActionType): Unit
   /**
    * Method that manages the Kill Timer.
    *
@@ -66,8 +67,10 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
                              override val modelRef: Option[ActorRef],
                              override val clientId: String) extends GameActorInfo {
 
-  val killDuration = 10
-  val killTimer: ActionTimer = new ActionTimerImpl(killDuration, new TimerListener {
+  final private val KILL_DURATION = 10
+  final private val SABOTAGE_DURATION = 15
+
+  val killTimer: ActionTimer = new ActionTimerImpl(KILL_DURATION, new TimerListener {
 
     override def onStart(): Unit = {
       modelRef.get ! KillTimerStatusModel(TimerStarted)
@@ -80,12 +83,11 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
     override def onTick(millis: Long): Unit = {
       val time = millisToMinutesAndSeconds(millis)
       guiRef.get ! KillTimerUpdateUi(time._1, time._2)
-      if(time._2 == killDuration) killTimer.end()
+      if(time._2 == KILL_DURATION) killTimer.end()
     }
   })
 
-  val sabotageDuration = 15
-  val sabotageTimer: ActionTimer = new ActionTimerImpl(sabotageDuration, new TimerListener {
+  val sabotageTimer: ActionTimer = new ActionTimerImpl(SABOTAGE_DURATION, new TimerListener {
 
     override def onStart(): Unit = {
       guiRef.get ! ActionOffUi(SabotageAction)
@@ -98,12 +100,12 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
     override def onTick(millis: Long): Unit = {
       val time = millisToMinutesAndSeconds(millis)
       guiRef.get ! SabotageTimerUpdateUi(time._1, time._2)
-      if(time._2 == sabotageDuration) sabotageTimer.end()
+      if(time._2 == SABOTAGE_DURATION) sabotageTimer.end()
     }
   })
 
   override def loadMap(): Iterator[String] = {
-    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/map/gameMap.csv"))
+    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream(GAME_MAP))
     bufferedSource.getLines
   }
 
@@ -113,7 +115,7 @@ case class GameActorInfoData(override val gameServerRef: Option[ActorRef],
     (minutes, seconds)
   }
 
-  override def checkButton(action: ActionType): Unit = action match{
+  override def checkAction(action: ActionType): Unit = action match{
     case KillAction => killTimer.start()
     case SabotageAction => sabotageTimer.start()
     case _ =>
