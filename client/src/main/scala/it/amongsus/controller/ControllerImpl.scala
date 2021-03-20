@@ -1,7 +1,7 @@
 package it.amongsus.controller
 
 import it.amongsus.Constants.Remote.{SERVER_ADDRESS, SERVER_PORT}
-import it.amongsus.{ActorSystemManager, Constants}
+import it.amongsus.{ActorSystemManager}
 import it.amongsus.messages.LobbyMessagesClient.ConnectClient
 import it.amongsus.controller.actor.{ControllerActor, ControllerLobbyInfo}
 import it.amongsus.view.actor.{UiActor, UiLobbyInfo}
@@ -16,10 +16,7 @@ class ControllerImpl() extends Controller {
     ActorSystemManager.actorSystem.actorOf(ControllerActor.props(ControllerLobbyInfo(Option(guiRef))), "client-lobby")
 
   override def start(): Unit = {
-    connect()
-  }
-
-  private def connect(): Unit = {
     this.lobbyActorRef.tell(ConnectClient(SERVER_ADDRESS, SERVER_PORT), lobbyActorRef)
   }
+
 }

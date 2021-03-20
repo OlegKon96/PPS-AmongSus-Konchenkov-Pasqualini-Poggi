@@ -8,10 +8,11 @@ import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.{Coin, DeadBody, Tile}
 import it.amongsus.core.player.{AlivePlayer, Player}
+import it.amongsus.core.util.MapHelper.GameMap
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient.{EliminatedPlayer, LeaveGameClient, PlayerReadyClient, VoteClient}
 import it.amongsus.messages.LobbyMessagesClient._
-import it.amongsus.view.actor.UiActorGameMessages.{KillTimerUpdateUi, _}
+import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import it.amongsus.view.frame.{GameFrame, LobbyFrame, MenuFrame, VoteFrame}
 
@@ -72,7 +73,7 @@ class UiActor(private val state: UiLobbyInfo) extends Actor with ActorLogging {
 
     case PlayerReadyUi => state.clientRef.get ! PlayerReadyClient
 
-    case GameFoundUi(map: Array[Array[Drawable[Tile]]], myChar: Player, players: Seq[Player],
+    case GameFoundUi(map: GameMap, myChar: Player, players: Seq[Player],
     coins: Seq[Coin]) =>
       state.currentFrame.get.dispose().unsafeRunSync()
       val game = GameFrame(Option(self), map, myChar, players, coins)

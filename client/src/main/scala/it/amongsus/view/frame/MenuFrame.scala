@@ -51,7 +51,6 @@ object MenuFrame {
 
 
     val menuFrame = new JFrameIO(new JFrame("Among Sus"))
-    val values : Seq[Int] = Seq(4,5,6,7,8,9,10)
     var code: String = ""
 
     override def start(): IO[Unit] =
@@ -72,7 +71,7 @@ object MenuFrame {
         _ <- playersLabel.setText(INSERT_NUMBER)
         _ <- inputPanel.add(playersLabel)
         comboBoxPlayers <- JComboBoxIO()
-        _ <- IO(values.foreach(value => comboBoxPlayers.addItem(value).unsafeRunSync()))
+        _ <- IO(VALUES.foreach(value => comboBoxPlayers.addItem(value).unsafeRunSync()))
         _ <- inputPanel.add(comboBoxPlayers)
         joinPublic <- JButtonIO(JOIN_PUBLIC)
         _ <- joinPublic.addActionListener(for {

@@ -15,9 +15,9 @@ trait DrawableEntity[E] {
 }
 
 object DrawableEntity {
-  def drawEntity[E : DrawableEntity](elem : E, g : Graphics, gamePlayers : Seq[Player], gameDeadBodies : Seq[DeadBody],
-                                     gameCoins : Seq[Coin]) : Unit =
-    implicitly[DrawableEntity[E]].drawEntity(elem,g,gamePlayers,gameDeadBodies,gameCoins)
+  def drawEntity[E : DrawableEntity](entity : E, g : Graphics, gamePlayers : Seq[Player],
+                                     gameDeadBodies : Seq[DeadBody], gameCoins : Seq[Coin]) : Unit =
+    implicitly[DrawableEntity[E]].drawEntity(entity,g,gamePlayers,gameDeadBodies,gameCoins)
 
   implicit object drawCrewmateAlive extends DrawableEntity[CrewmateAlive] {
     override def drawEntity(entity: CrewmateAlive, g : Graphics, gamePlayers : Seq[Player],

@@ -2,7 +2,6 @@ package it.amongsus.core.player
 
 import it.amongsus.core.util.MapHelper.GameMap
 import it.amongsus.core.map.Boundary
-import it.amongsus.core.util.Point2D
 
 /**
  * Method to manages the Dead Players

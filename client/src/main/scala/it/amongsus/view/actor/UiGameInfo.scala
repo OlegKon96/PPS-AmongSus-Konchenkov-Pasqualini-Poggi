@@ -25,10 +25,10 @@ trait UiGameInfo {
   /**
    *  Method to manage enable of buttons
    *
-   * @param button to enable or disable
+   * @param actionType to enable or disable
    * @param boolean that tells is the button is to turn on or off
    */
-  def setButtonState(button : ActionType, boolean: Boolean): Unit
+  def setButtonState(actionType : ActionType, boolean: Boolean): Unit
   /**
    * Method that change the state of the game to draw
    *
@@ -73,8 +73,8 @@ case class UiGameData(override val clientRef: Option[ActorRef],
                             deadBodies : Seq[DeadBody]): Unit =
     gameFrame.get.updateGame(myChar, players, coins, deadBodies)
 
-  override def setButtonState(action: ActionType, boolean: Boolean): Unit =
-    gameFrame.get.setButtonState(action, boolean).unsafeRunSync()
+  override def setButtonState(actionType: ActionType, boolean: Boolean): Unit =
+    gameFrame.get.setButtonState(actionType, boolean).unsafeRunSync()
 
   override def updateKillButton(seconds: Long): Unit = gameFrame.get.updateKillButton(seconds).unsafeRunSync()
 

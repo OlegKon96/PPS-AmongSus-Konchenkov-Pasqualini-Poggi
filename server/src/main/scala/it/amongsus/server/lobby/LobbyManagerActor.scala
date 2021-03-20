@@ -96,9 +96,7 @@ class LobbyManagerActor(private val state: LobbyManagerActorInfo) extends Actor 
     val gameActor = context.actorOf(GameActor.props(GameActorInfo(lobbyType.numberOfPlayers)))
     players.foreach(p => {
       context.unwatch(p.actorRef)
-      // remove player from lobby
       this.lobbyManager.removePlayer(p.id)
-      // remove player from connected players structure
       this.state.connectedPlayers = this.state.connectedPlayers - p.id
     })
     gameActor ! GamePlayers(players)

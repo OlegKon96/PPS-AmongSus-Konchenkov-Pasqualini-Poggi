@@ -19,9 +19,9 @@ object GameMessageClient {
    * Tells the controller actor that player moved to another position
    *
    * @param player of the game
-   * @param deadBodys of the game
+   * @param deadBodies of the game
    */
-  case class PlayerMovedClient(player: Player, deadBodys: Seq[DeadBody])
+  case class PlayerMovedClient(player: Player, deadBodies: Seq[DeadBody])
   /**
    * Tells the controller actor that a player wants to leave the game
    */

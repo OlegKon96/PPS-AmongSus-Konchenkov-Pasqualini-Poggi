@@ -159,12 +159,10 @@ class GameActor(private val state: GameActorInfo) extends Actor with ActorLoggin
    * @param playersReady all the players ready
    */
   private def initializeGame(playersReady: Seq[GamePlayer]): Unit = {
-    // unwatch the player with the old actor ref
     this.state.players.foreach(p => context.unwatch(p.actorRef))
     this.state.players = playersReady
     log.debug(s"Server -> ready players $playersReady")
     log.debug(s"Server -> updated players ${this.state.players}")
-    // watch the players with the new actor ref
     val playersRole = this.state.defineRoles()
     this.state.players.foreach(p => {
       p.actorRef ! GamePlayersClient(playersRole)

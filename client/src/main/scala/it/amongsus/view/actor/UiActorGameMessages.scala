@@ -36,11 +36,11 @@ object UiActorGameMessages {
    *
    * @param myChar in the game
    * @param player of the game
-   * @param collectionables of the game
+   * @param coins of the game
    * @param deadBodies of the game
    */
   case class PlayerUpdatedUi(myChar: Player, player: Seq[Player],
-                             collectionables: Seq[Coin], deadBodies: Seq[DeadBody])
+                             coins: Seq[Coin], deadBodies: Seq[DeadBody])
   /**
    * Tells to UI actor that a Button can be pressed
    *

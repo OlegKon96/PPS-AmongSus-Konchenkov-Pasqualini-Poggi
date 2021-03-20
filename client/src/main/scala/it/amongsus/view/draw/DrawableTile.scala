@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
  * @tparam T
  */
 trait DrawableTile[T] {
-  def drawTile(tile : T,g : Graphics,player : Player)
+  def drawTile(tile : T, g : Graphics, player : Player)
 }
 
 object DrawableTile {
@@ -20,9 +20,9 @@ object DrawableTile {
   implicit object drawWall extends DrawableTile[Wall] {
     override def drawTile(tile: Wall, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g,tile,WALL)
+        paint(g, tile, WALL)
       } else {
-        paint(g,tile,WALL_OFF)
+        paint(g, tile, WALL_OFF)
       }
     }
   }
@@ -30,9 +30,9 @@ object DrawableTile {
   implicit object drawVent extends DrawableTile[Vent] {
     override def drawTile(tile: Vent, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g,tile,VENT)
+        paint(g, tile, VENT)
       } else {
-        paint(g,tile,VENT_OFF)
+        paint(g, tile, VENT_OFF)
       }
     }
   }
@@ -40,9 +40,9 @@ object DrawableTile {
   implicit object drawEmergency extends DrawableTile[Emergency] {
     override def drawTile(tile: Emergency, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g,tile,EMERGENCY)
+        paint(g, tile, EMERGENCY)
       } else {
-        paint(g,tile,EMERGENCY_OFF)
+        paint(g, tile, EMERGENCY_OFF)
       }
     }
   }
@@ -50,22 +50,22 @@ object DrawableTile {
   implicit object drawFloor extends DrawableTile[Floor] {
     override def drawTile(tile: Floor, g: Graphics, player : Player): Unit = {
       if (fieldOfViewDistance(tile, player)) {
-        paint(g,tile,FLOOR)
+        paint(g, tile, FLOOR)
       } else {
-        paint(g,tile,FLOOR_OFF)
+        paint(g, tile, FLOOR_OFF)
       }
     }
   }
 
   implicit object drawBoundary extends DrawableTile[Boundary] {
     override def drawTile(tile: Boundary, g: Graphics, player : Player): Unit = {
-      paint(g,tile,SPACE)
+      paint(g, tile, SPACE)
     }
   }
 
   implicit object drawOther extends DrawableTile[Other] {
     override def drawTile(tile: Other, g: Graphics, player : Player): Unit = {
-      paint(g,tile,SPACE)
+      paint(g, tile, SPACE)
     }
   }
 

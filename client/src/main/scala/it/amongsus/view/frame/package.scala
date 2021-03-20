@@ -99,6 +99,7 @@ package object frame {
         final val ROWS_NUMBER : Int = 4
         final val WIDTH: Int = 600
         final val HEIGHT: Int = 300
+        final val VALUES: Seq[Int] = Seq(4,5,6,7,8,9,10)
       }
       object Strings {
         final val TITLE : String = "Among Sus"

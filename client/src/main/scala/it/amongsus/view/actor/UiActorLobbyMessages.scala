@@ -55,10 +55,10 @@ object UiActorLobbyMessages {
    * @param map of the game
    * @param myChar in the game
    * @param players of the game
-   * @param collectionables of the game
+   * @param coins of the game
    */
   case class GameFoundUi(map: GameMap, myChar: Player,
-                         players: Seq[Player], collectionables: Seq[Coin])
+                         players: Seq[Player], coins: Seq[Coin])
   /**
    * Notify the User that there's a match to a Lobby
    */
