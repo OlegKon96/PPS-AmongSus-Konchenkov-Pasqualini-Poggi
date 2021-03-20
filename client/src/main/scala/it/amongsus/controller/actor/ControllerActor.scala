@@ -6,9 +6,9 @@ import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
-import it.amongsus.core.Drawable
+import it.amongsus.controller.actor.ErrorEvent.LobbyJoinErrorEvent
 import it.amongsus.core.map.MapHelper.GameMap
-import it.amongsus.core.map.{Coin, DeadBody, Tile}
+import it.amongsus.core.map.{Coin, DeadBody}
 import it.amongsus.core.player.Player
 import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient._
