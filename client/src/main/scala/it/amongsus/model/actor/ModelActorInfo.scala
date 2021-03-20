@@ -162,7 +162,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
   override def kill(): Unit = {
     myCharacter match {
       case impostorAlive: ImpostorAlive =>
-        impostorAlive.kill(impostorAlive.position, gamePlayers) match {
+        impostorAlive.kill(gamePlayers) match {
           case Some(player) =>
             val dead = CrewmateGhost(player.color, player.clientId, player.username,
               player.asInstanceOf[CrewmateAlive].numCoins, player.position)
@@ -198,7 +198,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
               case Some(_) => controllerRef.get ! ActionOnController(VentAction)
               case None => controllerRef.get ! ActionOffController(VentAction)
             }
-            if (impostorAlive.canKill(myCharacter.position, gamePlayers) && !isTimerOn) {
+            if (impostorAlive.canKill(gamePlayers) && !isTimerOn) {
               controllerRef.get ! ActionOnController(KillAction)
             } else if (!isTimerOn) {
               controllerRef.get ! ActionOffController(KillAction)

@@ -53,8 +53,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
     "Can Kill Crewmate" in {
       this.impostorAlive match {
-        case impostor: ImpostorAlive => assert(impostor.canKill(Point2D(positionDefault35,positionDefault35),
-          Seq(crewmateAlive)))
+        case impostor: ImpostorAlive => assert(impostor.canKill(Seq(crewmateAlive)))
       }
     }
 

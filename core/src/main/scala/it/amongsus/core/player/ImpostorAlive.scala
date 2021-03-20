@@ -3,11 +3,8 @@ package it.amongsus.core.player
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.Tile
-import it.amongsus.core.player.CrewmateAlive.CrewmateAliveImpl
 import it.amongsus.core.util.MovePlayer._
 import it.amongsus.core.util.{Direction, Point2D}
-
-import scala.annotation.tailrec
 
 /**
  * Trait that manages the Impostor of the game.
@@ -20,7 +17,7 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    * @param players sequence of the players of the game.
    * @return true if there is a player in range, else otherwise.
    */
-  def canKill(position: Point2D, players: Seq[Player]): Boolean
+  def canKill(players: Seq[Player]): Boolean
   /**
    * Method that manages the kill of the game.
    *
@@ -28,7 +25,7 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    * @param players sequence of the players of the game.
    * @return a player that is in range to kill, None otherwise.
    */
-  def kill(position: Point2D, players: Seq[Player]): Option[Player]
+  def kill(players: Seq[Player]): Option[Player]
   /**
    * Method that manages the use of the vent.
    *
@@ -65,14 +62,14 @@ object ImpostorAlive {
       movePlayer(ImpostorAlive(this), direction, map)
     }
 
-    override def canKill(position: Point2D, players: Seq[Player]): Boolean = {
+    override def canKill(players: Seq[Player]): Boolean = {
       players.exists {
         case crewmate: CrewmateAlive if crewmate.position.distance(position) < Constants.Impostor.KILL_DISTANCE => true
         case _=> false
       }
     }
 
-    override def kill(position: Point2D, players: Seq[Player]): Option[Player] = {
+    override def kill(players: Seq[Player]): Option[Player] = {
       players.find {
         case crewmate: CrewmateAlive if crewmate.position.distance(position) < Constants.Impostor.KILL_DISTANCE => true
         case _ => false
