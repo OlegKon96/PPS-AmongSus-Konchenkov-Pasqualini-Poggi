@@ -19,7 +19,7 @@ object DrawableTile {
 
   implicit object drawWall extends DrawableTile[Wall] {
     override def drawTile(tile: Wall, g: Graphics, player : Player): Unit = {
-      if (tile.position.distance(player.position) < player.fieldOfView) {
+      if (fieldOfViewDistance(tile, player)) {
         paint(g,tile,WALL)
       } else {
         paint(g,tile,WALL_OFF)
@@ -29,7 +29,7 @@ object DrawableTile {
 
   implicit object drawVent extends DrawableTile[Vent] {
     override def drawTile(tile: Vent, g: Graphics, player : Player): Unit = {
-      if (tile.position.distance(player.position) < player.fieldOfView) {
+      if (fieldOfViewDistance(tile, player)) {
         paint(g,tile,VENT)
       } else {
         paint(g,tile,VENT_OFF)
@@ -39,7 +39,7 @@ object DrawableTile {
 
   implicit object drawEmergency extends DrawableTile[Emergency] {
     override def drawTile(tile: Emergency, g: Graphics, player : Player): Unit = {
-      if (tile.position.distance(player.position) < player.fieldOfView) {
+      if (fieldOfViewDistance(tile, player)) {
         paint(g,tile,EMERGENCY)
       } else {
         paint(g,tile,EMERGENCY_OFF)
@@ -49,7 +49,7 @@ object DrawableTile {
 
   implicit object drawFloor extends DrawableTile[Floor] {
     override def drawTile(tile: Floor, g: Graphics, player : Player): Unit = {
-      if (tile.position.distance(player.position) < player.fieldOfView) {
+      if (fieldOfViewDistance(tile, player)) {
         paint(g,tile,FLOOR)
       } else {
         paint(g,tile,FLOOR_OFF)

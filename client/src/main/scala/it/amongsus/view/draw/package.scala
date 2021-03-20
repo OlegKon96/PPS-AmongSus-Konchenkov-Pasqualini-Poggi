@@ -1,9 +1,8 @@
 package it.amongsus.view
 
+import it.amongsus.core.map.Tile
 import it.amongsus.core.player.Player
-import it.amongsus.view.draw.DrawableEntity.getClass
 
-import java.awt.Graphics
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
@@ -22,15 +21,16 @@ package object draw {
   final val DRAWABLE_SCALING : Int = 15
   final val PLAYER_SCALING : Int = 20
 
-  def getImageAlive(color : String) : BufferedImage =  {
+  final val getImageAlive: String => BufferedImage =  color =>
     ImageIO.read(getClass.getResourceAsStream(s"/images/playerAlive$color.png"))
-  }
 
-  def getImageGhost(color : String) : BufferedImage =  {
+  final val getImageGhost: String => BufferedImage =  color =>
     ImageIO.read(getClass.getResourceAsStream(s"/images/playerGhost$color.png"))
-  }
 
-  def getImageDead(color : String) : BufferedImage =  {
+  final val getImageDead: String => BufferedImage =  color =>
     ImageIO.read(getClass.getResourceAsStream(s"/images/playerDead$color.png"))
-  }
+
+  final val fieldOfViewDistance: (Tile, Player) => Boolean = (tile,player) =>
+    tile.position.distance(player.position) < player.fieldOfView
 }
+
