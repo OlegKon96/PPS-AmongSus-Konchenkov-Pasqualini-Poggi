@@ -35,7 +35,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
     "Can or Not Collect Coin" in {
       this.crewmateAlive match {
         case crewmate :Crewmate => crewmate.canCollect(gameCoins, checkPosition) match {
-          case Some(_) => crewmate.collect(crewmate)
+          case Some(_) => crewmate.collect()
             assert(crewmate.numCoins == 4)
           case None => assert(crewmate.numCoins == 3)
         }

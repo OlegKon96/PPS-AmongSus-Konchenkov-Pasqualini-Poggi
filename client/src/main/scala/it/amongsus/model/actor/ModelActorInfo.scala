@@ -133,7 +133,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
             crewmate.canCollect(gameCoins, checkPosition) match {
               case Some(toCollect) =>
                 gameCoins = gameCoins.filter(coin => coin != toCollect)
-                crewmate.collect(crewmate)
+                crewmate.collect()
               case None => crewmate
             }
           case _ => player
@@ -154,7 +154,7 @@ case class ModelActorInfoData(override val controllerRef: Option[ActorRef],
 
   override def callEmergency(): Unit = {
     myCharacter match {
-      case alive: AlivePlayer => updatePlayer(alive.callEmergency(alive))
+      case alive: AlivePlayer => updatePlayer(alive.callEmergency())
       case _ =>
     }
   }

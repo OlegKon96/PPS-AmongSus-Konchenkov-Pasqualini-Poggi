@@ -1,7 +1,6 @@
 package it.amongsus.core.player
 
 import it.amongsus.core.map.Coin
-import it.amongsus.core.util.Point2D
 
 /**
  * Trait that manages Crewmate.
@@ -18,8 +17,8 @@ trait Crewmate {
    * @param player of the game.
    * @return a new instance of a player whit updated coin number.
    */
-  def collect(player: Crewmate):  Player = {
-    player match {
+  def collect():  Player = {
+    self match {
       case alive: CrewmateAlive => CrewmateAlive(alive.color, alive.emergencyCalled, alive.clientId, alive.username,
         alive.numCoins + 1, alive.position)
       case ghost: CrewmateGhost => CrewmateGhost(ghost.color, ghost.clientId, ghost.username, ghost.numCoins + 1,

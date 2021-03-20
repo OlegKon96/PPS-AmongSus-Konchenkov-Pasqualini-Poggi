@@ -24,8 +24,8 @@ trait AlivePlayer {
    * @param player that calls the emergency.
    * @return a new instance of the same player but he will no longer be able to call an emergency.
    */
-  def callEmergency(player: Player): Player = {
-    player match {
+  def callEmergency(): Player = {
+    self match {
       case crewmateAlive: CrewmateAlive => core.player.CrewmateAlive(crewmateAlive.color, emergencyCalled = true,
         crewmateAlive.clientId, crewmateAlive.username,crewmateAlive.numCoins, crewmateAlive.position)
       case impostorAlive: ImpostorAlive => ImpostorAlive(impostorAlive.color, emergencyCalled = true,
