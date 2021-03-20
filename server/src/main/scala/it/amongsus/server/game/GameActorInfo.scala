@@ -91,7 +91,7 @@ case class GameActorInfoData(override var players: Seq[GamePlayer], override var
                             extends GameActorInfo with CustomLogger {
   this.totalVotes = this.numberOfPlayers
   this.playersToLobby = Map.empty
-  private final val mapCenter: Int = 35
+  private final val MAP_CENTER: Point2D = Point2D(10,31)
   private final val colorsSequence: Seq[String] = Seq("green", "red", "cyan", "yellow", "blue", "pink", "orange")
 
   override def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew, gameActor: ActorRef): Unit = {
@@ -120,15 +120,14 @@ case class GameActorInfoData(override var players: Seq[GamePlayer], override var
     val rand1 = Random.nextInt(this.players.length)
     val colors = Random.shuffle(colorsSequence)
     val rand2 = if(this.players.length > 5) Random.nextInt(this.players.length) else rand1
-    val mapCentre = Point2D(mapCenter, mapCenter)
 
     for (n <- this.players.indices) {
       n match {
         case n if n == rand1 || n == rand2 =>
           playersRole = playersRole :+ ImpostorAlive(colors(n), emergencyCalled = false, this.players(n).id,
-            this.players(n).username, mapCentre)
+            this.players(n).username, MAP_CENTER)
         case _ => playersRole = playersRole :+ CrewmateAlive(colors(n), emergencyCalled = false,
-          this.players(n).id, this.players(n).username, Constants.Crewmate.NUM_COINS, mapCentre)
+          this.players(n).id, this.players(n).username, Constants.Crewmate.NUM_COINS, MAP_CENTER)
       }
     }
     playersRole
