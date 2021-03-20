@@ -3,8 +3,11 @@ package it.amongsus.core.player
 import it.amongsus.core.Drawable
 import it.amongsus.core.map.MapHelper.GameMap
 import it.amongsus.core.map.Tile
+import it.amongsus.core.player.CrewmateAlive.CrewmateAliveImpl
 import it.amongsus.core.util.MovePlayer._
 import it.amongsus.core.util.{Direction, Point2D}
+
+import scala.annotation.tailrec
 
 /**
  * Trait that manages the Impostor of the game.
@@ -47,6 +50,10 @@ object ImpostorAlive {
   ImpostorAlive = ImpostorAliveImpl(color, emergencyCalled, clientId, username,
     Constants.Impostor.FIELD_OF_VIEW, position)
 
+  def apply(impostorAlive: ImpostorAlive): ImpostorAlive = ImpostorAliveImpl(impostorAlive.color,
+    impostorAlive.emergencyCalled, impostorAlive.clientId, impostorAlive.username,
+    impostorAlive.fieldOfView, impostorAlive.position)
+
   private case class ImpostorAliveImpl(override val color: String,
                                        override val emergencyCalled: Boolean,
                                        override val clientId: String,
@@ -55,7 +62,7 @@ object ImpostorAlive {
                                        override val position: Point2D) extends ImpostorAlive {
 
     override def move(direction: Direction, map: GameMap): Option[Player] = {
-      movePlayer(ImpostorAlive(color, emergencyCalled, clientId, username, position), direction, map)
+      movePlayer(ImpostorAlive(this), direction, map)
     }
 
     override def canKill(position: Point2D, players: Seq[Player]): Boolean = {

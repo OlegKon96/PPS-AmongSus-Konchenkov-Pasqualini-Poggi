@@ -41,6 +41,9 @@ trait MapHelper {
 object MapHelper extends MapHelper{
   private final val ROWS: Int = 50
   private final val COLS: Int = 72
+  private final val NUM_COINS: Int = 10
+  private final val ONE: Int = 1
+  private final val TWO: Int = 2
 
   type GameMap = Array[Array[Drawable[Tile]]]
 
@@ -67,10 +70,10 @@ object MapHelper extends MapHelper{
     } yield tile
 
     var gameCoins: Seq[Coin] = Seq()
-    for (_ <- 0 until 10) {
+    for (_ <- 0 until NUM_COINS) {
       val rand = Random.nextInt(tiles.length)
       gameCoins = gameCoins :+ Coin(tiles(rand).position)
-      tiles = tiles.take(rand) ++ tiles.drop(rand + 1)
+      tiles = tiles.take(rand) ++ tiles.drop(rand + ONE)
     }
     gameCoins
   }
@@ -82,8 +85,8 @@ object MapHelper extends MapHelper{
       } yield tile
 
     var ventTuples: Seq[(Drawable[Tile], Drawable[Tile])] = Seq()
-    for (i <- 0 until vents.length / 2) {
-      ventTuples = ventTuples :+ (vents(i), vents(vents.length - i - 1))
+    for (i <- 0 until vents.length / TWO) {
+      ventTuples = ventTuples :+ (vents(i), vents(vents.length - i - ONE))
     }
     ventTuples
   }

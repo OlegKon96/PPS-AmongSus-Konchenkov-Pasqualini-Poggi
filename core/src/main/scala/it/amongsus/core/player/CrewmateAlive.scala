@@ -20,6 +20,10 @@ object CrewmateAlive {
     CrewmateAliveImpl(color, emergencyCalled, clientId, username,
       fieldOfView, numCoins, position)
 
+  def apply(crewmateAlive: CrewmateAlive): CrewmateAlive = CrewmateAliveImpl(crewmateAlive.color,
+    crewmateAlive.emergencyCalled, crewmateAlive.clientId, crewmateAlive.username,
+    crewmateAlive.fieldOfView, crewmateAlive.numCoins, crewmateAlive.position)
+
   private case class CrewmateAliveImpl(override val color: String,
                                        override val emergencyCalled: Boolean,
                                        override val clientId: String,
@@ -29,8 +33,8 @@ object CrewmateAlive {
                                        override val position: Point2D) extends CrewmateAlive {
 
     override def move(direction: Direction, map: GameMap): Option[Player] = {
-      movePlayer(CrewmateAlive(color, emergencyCalled, fieldOfView, clientId, username, numCoins, position),
-        direction, map)
+      movePlayer(CrewmateAlive(this), direction, map)
     }
   }
+
 }
