@@ -3,7 +3,7 @@ package core
 import it.amongsus
 import it.amongsus.core.util.MapHelper.{GameMap, generateCoins, generateMap}
 import it.amongsus.core.map.Vent
-import it.amongsus.core.util.PlayerHelper.checkPosition
+import it.amongsus.core.util.PlayerHelper.{checkKill, checkPosition}
 import it.amongsus.core.player.{Crewmate, CrewmateAlive, ImpostorAlive, ImpostorGhost, Player}
 import it.amongsus.core.util.Direction.{Down, Up}
 import it.amongsus.core.util.Point2D
@@ -52,7 +52,7 @@ class CoreBaseTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
     "Can Kill Crewmate" in {
       this.impostorAlive match {
-        case impostor: ImpostorAlive => assert(impostor.canKill(Seq(crewmateAlive)))
+        case impostor: ImpostorAlive => assert(impostor.canKill(Seq(crewmateAlive), checkKill))
       }
     }
 

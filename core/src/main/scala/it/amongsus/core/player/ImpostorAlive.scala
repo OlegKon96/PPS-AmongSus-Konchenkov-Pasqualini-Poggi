@@ -17,7 +17,7 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    * @param players sequence of the players of the game.
    * @return true if there is a player in range, else otherwise.
    */
-  def canKill(players: Seq[Player]): Boolean
+  def canKill(players: Seq[Player], checkKill : (Player, Player) => Boolean): Boolean
   /**
    * Method that manages the kill of the game.
    *
@@ -25,7 +25,7 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
    * @param players sequence of the players of the game.
    * @return a player that is in range to kill, None otherwise.
    */
-  def kill(players: Seq[Player]): Option[Player]
+  def kill(players: Seq[Player], checkKill : (Player, Player) => Boolean): Option[Player]
   /**
    * Method that manages the use of the vent.
    *
@@ -62,18 +62,12 @@ object ImpostorAlive {
       movePlayer(ImpostorAlive(this), direction, map)
     }
 
-    override def canKill(players: Seq[Player]): Boolean = {
-      players.exists {
-        case crewmate: CrewmateAlive if crewmate.position.distance(position) < Constants.Impostor.KILL_DISTANCE => true
-        case _=> false
-      }
+    override def canKill(players: Seq[Player], checkKill : (Player, Player) => Boolean): Boolean = {
+      players.exists(player => checkKill(player, this))
     }
 
-    override def kill(players: Seq[Player]): Option[Player] = {
-      players.find {
-        case crewmate: CrewmateAlive if crewmate.position.distance(position) < Constants.Impostor.KILL_DISTANCE => true
-        case _ => false
-      } match {
+    override def kill(players: Seq[Player], checkKill : (Player, Player) => Boolean): Option[Player] = {
+      players.find(player => checkKill(player, this)) match {
         case Some(player) => Option(player)
         case None => None
       }

@@ -2,7 +2,7 @@ package core
 
 import it.amongsus
 import it.amongsus.core.map.DeadBody
-import it.amongsus.core.util.PlayerHelper.reportDistance
+import it.amongsus.core.util.PlayerHelper.{checkKill, reportDistance}
 import it.amongsus.core.player.{CrewmateAlive, ImpostorAlive, Player}
 import it.amongsus.core.util.Point2D
 import org.scalatest.BeforeAndAfterAll
@@ -21,7 +21,7 @@ class KillTest extends AnyWordSpecLike with BeforeAndAfterAll {
   "An Impostor Alive" should {
     "Can Kill Crewmate" in {
       this.impostorAlive match {
-        case impostor: ImpostorAlive => assert(impostor.canKill(Seq(crewmateAlive)))
+        case impostor: ImpostorAlive => assert(impostor.canKill(Seq(crewmateAlive), checkKill))
       }
     }
 

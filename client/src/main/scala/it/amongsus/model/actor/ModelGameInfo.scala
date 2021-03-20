@@ -5,7 +5,7 @@ import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages._
 import it.amongsus.core.util.MapHelper.{GameMap, generateEmergencyButtons, generateVentLinks}
 import it.amongsus.core.map._
-import it.amongsus.core.util.PlayerHelper.{checkPosition, emergencyDistance, reportDistance}
+import it.amongsus.core.util.PlayerHelper.{checkKill, checkPosition, emergencyDistance, reportDistance}
 import it.amongsus.core.player._
 import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, VentAction}
 import it.amongsus.core.util.Direction
@@ -162,7 +162,7 @@ case class ModelGameInfoData(override val controllerRef: Option[ActorRef],
   override def kill(): Unit = {
     myCharacter match {
       case impostorAlive: ImpostorAlive =>
-        impostorAlive.kill(gamePlayers) match {
+        impostorAlive.kill(gamePlayers, checkKill) match {
           case Some(player) =>
             val dead = CrewmateGhost(player.color, player.clientId, player.username,
               player.asInstanceOf[CrewmateAlive].numCoins, player.position)
@@ -198,7 +198,7 @@ case class ModelGameInfoData(override val controllerRef: Option[ActorRef],
               case Some(_) => controllerRef.get ! ActionOnController(VentAction)
               case None => controllerRef.get ! ActionOffController(VentAction)
             }
-            if (impostorAlive.canKill(gamePlayers) && !isTimerOn) {
+            if (impostorAlive.canKill(gamePlayers, checkKill) && !isTimerOn) {
               controllerRef.get ! ActionOnController(KillAction)
             } else if (!isTimerOn) {
               controllerRef.get ! ActionOffController(KillAction)
