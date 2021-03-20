@@ -3,7 +3,7 @@ package it.amongsus.server
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import it.amongsus.Constants
-import it.amongsus.server.lobby.{LobbyManagerActor, LobbyManagerInfo}
+import it.amongsus.server.lobby.{LobbyManagerActor, LobbyManagerActorInfo}
 
 object AmongSusServer extends App {
   val config = ConfigFactory.parseString(
@@ -13,5 +13,5 @@ object AmongSusServer extends App {
        |""".stripMargin).withFallback(ConfigFactory.load())
 
   val system = ActorSystem(Constants.Remote.SERVER_ACTOR_SYSTEM_NAME, config)
-  system.actorOf(LobbyManagerActor.props(LobbyManagerInfo(Map())), Constants.Remote.SERVER_LOBBY_ACTOR_NAME)
+  system.actorOf(LobbyManagerActor.props(LobbyManagerActorInfo(Map())), Constants.Remote.SERVER_LOBBY_ACTOR_NAME)
 }

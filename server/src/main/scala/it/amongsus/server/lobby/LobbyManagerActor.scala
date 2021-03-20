@@ -9,7 +9,7 @@ import it.amongsus.server.game.{GameActor, GameActorInfo}
 import it.amongsus.server.game.GameActor.GamePlayers
 
 object LobbyManagerActor {
-  def props(state: LobbyManagerInfo): Props = Props(new LobbyManagerActor(state))
+  def props(state: LobbyManagerActorInfo): Props = Props(new LobbyManagerActor(state))
 }
 
 /**
@@ -17,7 +17,7 @@ object LobbyManagerActor {
  *
  * @param state info of the lobby
  */
-class LobbyManagerActor(private val state: LobbyManagerInfo) extends Actor with IdGenerator with ActorLogging {
+class LobbyManagerActor(private val state: LobbyManagerActorInfo) extends Actor with IdGenerator with ActorLogging {
   private val lobbyManager = LobbyManager()
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
 
