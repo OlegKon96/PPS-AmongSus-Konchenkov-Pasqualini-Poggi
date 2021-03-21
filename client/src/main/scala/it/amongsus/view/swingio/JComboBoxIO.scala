@@ -10,7 +10,15 @@ import javax.swing.JComboBox
  * @param component the jComboBox that this class wraps.
  */
 class JComboBoxIO(override val component: JComboBox[Int]) extends ComponentIO(component){
+  /**
+   * Monadic description of Swing's addItem method
+   * @param item
+   */
   def addItem(item: Int) : IO[Unit] = IO {component.addItem(item)}
+
+  /**
+   * Monadic description of Swing's getItemAtSelectedIndex method
+   */
   def selectedItem: IO[Int] = IO {component.getItemAt(component.getSelectedIndex)}
 }
 

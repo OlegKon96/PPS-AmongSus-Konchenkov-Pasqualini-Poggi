@@ -11,8 +11,20 @@ import javax.swing.JTextField
  * @param component the JTextField that this class wraps.
  */
 class JTextFieldIO(override val component: JTextField) extends ComponentIO(component){
+  /**
+   * Monadic description of Swing's getText method
+   */
   def text: IO[String] = IO {component.getText()}
-  def addFocusListener(l:FocusListener) : IO[Unit] = IO {component.addFocusListener(l)}
+
+  /**
+   * Monadic description of Swing's addFocusListener method
+   * @param focusListener
+   */
+  def addFocusListener(focusListener:FocusListener) : IO[Unit] = IO {component.addFocusListener(focusListener)}
+
+  /**
+   * Monadic description of Swing's setText("") method
+   */
   def clearText(): IO[Unit] = IO { component.setText("") }
 }
 

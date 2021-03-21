@@ -12,25 +12,88 @@ import java.awt.{Component, Container, LayoutManager}
  * @tparam T the type of the component to be wrapped. and whose methods are to be enhanced with IO description.
  */
 class ContainerIO[T<:Container](override val component: T) extends ComponentIO(component) {
+  /**
+   * Monadic description of Swing's add method
+   * @param componentToBeAdded
+   */
   def add(componentToBeAdded: ComponentIO[_<:Component]): IO[Component] =
     IO {component.add(componentToBeAdded.component)}
+
+
+  /**
+   * Monadic description of Swing's add method
+   * @param name
+   * @param componentToBeAdded
+   */
   def add(name: String, componentToBeAdded: ComponentIO[_<:Component]): IO[Component] =
     IO {component.add(name, componentToBeAdded.component)}
+
+
+  /**
+   * Monadic description of Swing's add method
+   * @param componentToBeAdded
+   * @param constraints
+   */
   def add(componentToBeAdded: ComponentIO[_<:Component], constraints : Object): IO[Unit] =
     IO {component.add(componentToBeAdded.component, constraints)}
-  def remove(componentToBeAdded: ComponentIO[_<:Component]): IO[Unit] =
-    IO {component.remove(componentToBeAdded.component)}
+
+  /**
+   * Monadic description of Swing's remove method
+   * @param componentToBeAdded
+   * @return
+   */
+  def remove(componentToBeRemoved: ComponentIO[_<:Component]): IO[Unit] =
+    IO {component.remove(componentToBeRemoved.component)}
+
+  /**
+   * Monadic description of Swing's removeAll method
+   */
   def removeAll(): IO[Unit] = IO {component.removeAll()}
-  def setLayout(mgr : LayoutManager): IO[Unit] = IO {component.setLayout(mgr)}
-  //versions with invokeAndWait for finer granularity in thread assignment
+
+  /**
+   * Monadic description of Swing's setLayout method
+   * @param manager
+   */
+  def setLayout(manager : LayoutManager): IO[Unit] = IO {component.setLayout(manager)}
+
+  /**
+   * Monadic description using InvokeAndWaiting of Swing's add method
+   * @param componentToBeAdded
+   */
   def addInvokingAndWaiting(componentToBeAdded: ComponentIO[_<:Component]): IO[Unit] =
     invokeAndWaitIO(component.add(componentToBeAdded.component))
+
+  /**
+   * Monadic description using InvokeAndWaiting of Swing's add method
+   * @param name
+   * @param componentToBeAdded
+   */
   def addInvokingAndWaiting(name: String, componentToBeAdded: ComponentIO[_<:Component]): IO[Unit] =
     invokeAndWaitIO(component.add(name, componentToBeAdded.component))
+
+  /**
+   * Monadic description using InvokeAndWaiting of Swing's add method
+   * @param componentToBeAdded
+   * @param constraints
+   */
   def addInvokingAndWaiting(componentToBeAdded: ComponentIO[_<:Component], constraints : Object): IO[Unit] =
     invokeAndWaitIO(component.add(componentToBeAdded.component, constraints))
-  def removeInvokingAndWaiting(componentToBeAdded: ComponentIO[_<:Component]): IO[Unit] =
-    invokeAndWaitIO(component.remove(componentToBeAdded.component))
+
+  /**
+   * Monadic description using InvokeAndWaiting of Swing's remove method
+   * @param componentToBeRemoved
+   */
+  def removeInvokingAndWaiting(componentToBeRemoved: ComponentIO[_<:Component]): IO[Unit] =
+    invokeAndWaitIO(component.remove(componentToBeRemoved.component))
+
+  /**
+   * Monadic description using InvokeAndWaiting of Swing's removeAll method
+   */
   def removeAllInvokingAndWaiting(): IO[Unit] = invokeAndWaitIO(component.removeAll())
-  def setLayoutInvokingAndWaiting(mgr : LayoutManager): IO[Unit] = invokeAndWaitIO(component.setLayout(mgr))
+
+  /**
+   * Monadic description using InvokeAndWaiting of Swing's setLayout method
+   * @param manager
+   */
+  def setLayoutInvokingAndWaiting(manager : LayoutManager): IO[Unit] = invokeAndWaitIO(component.setLayout(manager))
 }
