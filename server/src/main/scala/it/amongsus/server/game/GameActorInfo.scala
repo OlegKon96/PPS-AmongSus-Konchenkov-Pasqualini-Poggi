@@ -6,6 +6,8 @@ import it.amongsus.core.util.GameEnd.{CrewmateCrew, ImpostorCrew, Lost, Win}
 import it.amongsus.core.util.{Point2D, WinnerCrew}
 import it.amongsus.messages.GameMessageClient.GameEndClient
 import it.amongsus.server.common.GamePlayer
+import it.amongsus.server.server.Constants.ColorPlayers._
+import it.amongsus.server.server.Constants.MapCenter._
 import it.amongsus.utils.CustomLogger
 import scala.util.Random
 
@@ -91,8 +93,9 @@ case class GameActorInfoData(override var players: Seq[GamePlayer], override var
                             extends GameActorInfo with CustomLogger {
   this.totalVotes = this.numberOfPlayers
   this.playersToLobby = Map.empty
-  private final val MAP_CENTER: Point2D = Point2D(10,31)
-  private final val colorsSequence: Seq[String] = Seq("green", "red", "cyan", "yellow", "blue", "pink", "orange")
+  private final val MAP_CENTER: Point2D = Point2D(X_MAP, Y_MAP)
+  private final val colorsSequence: Seq[String] = Seq(BLUE, CYAN, GREEN, GREY, LIGHT_BLUE, ORANGE, PINK, RED,
+    VIOLET, YELLOW)
 
   override def sendWinMessage(gamePlayers: Seq[Player], crew: WinnerCrew, gameActor: ActorRef): Unit = {
     gamePlayers.foreach{
