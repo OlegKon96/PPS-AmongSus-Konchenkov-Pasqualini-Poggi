@@ -61,6 +61,17 @@ lazy val commonSettings = Defaults.coreDefaultSettings ++ Seq(
   scalaVersion := "2.12.8",
   version := "0.1",
   crossPaths := false,
+  coverageExcludedPackages := "<empty>;" +
+    ".*it.amongsus.view.*;" +
+    ".*it.amongsus.core.map.*;" +
+    ".*it.amongsus.core.util.*;" +
+    ".*Constants.*;" +
+    ".*CustomLogger.*;" +
+    ".*AppLauncher.*;" +
+    ".*ActorSystemManager.*;" +
+    ".*ControllerActorMessages.*;" +
+    ".*ModelActorMessages.*;" +
+    ".*ActionTimer.*;",
   scalacOptions ++= compilerOptions,
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots")
