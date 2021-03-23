@@ -14,7 +14,6 @@ trait Crewmate {
   /**
    * Method to collect the coin.
    *
-   * @param player of the game.
    * @return a new instance of a player whit updated coin number.
    */
   def collect():  Player = {
@@ -28,7 +27,6 @@ trait Crewmate {
   /**
    * Method to check if a player can collect the coin of the game.
    * @param coins of the game.
-   * @param player of the game.
    * @return a coin to collect if the player is on top of it, None otherwise.
    */
   def canCollect(coins: Seq[Coin], checkPosition: (Coin, Player) => Boolean): Option[Coin] = {

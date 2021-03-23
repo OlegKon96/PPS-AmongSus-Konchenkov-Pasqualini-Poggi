@@ -20,6 +20,9 @@ playerCrewmate(C, ID, U, point(X,Y), FOV) :- color(C), checkPoint(X, Y), fieldOf
 playerImpostor(C, ID, U, point(X,Y), FOV) :- color(C), checkPoint(X, Y), fieldOfViewImpostor(FOV).
 playerCrewmateSabotaged(C, ID, U, point(X,Y), FOV) :- color(C), checkPoint(X, Y), fieldOfViewCrewmateSabotaged(FOV).
 
+createPlayers([player(U, ID)|T], [playerCrewmate("Green", ID, U, point(0,0), 6)|T2]) :- createPlayers(T, T2).
+createPlayers([], []).
+
 % All possible direction that a player can take
 % direction(+Movement)
 direction("Up").

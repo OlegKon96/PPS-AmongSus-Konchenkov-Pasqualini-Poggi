@@ -11,7 +11,6 @@ trait DeadPlayer {
   /**
    * Method to check collision with the border of the GUI.
    *
-   * @param position position of the player.
    * @param map game map.
    * @return true if collides whit a boundary, false otherwise.
    */

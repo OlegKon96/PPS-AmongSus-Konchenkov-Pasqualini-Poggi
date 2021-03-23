@@ -20,7 +20,6 @@ trait AlivePlayer {
   /**
    * Method to call an emergency.
    *
-   * @param player that calls the emergency.
    * @return a new instance of the same player but he will no longer be able to call an emergency.
    */
   def callEmergency(): Player = {
@@ -34,7 +33,6 @@ trait AlivePlayer {
   /**
    * Method to let player to report a dead body
    *
-   * @param position         position of the player.
    * @param deadPlayers sequence of dead bodies of the game.
    * @return true if the player is near enought to a dead body, else otherwise.
    */
@@ -44,7 +42,6 @@ trait AlivePlayer {
   /**
    * Method to let player to call an emergency in the game.
    *
-   * @param player           game player.
    * @param emergencyButtons sequence of emergency buttons of the game.
    * @return true if the player if in the correct distance whit the emergency button else otherwise.
    */
@@ -54,7 +51,6 @@ trait AlivePlayer {
   /**
    * Method to check collisions of the player.
    *
-   * @param position position of the player.
    * @param map game map.
    * @return true if collides, false otherwise.
    */

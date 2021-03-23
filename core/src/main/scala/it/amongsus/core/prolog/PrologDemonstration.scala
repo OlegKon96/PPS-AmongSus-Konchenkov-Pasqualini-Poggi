@@ -4,7 +4,6 @@ import scala.language.implicitConversions
 import alice.tuprolog.{Double, Int, Struct, Term}
 import it.amongsus.core.map.{Boundary, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.util.{Direction, Point2D}
-
 import scala.collection.convert.ImplicitConversions.`iterator asScala`
 
 object PrologDemonstration {
@@ -42,6 +41,15 @@ object PrologDemonstration {
   implicit def toStructPoint(point: Point2D): Term = new Struct("point", new Int(point.x), new Int(point.y))
 
   /**
+   * Implicit to convert a [[(String, String)]] to a [[Term]].
+   *
+   * @param player the [[(String, String)]] to convert.
+   * @return the [[Term]] equivalent at the [[(String, String)]].
+   */
+  implicit def toStructPlayer(player: (String, String)): Term = new Struct("player", Term.createTerm(player._1),
+    Term.createTerm(player._2))
+
+  /**
    * Implicit to convert a [[Tile]] to a [[Term]].
    *
    * @param tile the [[Tile]] to convert.
@@ -66,6 +74,18 @@ object PrologDemonstration {
    * @return the [[Term]] equivalent at the [[List[Int]]].
    */
   implicit def toStructList(list: List[scala.Int]): Term = {
+    val struct = new Struct()
+    for { term <- list } struct.append(term)
+    struct
+  }
+
+  /**
+   * Implicit to convert a [[List[(String, String)]]] to a [[Term]].
+   *
+   * @param list the [[List[(String, String)]]] to convert.
+   * @return the [[Term]] equivalent at the [[List[(String, String)]]].
+   */
+  implicit def toStructPlayer(list: List[(String, String)]): Term = {
     val struct = new Struct()
     for { term <- list } struct.append(term)
     struct

@@ -13,7 +13,6 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
   /**
    * Method that manages the Impostor that killed a Crewmate.
    *
-   * @param position of the player.
    * @param players sequence of the players of the game.
    * @return true if there is a player in range, else otherwise.
    */
@@ -21,7 +20,6 @@ trait ImpostorAlive extends Player with AlivePlayer with Impostor {
   /**
    * Method that manages the kill of the game.
    *
-   * @param position of the player.
    * @param players sequence of the players of the game.
    * @return a player that is in range to kill, None otherwise.
    */
