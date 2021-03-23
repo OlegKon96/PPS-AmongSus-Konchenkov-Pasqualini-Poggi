@@ -3,21 +3,21 @@ package it.amongsus.controller
 import java.util.{Timer, TimerTask}
 
 /**
- * Trait that contains all the callback functions of the kill timer
+ * Trait that contains all the callback functions of the kill timer.
  */
 trait ActionTimer {
   /**
-   * Method that starts the times
+   * Method that starts the times.
    */
   def start()
   /**
-   * Method that ends the timer
+   * Method that ends the timer.
    */
   def end()
 }
 
 /**
- * Trait that manages the listener of the turn timer
+ * Trait that manages the listener of the turn timer.
  */
 trait TimerListener {
   /**
@@ -29,9 +29,9 @@ trait TimerListener {
    */
   def onEnd()
   /**
-   * Method that manages the tick of the timer
+   * Method that manages the tick of the timer.
    *
-   * @param millis milliseconds of the tick
+   * @param millis milliseconds of the tick.
    */
   def onTick(millis: Long)
 }
@@ -41,10 +41,11 @@ trait TimerStatus
 object ActionTimer {
   case object TimerStarted extends TimerStatus
   case object TimerEnded extends TimerStatus
+  private final val MILLIS = 1000
 
   class ActionTimerImpl(duration: Long, listener: TimerListener) extends ActionTimer {
     var timer: Timer = new Timer()
-    var timeRemaining: Long = duration * 1000
+    var timeRemaining: Long = duration * MILLIS
 
     var tickTask: TimerTask = _
     var endTask: TimerTask = _
@@ -52,7 +53,7 @@ object ActionTimer {
     override def start(): Unit = {
       tickTask = new TimerTask {
         override def run(): Unit = {
-          timeRemaining = timeRemaining - 1000
+          timeRemaining = timeRemaining - MILLIS
           listener.onTick(timeRemaining)
         }
       }
@@ -63,8 +64,8 @@ object ActionTimer {
           listener.onEnd()
         }
       }
-      timer.schedule(tickTask, 1000, 1000)
-      timer.schedule(endTask, duration * 1000)
+      timer.schedule(tickTask, MILLIS, MILLIS)
+      timer.schedule(endTask, duration * MILLIS)
       listener.onStart()
     }
 
@@ -72,7 +73,7 @@ object ActionTimer {
       tickTask.cancel()
       endTask.cancel()
       timer.purge()
-      timeRemaining = duration * 1000
+      timeRemaining = duration * MILLIS
     }
   }
 }

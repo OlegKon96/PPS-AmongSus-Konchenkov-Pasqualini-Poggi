@@ -2,100 +2,104 @@ package it.amongsus.model.actor
 
 import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
+import it.amongsus.RichActor.RichContext
 import it.amongsus.controller.ActionTimer.{TimerEnded, TimerStarted}
 import it.amongsus.controller.TimerStatus
-import it.amongsus.controller.actor.ControllerActorMessages.{BeginVotingController, ButtonOffController}
+import it.amongsus.controller.actor.ControllerActorMessages.{ActionOffController, BeginVotingController}
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, ModelReadyController}
 import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
-import it.amongsus.core.entities.util.ButtonType.{EmergencyButton, KillButton, ReportButton, SabotageButton, VentButton}
+import it.amongsus.core.map.DeadBody
+import it.amongsus.core.util.MapHelper.{generateCoins, generateMap}
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.ActionType.{EmergencyAction, KillAction, ReportAction, SabotageAction, VentAction}
+import it.amongsus.core.util.{ActionType, Direction, GameEnd}
 import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, GameEndModel, InitModel, KillPlayerModel}
 import it.amongsus.model.actor.ModelActorMessages.{KillTimerStatusModel, MyCharMovedModel, MyPlayerLeftModel}
 import it.amongsus.model.actor.ModelActorMessages.{PlayerLeftModel, PlayerMovedModel, RestartGameModel}
-import it.amongsus.model.actor.ModelActorMessages.UiButtonPressedModel
+import it.amongsus.model.actor.ModelActorMessages.UiActionModel
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ModelActor {
-  def props(state: ModelActorInfo): Props =
+  def props(state: ModelGameInfo): Props =
     Props(new ModelActor(state))
 }
 
-class ModelActor(state: ModelActorInfo) extends Actor  with ActorLogging{
+class ModelActor(private val state: ModelGameInfo) extends Actor  with ActorLogging{
   override def receive: Receive = gameBehaviour(state)
 
-  private def gameBehaviour(state: ModelActorInfo): Receive = {
-    case InitModel(map, players) =>
+  private def gameBehaviour(state: ModelGameInfo): Receive = {
+    case InitModel(map: Iterator[String], players: Seq[Player]) =>
       state.gamePlayers = players
-      val gameMap = state.generateMap(map)
-      state.generateCollectionables(gameMap)
-      state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, state.gamePlayers,
-        state.gameCollectionables)
+      val gameMap = generateMap(map)
+      state.controllerRef.get ! ModelReadyController(gameMap, state.myCharacter, players,
+        generateCoins(gameMap))
       state.checkTimer(TimerStarted)
-      context become gameBehaviour(ModelActorInfo(state.controllerRef,
-        Option(gameMap), players, state.gameCollectionables, state.clientId))
+      context >>> gameBehaviour(ModelGameInfo(state.controllerRef,
+        Option(gameMap), players, generateCoins(gameMap), state.clientId))
 
-    case MyCharMovedModel(direction) => state.updateMyChar(direction)
+    case MyCharMovedModel(direction: Direction) => state.updateMyChar(direction)
 
-    case PlayerMovedModel(player, deadBodys) =>
-      state.deadBodys = deadBodys
+    case PlayerMovedModel(player: Player, deadBodiss: Seq[DeadBody]) =>
+      state.deadBodies = deadBodiss
       state.updatePlayer(player)
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodys)
+        state.gameCoins, state.deadBodies)
 
-    case UiButtonPressedModel(button) => button match {
-      case _: VentButton => state.useVent()
-      case _: EmergencyButton => state.checkTimer(TimerEnded)
+    case UiActionModel(action: ActionType) => action match {
+      case VentAction => state.useVent()
+      case EmergencyAction => state.checkTimer(TimerEnded)
         state.callEmergency()
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
-        context become voteBehaviour(state)
-      case _: KillButton => state.kill()
-      case _: ReportButton => state.checkTimer(TimerEnded)
+        context >>> voteBehaviour(state)
+      case KillAction => state.kill()
+      case ReportAction => state.checkTimer(TimerEnded)
         state.controllerRef.get ! BeginVotingController(state.gamePlayers)
-        context become voteBehaviour(state)
-      case _: SabotageButton => state.sabotage()
+        context >>> voteBehaviour(state)
+      case SabotageAction => state.sabotage(true)
         ActorSystemManager.actorSystem.scheduler.scheduleOnce(5 seconds){
-          state.sabotageOff()
+          state.sabotage(false)
         }
     }
 
     case KillTimerStatusModel(status: TimerStatus) => status match {
       case TimerStarted =>
-        state.controllerRef.get ! ButtonOffController(KillButton())
+        state.controllerRef.get ! ActionOffController(KillAction)
         state.isTimerOn = true
       case TimerEnded => state.isTimerOn = false
     }
       state.updatePlayer(state.myCharacter)
 
-    case BeginVotingModel() => state.checkTimer(TimerEnded)
-      context become voteBehaviour(state)
+    case BeginVotingModel => state.checkTimer(TimerEnded)
+      context >>> voteBehaviour(state)
 
-    case GameEndModel(end) => state.checkTimer(TimerEnded)
+    case GameEndModel(end: GameEnd) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
-    case MyPlayerLeftModel() => self ! PoisonPill
+    case MyPlayerLeftModel => self ! PoisonPill
 
-    case PlayerLeftModel(clientId) => state.removePlayer(clientId)
+    case PlayerLeftModel(clientId: String) => state.removePlayer(clientId)
 
-    case _ => println("error model game")
+    case _ => log.info("Model Actor -> game error" )
   }
 
-  private def voteBehaviour(state: ModelActorInfo): Receive = {
-    case KillPlayerModel(username) =>
+  private def voteBehaviour(state: ModelGameInfo): Receive = {
+    case KillPlayerModel(username: String) =>
       state.killAfterVote(username)
-      state.deadBodys = Seq()
+      state.deadBodies = Seq()
       state.controllerRef.get ! UpdatedPlayersController(state.myCharacter,state.gamePlayers,
-        state.gameCollectionables, state.deadBodys)
+        state.gameCoins, state.deadBodies)
 
-    case RestartGameModel() => state.checkTimer(TimerStarted)
-      context become gameBehaviour(state)
+    case RestartGameModel => state.checkTimer(TimerStarted)
+      context >>> gameBehaviour(state)
 
-    case GameEndModel(end) => state.checkTimer(TimerEnded)
+    case GameEndModel(end: GameEnd) => state.checkTimer(TimerEnded)
       state.controllerRef.get ! GameEndController(end)
       self ! PoisonPill
 
-    case MyPlayerLeftModel() => self ! PoisonPill
+    case MyPlayerLeftModel => self ! PoisonPill
 
-    case _ => println("ERROR VOTE")
+    case _ => log.info("Model Actor -> vote error" )
   }
 }

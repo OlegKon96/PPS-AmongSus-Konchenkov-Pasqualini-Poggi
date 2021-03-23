@@ -5,96 +5,109 @@ import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer.LobbyError.PrivateLobbyIdNotValid
 import it.amongsus.messages.LobbyMessagesServer._
 import it.amongsus.server.common.{GamePlayer, IdGenerator}
-import it.amongsus.server.game.GameActor
+import it.amongsus.server.game.{GameActor, GameActorInfo}
 import it.amongsus.server.game.GameActor.GamePlayers
 
 object LobbyManagerActor {
-  def props() = Props(new LobbyManagerActor())
+  def props(state: LobbyManagerActorInfo): Props = Props(new LobbyManagerActor(state))
 }
 
-class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
-
-  type UserName = String
-  type UserId = String
-  private val lobbyManger: LobbyManager[GamePlayer] = LobbyManager()
+/**
+ * Actor that manages all operations of the Lobby
+ *
+ * @param state info of the lobby
+ */
+class LobbyManagerActor(private val state: LobbyManagerActorInfo) extends Actor with IdGenerator with ActorLogging {
+  private val lobbyManager = LobbyManager()
   private val privateLobbyService: PrivateLobbyService = PrivateLobbyService()
-  private var connectedPlayers: Map[UserId, ActorRef] = Map()
 
   override def receive: Receive = {
-    case ConnectServer(clientRef) => {
-      log.info(s"client $clientRef is asking for a connection")
+    case ConnectServer(clientRef: ActorRef) =>
+      log.info(s"Server -> client $clientRef is asking for a connection")
       val clientId = generateId
-      connectedPlayers = connectedPlayers + (clientId -> clientRef)
+      this.state.connectedPlayers = this.state.connectedPlayers + (clientId -> clientRef)
       context.watch(clientRef)
       clientRef ! Connected(clientId)
-    }
 
-    case JoinPublicLobbyServer(clientId, username, numberOfPlayers) =>
-      log.info(s"client $clientId wants to join a public lobby")
+    case JoinPublicLobbyServer(clientId: String, username: String, numberOfPlayers: Int) =>
+      log.info(s"Server -> client $clientId wants to join a public lobby")
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = PlayerNumberLobby(numberOfPlayers)
-        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length,numberOfPlayers)
-        this.lobbyManger.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
-          player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length))
+        this.lobbyManager.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        ref ! UserAddedToLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length,numberOfPlayers)
+        this.lobbyManager.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
+          player.actorRef ! UpdateLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length))
         this.checkAndCreateGame(lobbyType)
       }
 
-    case CreatePrivateLobbyServer(clientId, username, numberOfPlayers) => {
+    case CreatePrivateLobbyServer(clientId: String, username: String, numberOfPlayers: Int) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         val lobbyType = privateLobbyService.generateNewPrivateLobby(numberOfPlayers)
-        this.lobbyManger.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
-        ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId, numberOfPlayers)
+        this.lobbyManager.addPlayer(GamePlayer(clientId, username, ref), lobbyType)
+        ref ! PrivateLobbyCreatedClient(lobbyType.lobbyId,numberOfPlayers)
       }
-    }
 
-    case JoinPrivateLobbyServer(clientId, username, lobbyCode) =>
+    case JoinPrivateLobbyServer(clientId: String, username: String, lobbyCode: String) =>
       this.executeOnClientRefPresent(clientId) { ref =>
         privateLobbyService.retrieveExistingLobby(lobbyCode) match {
           case Some(lobbyType) =>
             val player = GamePlayer(clientId, username, ref)
-            this.lobbyManger.addPlayer(player, lobbyType)
-            ref ! UserAddedToLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length,lobbyType.numberOfPlayers)
-            this.lobbyManger.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
-              player.actorRef ! UpdateLobbyClient(this.lobbyManger.getLobby(lobbyType).get.players.length))
+            this.lobbyManager.addPlayer(player, lobbyType)
+            ref ! UserAddedToLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length,
+              lobbyType.numberOfPlayers)
+            this.lobbyManager.getLobby(lobbyType).get.players.filter(player => player.id != clientId).foreach(player =>
+              player.actorRef ! UpdateLobbyClient(this.lobbyManager.getLobby(lobbyType).get.players.length))
             this.checkAndCreateGame(lobbyType)
           case None => ref ! LobbyErrorOccurred(PrivateLobbyIdNotValid)
         }
       }
 
-    case LeaveLobbyServer(userId) => {
-      log.info(s"client $userId")
-      val lobby = lobbyManger.getLobbyPlayer(userId).get
-      this.lobbyManger.removePlayer(userId)
-      lobby.removePlayer(userId).players.foreach(player =>
-        player.actorRef ! UpdateLobbyClient(lobby.players.length - 1))
-    }
+    case LeaveLobbyServer(userId: String) =>
+      log.info(s"Server -> client $userId")
+      val lobby = lobbyManager.getLobbyPlayer(userId).get
+      this.lobbyManager.removePlayer(userId)
+      lobby.removePlayer(userId)
+        .players.foreach(player => player.actorRef ! UpdateLobbyClient(lobby.players.length - 1))
 
-    case Terminated(actorRef) => {
-      log.info(s"terminated $actorRef, connected players: $connectedPlayers")
+    case Terminated(actorRef) =>
+      log.info(s"Server -> terminated $actorRef, connected players: ${this.state.connectedPlayers}")
       removeClient(actorRef)
-    }
   }
 
+  /**
+   * Method to check if all setup are correct and start the game
+   *
+   * @param lobbyType type of the lobby
+   */
   private def checkAndCreateGame(lobbyType: LobbyType): Unit = {
-    this.lobbyManger.attemptExtractPlayerForMatch(lobbyType) match {
+    this.lobbyManager.attemptExtractPlayerForMatch(lobbyType) match {
       case Some(players) => this.generateAndStartGameActor(lobbyType)(players)
       case None =>
     }
   }
 
+  /**
+   * Method to generate and starts game actor
+   *
+   * @param lobbyType type of the lobby
+   * @param players sequence of the players of the lobby
+   */
   private def generateAndStartGameActor(lobbyType: LobbyType)(players: Seq[GamePlayer]): Unit = {
-    val gameActor = context.actorOf(GameActor.props(lobbyType.numberOfPlayers))
+    val gameActor = context.actorOf(GameActor.props(GameActorInfo(lobbyType.numberOfPlayers)))
     players.foreach(p => {
       context.unwatch(p.actorRef)
-      // remove player form lobby
-      this.lobbyManger.removePlayer(p.id)
-      // remove player from connected players structure
-      this.connectedPlayers = this.connectedPlayers - p.id
+      this.lobbyManager.removePlayer(p.id)
+      this.state.connectedPlayers = this.state.connectedPlayers - p.id
     })
     gameActor ! GamePlayers(players)
   }
 
+  /**
+   * Method to execute an action to a player
+   *
+   * @param clientId of the player
+   * @param action to do
+   */
   private def executeOnClientRefPresent(clientId: String)(action: ActorRef => Unit): Unit = {
     this.getClientRef(clientId) match {
       case Some(ref) => action(ref)
@@ -102,20 +115,30 @@ class LobbyManagerActor extends Actor with IdGenerator with ActorLogging {
     }
   }
 
+  /**
+   * Method to get a client references
+   *
+   * @param clientId of the player
+   * @return
+   */
   private def getClientRef(clientId: String): Option[ActorRef] = {
-    this.connectedPlayers.get(clientId)
+    this.state.connectedPlayers.get(clientId)
   }
 
+  /**
+   * Method to remove the client from the lobby
+   *
+   * @param actorRef of the player
+   */
   private def removeClient(actorRef: ActorRef): Unit = {
-    this.connectedPlayers.find(_._2 == actorRef) match {
-      case Some((userId, _)) => {
-        log.info(s"removing client $actorRef from lobby and connected players list")
+    this.state.connectedPlayers.find(_._2 == actorRef) match {
+      case Some((userId, _)) =>
+        log.info(s"Server -> removing client $actorRef from lobby and connected players list")
         context.unwatch(actorRef)
-        this.lobbyManger.removePlayer(userId)
-        this.connectedPlayers = this.connectedPlayers - userId
-        log.info(s"removed client $actorRef from lobby and connected players list")
-      }
-      case None => log.info(s"client $actorRef not found")
+        this.lobbyManager.removePlayer(userId)
+        this.state.connectedPlayers = this.state.connectedPlayers - userId
+        log.info(s"Server -> removed client $actorRef from lobby and connected players list")
+      case None => log.info(s"Server -> client $actorRef not found")
     }
   }
 }

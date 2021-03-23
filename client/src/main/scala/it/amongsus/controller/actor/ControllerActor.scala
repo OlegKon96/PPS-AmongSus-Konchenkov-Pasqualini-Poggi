@@ -1,24 +1,31 @@
 package it.amongsus.controller.actor
 
-import akka.actor.{Actor, ActorLogging, PoisonPill, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import it.amongsus.ActorSystemManager
+import it.amongsus.RichActor.RichContext
+import it.amongsus.controller.TimerStatus
 import it.amongsus.controller.actor.ControllerActorMessages.{GameEndController, PlayerLeftController}
 import it.amongsus.controller.actor.ControllerActorMessages.{SendTextChatController, _}
-import it.amongsus.core.entities.player.Player
+import it.amongsus.controller.actor.ErrorEvent.LobbyJoinErrorEvent
+import it.amongsus.core.util.MapHelper.GameMap
+import it.amongsus.core.map.{Coin, DeadBody}
+import it.amongsus.core.player.Player
+import it.amongsus.core.util.{ActionType, ChatMessage, Direction, GameEnd}
 import it.amongsus.messages.GameMessageClient._
-import it.amongsus.messages.GameMessageServer.{PlayerMovedServer, PlayerReadyServer, SendTextChatServer, StartVoting}
+import it.amongsus.messages.GameMessageServer._
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
+import it.amongsus.model.actor.{ModelActor, ModelGameInfo}
 import it.amongsus.model.actor.ModelActorMessages.{GameEndModel, _}
 import it.amongsus.view.actor.UiActorGameMessages.{GameEndUi, _}
 import it.amongsus.view.actor.UiActorLobbyMessages._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationDouble
 import scala.util.{Failure, Success}
 
 object ControllerActor {
-  def props(state: LobbyActorInfo): Props =
+  def props(state: ControllerLobbyInfo): Props =
     Props(new ControllerActor(state))
 }
 
@@ -27,20 +34,19 @@ object ControllerActor {
  *
  * @param state state of the lobbyActorInfo that represents the function that notify the user about the received event
  */
-class ControllerActor(private val state: LobbyActorInfo) extends Actor  with ActorLogging {
-
+class ControllerActor(private val state: ControllerLobbyInfo) extends Actor  with ActorLogging {
   override def receive: Receive = lobbyBehaviour(state)
 
-  private def lobbyBehaviour(state: LobbyActorInfo): Receive = {
-    case ConnectClient(address, port) =>
-      state.guiRef.get ! Init()
+    private def lobbyBehaviour(state: ControllerLobbyInfo): Receive = {
+    case ConnectClient(address: String, port: Int) =>
+      state.guiRef.get ! Init
       state.resolveRemoteActorPath(state.generateServerActorPath(address, port)) onComplete {
         case Success(ref) =>
           ref ! ConnectServer(context.self)
         case Failure(_) =>
           state.guiRef.get ! LobbyJoinErrorEvent(ErrorEvent.ServerNotFound)
       }
-    case Connected(id) => context become lobbyBehaviour(LobbyActorInfoData(Option(sender), state.guiRef, id))
+    case Connected(id: String) => context >>> lobbyBehaviour(ControllerLobbyInfoData(Option(sender), state.guiRef, id))
 
     case JoinPublicLobbyClient(username: String, numberOfPlayers: Int) =>
       state.serverRef.get ! JoinPublicLobbyServer(state.clientId, username, numberOfPlayers)
@@ -51,115 +57,123 @@ class ControllerActor(private val state: LobbyActorInfo) extends Actor  with Act
     case JoinPrivateLobbyClient(username: String, privateLobbyCode: String) =>
       state.serverRef.get ! JoinPrivateLobbyServer(state.clientId, username, privateLobbyCode)
 
-    case LeaveLobbyClient() => state.serverRef.get ! LeaveLobbyServer(state.clientId)
+    case LeaveLobbyClient => state.serverRef.get ! LeaveLobbyServer(state.clientId)
 
-    case UserAddedToLobbyClient(numPlayers, roomSize) => state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
+    case UserAddedToLobbyClient(numPlayers: Int, roomSize: Int) =>
+      state.guiRef.get ! UserAddedToLobbyUi(numPlayers,roomSize)
 
-    case UpdateLobbyClient(numPlayers) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
+    case UpdateLobbyClient(numPlayers: Int) => state.guiRef.get ! UpdateLobbyClient(numPlayers)
 
-    case PrivateLobbyCreatedClient(lobbyCode,roomSize) => state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
+    case PrivateLobbyCreatedClient(lobbyCode: String,roomSize: Int) =>
+      state.guiRef.get ! PrivateLobbyCreatedUi(lobbyCode,roomSize)
 
-    case PlayerLeftController() => self ! PoisonPill
+    case PlayerLeftController => self ! PoisonPill
 
-    case MatchFound(gameRoom) =>
-      state.guiRef.get ! MatchFoundUi()
-      val model =
-        ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelActorInfo(Option(self),
+    case MatchFound(gameRoom: ActorRef) => state.guiRef.get ! MatchFoundUi
+      val model = ActorSystemManager.actorSystem.actorOf(ModelActor.props(ModelGameInfo(Option(self),
           None, Seq(), Seq(), state.clientId)), "model")
-      context become gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
+      context >>> gameBehaviour(GameActorInfo(Option(gameRoom), state.guiRef,
         Option(model), state.clientId))
 
-    case LobbyErrorOccurred(error) => error match {
-      case LobbyError.PrivateLobbyIdNotValid => ???
+    case TestGameBehaviour(model: ActorRef, server: ActorRef) =>
+      context >>> gameBehaviour(GameActorInfo(Option(server), state.guiRef,
+        Option(model), state.clientId))
+
+    case LobbyErrorOccurred(error: LobbyError) => error match {
+      case LobbyError.PrivateLobbyIdNotValid =>  log.info("Controller Actor -> Private Lobby id not valid" )
       case _ =>
     }
 
-    case _ => println("lobby error" + _)
+    case _ => log.info("Controller Actor -> lobby error" )
   }
 
   private def gameBehaviour(state: GameActorInfo): Receive = {
-    case PlayerReadyClient() => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
+    case PlayerReadyClient => state.gameServerRef.get ! PlayerReadyServer(state.clientId, self)
 
-    case GamePlayersClient(players) =>
+    case GamePlayersClient(players: Seq[Player]) =>
       state.modelRef.get ! InitModel(state.loadMap(), players)
 
-    case ModelReadyController(map, myChar, players, collectionables) =>
-      state.guiRef.get ! GameFoundUi(map, myChar, players, collectionables)
+    case ModelReadyController(map: GameMap, myChar: Player, players: Seq[Player],
+    coins: Seq[Coin]) => state.guiRef.get ! GameFoundUi(map, myChar, players, coins)
 
-    case KillTimerController(status) => state.manageKillTimer(status)
+    case KillTimerController(status: TimerStatus) => state.manageKillTimer(status)
 
-    case MyCharMovedController(direction) => state.modelRef.get ! MyCharMovedModel(direction)
+    case MyCharMovedController(direction: Direction) => state.modelRef.get ! MyCharMovedModel(direction)
 
-    case PlayerMovedClient(player, deadBodys) => state.modelRef.get ! PlayerMovedModel(player, deadBodys)
+    case PlayerMovedClient(player: Player, deadBodies: Seq[DeadBody]) =>
+      state.modelRef.get ! PlayerMovedModel(player, deadBodies)
 
-    case UpdatedMyCharController(player, gamePlayers, deadBodys) =>
-      state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodys)
+    case UpdatedMyCharController(player: Player, gamePlayers: Seq[Player], deadBodies: Seq[DeadBody]) =>
+      state.gameServerRef.get ! PlayerMovedServer(player, gamePlayers, deadBodies)
 
-    case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
-      state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+    case UpdatedPlayersController(myChar: Player, players: Seq[Player],coins: Seq[Coin],
+    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, coins, deadBodies)
 
-    case ButtonOnController(button) => state.guiRef.get ! ButtonOnUi(button)
+    case ActionOnController(action: ActionType) => state.guiRef.get ! ActionOnUi(action)
 
-    case ButtonOffController(button) => state.guiRef.get ! ButtonOffUi(button)
+    case ActionOffController(action: ActionType) => state.guiRef.get ! ActionOffUi(action)
 
-    case UiButtonPressedController(button) => state.modelRef.get ! UiButtonPressedModel(button)
-      state.checkButton(button)
+    case UiActionController(action: ActionType) => state.modelRef.get ! UiActionModel(action)
+      state.checkAction(action)
 
     case BeginVotingController(gamePlayers: Seq[Player]) => state.gameServerRef.get ! StartVoting(gamePlayers)
       state.guiRef.get ! BeginVotingUi(gamePlayers)
-      context become voteBehaviour(state)
+      context >>> voteBehaviour(state)
 
-    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel()
+    case StartVotingClient(gamePlayers: Seq[Player]) => state.modelRef.get ! BeginVotingModel
       state.guiRef.get ! BeginVotingUi(gamePlayers)
-      context become voteBehaviour(state)
+      context >>> voteBehaviour(state)
 
-    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+    case GameEndController(end: GameEnd) => state.guiRef.get ! GameEndUi(end)
+      context >>> lobbyBehaviour(ControllerLobbyInfo(state.guiRef))
 
-    case GameEndClient(end) => state.modelRef.get ! GameEndModel(end)
+    case GameEndClient(end: GameEnd) => state.modelRef.get ! GameEndModel(end)
 
-    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
+    case PlayerLeftController => state.modelRef.get ! MyPlayerLeftModel
       self ! PoisonPill
 
-    //case LeaveGameClient() => state.gameServerRef.get ! LeaveGameServer(state.clientId)
+    case LeaveGameClient => state.gameServerRef.get ! LeaveGameServer(state.clientId)
 
-    case PlayerLeftClient(clientId) => state.modelRef.get ! PlayerLeftModel(clientId)
+    case PlayerLeftClient(clientId: String) => state.modelRef.get ! PlayerLeftModel(clientId)
       state.guiRef.get ! PlayerLeftUi(clientId)
+
+    case _ => log.info("Controller Actor -> game error" )
   }
 
   private def voteBehaviour(state: GameActorInfo): Receive = {
     case VoteClient(username) => state.gameServerRef.get ! VoteClient(username)
 
-    case EliminatedPlayer(username) =>
+    case EliminatedPlayer(username: String) =>
       state.modelRef.get ! KillPlayerModel(username)
       state.guiRef.get ! EliminatedPlayer(username)
 
-    case NoOneEliminatedController() => state.guiRef.get ! NoOneEliminatedUi()
+    case NoOneEliminatedController => state.guiRef.get ! NoOneEliminatedUi
 
-    case UpdatedPlayersController(myChar, players, collectionables, deadBodies) =>
-      state.guiRef.get ! PlayerUpdatedUi(myChar, players, collectionables, deadBodies)
+    case UpdatedPlayersController(myChar: Player, players: Seq[Player], coins: Seq[Coin],
+    deadBodies: Seq[DeadBody]) => state.guiRef.get ! PlayerUpdatedUi(myChar, players, coins, deadBodies)
 
-    case SendTextChatController(message, myChar) => state.gameServerRef.get ! SendTextChatServer(message, myChar)
+    case SendTextChatController(message: ChatMessage, myChar: Player) =>
+      state.gameServerRef.get ! SendTextChatServer(message, myChar)
 
-    case SendTextChatClient(message) => state.guiRef.get ! ReceiveTextChatUi(message)
+    case SendTextChatClient(message: ChatMessage) => state.guiRef.get ! ReceiveTextChatUi(message)
 
-    case GameEndController(end) => state.guiRef.get ! GameEndUi(end)
-      context become lobbyBehaviour(LobbyActorInfo(state.guiRef))
+    case GameEndController(end: GameEnd) => state.guiRef.get ! GameEndUi(end)
+      context >>> lobbyBehaviour(ControllerLobbyInfo(state.guiRef))
 
-    case GameEndClient(end) =>
+    case GameEndClient(end: GameEnd) =>
       ActorSystemManager.actorSystem.scheduler.scheduleOnce(3.1 seconds){
         state.modelRef.get ! GameEndModel(end)
       }
 
-    case RestartGameController() =>
-      state.modelRef.get ! RestartGameModel()
-      context become gameBehaviour(state)
+    case RestartGameController =>
+      state.modelRef.get ! RestartGameModel
+      context >>> gameBehaviour(state)
 
-    case PlayerLeftController() => state.modelRef.get ! MyPlayerLeftModel()
+    case PlayerLeftController => state.modelRef.get ! MyPlayerLeftModel
       self ! PoisonPill
 
-    case PlayerLeftClient(clientId) => state.guiRef.get ! PlayerLeftUi(clientId)
+    case PlayerLeftClient(clientId: String) => state.guiRef.get ! PlayerLeftUi(clientId)
 
-    case _ => println("Error Controller Vote")
+    case _ => log.info("Controller Actor -> vote error" )
   }
 }

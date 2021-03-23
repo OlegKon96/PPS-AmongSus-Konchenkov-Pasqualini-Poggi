@@ -1,7 +1,8 @@
 package lobby
 
+import akka.actor.ActorRef
 import it.amongsus.server.common.GamePlayer
-import it.amongsus.server.lobby.{LobbyManager, LobbyManagerImpl, PlayerNumberLobby}
+import it.amongsus.server.lobby.{LobbyManager, PlayerNumberLobby}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -9,12 +10,11 @@ import org.scalatest.wordspec.AnyWordSpecLike
  * Class that tests the lobby manager.
  */
 class ManagerTest extends AnyWordSpecLike with MockFactory {
-
-  private val NUM_PLAYERS = 4
+  private final val NUM_PLAYERS = 4
 
   "The LobbyManager" should {
     "create a new lobby when a new player entered" in {
-      val lobbyManager = new LobbyManagerImpl[GamePlayer]()
+      val lobbyManager = LobbyManager()
       val player = mock[GamePlayer]
       val lobbyType = PlayerNumberLobby(NUM_PLAYERS)
       lobbyManager.addPlayer(player, lobbyType)
@@ -60,8 +60,8 @@ class ManagerTest extends AnyWordSpecLike with MockFactory {
     "remove from lobby" in {
       val lobbyManager = LobbyManager()
       val lobbyType = PlayerNumberLobby(2)
-      val p1 = GamePlayer("1", "asdasdasd", null)
-      val p2 = GamePlayer("2", "qwerty", null)
+      val p1 = GamePlayer("1", "asdasdasd", ActorRef.noSender)
+      val p2 = GamePlayer("2", "qwerty", ActorRef.noSender)
       lobbyManager.addPlayer(p1, lobbyType)
       lobbyManager.removePlayer(p1.id)
       lobbyManager.addPlayer(p1, lobbyType)

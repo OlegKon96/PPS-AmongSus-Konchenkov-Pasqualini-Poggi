@@ -10,8 +10,21 @@ import javax.swing.JTextArea
  * @param component the JTextArea that this class wraps.
  */
 class JTextAreaIO(override val component: JTextArea) extends ComponentIO(component){
+  /**
+   * Monadic description of Swing's append method
+   * @param text
+   */
   def appendText(text: String): IO[Unit] = IO {component.append(text)}
+
+  /**
+   * Monadic description of Swing's setAutoscrolls(true) method
+   */
   def focus(): Unit = component.setAutoscrolls(true)
+
+  /**
+   * Monadic description of Swing's setEditable(false) method
+   */
+  def setEditable(): Unit = component.setEditable(false)
 }
 
 /**

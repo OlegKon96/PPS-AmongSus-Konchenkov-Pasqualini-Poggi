@@ -1,10 +1,10 @@
 
 name := "PPS-AmongSus-Konchenkov-Pasqualini-Poggi"
 
-version in ThisBuild := "0.1.2"
+version in ThisBuild := "1.0.0"
 
 scalaVersion in ThisBuild := "2.12.8"
-organization in ThisBuild := "it.parttimeteam"
+organization in ThisBuild := "it.amongsus"
 
 /*
  * START LIBRARY DEFINITIONS.
@@ -61,6 +61,17 @@ lazy val commonSettings = Defaults.coreDefaultSettings ++ Seq(
   scalaVersion := "2.12.8",
   version := "0.1",
   crossPaths := false,
+  coverageExcludedPackages := "<empty>;" +
+    ".*it.amongsus.view.*;" +
+    ".*it.amongsus.core.map.*;" +
+    ".*it.amongsus.core.util.*;" +
+    ".*Constants.*;" +
+    ".*CustomLogger.*;" +
+    ".*AppLauncher.*;" +
+    ".*ActorSystemManager.*;" +
+    ".*ControllerActorMessages.*;" +
+    ".*ModelActorMessages.*;" +
+    ".*ActionTimer.*;",
   scalacOptions ++= compilerOptions,
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots")
@@ -84,7 +95,7 @@ lazy val core = Project(
   .settings(commonSettings)
   .settings(
     name := "core",
-    libraryDependencies ++= (testDependencies)
+    libraryDependencies ++= (testDependencies :+ tuProlog)
   )
 
 lazy val commons = Project(

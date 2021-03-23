@@ -7,7 +7,7 @@ import it.amongsus.messages.GameMessageClient.GamePlayersClient
 import it.amongsus.messages.GameMessageServer.PlayerReadyServer
 import it.amongsus.messages.LobbyMessagesServer.MatchFound
 import it.amongsus.server.common.GamePlayer
-import it.amongsus.server.game.GameActor
+import it.amongsus.server.game.{GameActor, GameActorInfo}
 import it.amongsus.server.game.GameActor.GamePlayers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterAll
@@ -20,13 +20,11 @@ class GameActorTest extends TestKit(ActorSystem("test", ConfigFactory.load("test
   with MockFactory {
 
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
-
-  private val NUMBER_OF_PLAYERS = 2
+  private final val NUMBER_OF_PLAYERS = 2
 
   "The game actor" should {
-
     "accept a specific numbers of players and notify that the game is started with an initial state" in {
-      val gameActor = TestActorRef[GameActor](GameActor.props(NUMBER_OF_PLAYERS))
+      val gameActor = TestActorRef[GameActor](GameActor.props(GameActorInfo(NUMBER_OF_PLAYERS)))
       val player1 = TestProbe()
       val player2 = TestProbe()
 

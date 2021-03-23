@@ -1,21 +1,23 @@
 package controller
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
-import it.amongsus.controller.actor.ControllerActorMessages.UpdatedPlayersController
-import it.amongsus.controller.actor.{ControllerActor, LobbyActorInfo, LobbyActorInfoData}
-import it.amongsus.core.entities.player.{CrewmateAlive, ImpostorAlive}
-import it.amongsus.core.entities.util.GameEnd.Win
-import it.amongsus.core.entities.util.Point2D
+import it.amongsus.controller.actor.ControllerActorMessages._
+import it.amongsus.controller.actor.{ControllerActor, ControllerLobbyInfo}
+import it.amongsus.core.player
+import it.amongsus.core.player.{ImpostorAlive, Player}
+import it.amongsus.core.util.ActionType.EmergencyAction
+import it.amongsus.core.util.GameEnd.{CrewmateCrew, Win}
+import it.amongsus.core.util.Direction.Up
+import it.amongsus.core.util.{ChatMessage, Point2D}
 import it.amongsus.messages.GameMessageClient._
-import it.amongsus.messages.GameMessageServer.{LeaveGameServer, PlayerReadyServer}
+import it.amongsus.messages.GameMessageServer.{PlayerReadyServer, SendTextChatServer, StartVoting}
 import it.amongsus.messages.LobbyMessagesClient._
 import it.amongsus.messages.LobbyMessagesServer._
-import it.amongsus.model.actor.ModelActorMessages.{BeginVotingModel, KillPlayerModel}
-import it.amongsus.model.actor.{ModelActor, ModelActorInfo}
-import it.amongsus.view.actor.{UiActor, UiActorInfo}
-import it.amongsus.view.actor.UiActorGameMessages.{BeginVotingUi, GameEndUi}
+import it.amongsus.model.actor.ModelActorMessages._
+import it.amongsus.model.actor.ModelGameInfo
+import it.amongsus.view.actor.UiActorGameMessages._
 import it.amongsus.view.actor.UiActorLobbyMessages._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -27,80 +29,122 @@ class ControllerActorTest extends TestKit(ActorSystem("test", ConfigFactory.load
 
   override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
   private val NUM_PLAYERS = 4
+  private final val positionDefault35 = 35
+  private val crewmateAlive: Player = player.CrewmateAlive("green", emergencyCalled = false, "asdasdasd",
+    "imCrewmate", 3, Point2D(positionDefault35, positionDefault35))
+  private val modelActor: ModelGameInfo = ModelGameInfo()
+  private final val client: TestProbe = TestProbe()
+  private final val serverActor: TestProbe = TestProbe()
+  private final val model: TestProbe = TestProbe()
+  private final val uiActor: TestProbe = TestProbe()
+  private val controllerActor: ActorRef =
+    system.actorOf(ControllerActor.props(ControllerLobbyInfo(Option(serverActor.ref), Option(uiActor.ref), "dasds")))
+  private val players = Seq(ImpostorAlive("green", emergencyCalled = false, "dasds", "asdasdsd", Point2D(0,0)))
 
   "The Controller Actor" should {
 
-    /*"Get Ready, Win a Match and then Leave the Client" in {
-      val client = TestProbe()
-      val controllerActor =
-        system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
-      controllerActor ! MatchFound(client.ref)
-      client.expectMsgType[MatchFoundUi]
-      controllerActor ! PlayerReadyClient()
-      client.expectMsgType[PlayerReadyServer]
-      controllerActor ! GameEndClient(Win())
-      client.expectMsgType[GameEndUi]
-      controllerActor ! LeaveGameClient()
-      client.expectMsgType[LeaveGameServer]
-    }*/
+    "Start Game, Get Ready, Start Voting, Vote Player, Eliminate Player and End Game" in {
+      controllerActor ! TestGameBehaviour(model.ref, serverActor.ref)
+      serverActor.expectNoMessage()
 
-    "Get Ready, Win a Match and then Leave the Client" in {
-      /*val client = TestProbe()
+      controllerActor ! PlayerReadyClient
+      serverActor.expectMsgType[PlayerReadyServer]
 
-      val uiActor = system.actorOf(UiActor.props(UiActorInfo()))
+      controllerActor ! BeginVotingController(Seq())
+      serverActor.expectMsgType[StartVoting]
+      uiActor.expectMsgType[BeginVotingUi]
 
-      uiActor ! Init()
+      controllerActor ! VoteClient("dasds")
+      serverActor.expectMsgType[VoteClient]
 
-      val controllerActor =
-        TestActorRef[ControllerActor](ControllerActor.props(LobbyActorInfoData(Option(client.ref), Option(uiActor), "dasds")))
+      controllerActor ! EliminatedPlayer("dasds")
+      model.expectMsgType[KillPlayerModel]
+      uiActor.expectMsgType[EliminatedPlayer]
 
-      val players = Seq(ImpostorAlive("green", false, "dasds", "asdasdsd", Point2D(0,0)))
-      //val modelActor =
-       // TestActorRef[ModelActor](ModelActor.props(ModelActorInfo(Option(controllerActor), None, players, Seq(), "dasds")))
+      controllerActor ! GameEndController(Win(Seq(),CrewmateCrew))
+      uiActor.expectMsgType[GameEndUi]
 
-      controllerActor ! MatchFound(ActorRef.noSender)
-      controllerActor ! GamePlayersClient(players)
-      controllerActor ! StartVotingClient(Seq())
-      /*modelActor ! BeginVotingModel()
-      modelActor ! KillPlayerModel("asdasdsd")*/
-      //modelActor.
-      //controllerActor ! MatchFound(client.ref)
-      client.expectMsgType[MatchFoundUi]
-      //controllerActor ! StartVotingClient(Seq())
-      client.expectMsgType[BeginVotingUi]
-      //client.expectMsgType[UpdatedPlayersController]
-      //uiActor.expectMsgType[]*/
+      uiActor.expectNoMessage()
+      model.expectNoMessage()
+      serverActor.expectNoMessage()
+      client.expectNoMessage()
+    }
 
+    "Start Game, Get Ready, Move Player, Press Emergency, Send Text to Chat, No Voting, Player Left and Left Game" in {
+      controllerActor ! TestGameBehaviour(model.ref, serverActor.ref)
+      serverActor.expectNoMessage()
 
+      controllerActor ! PlayerReadyClient
+      serverActor.expectMsgType[PlayerReadyServer]
+
+      controllerActor ! MyCharMovedController(Up)
+      model.expectMsgType[MyCharMovedModel]
+
+      controllerActor ! PlayerMovedClient(crewmateAlive, Seq())
+      model.expectMsgType[PlayerMovedModel]
+
+      controllerActor ! UpdatedPlayersController(crewmateAlive, players, modelActor.gameCoins, Seq())
+      uiActor.expectMsgType[PlayerUpdatedUi]
+
+      controllerActor ! ActionOnController(EmergencyAction)
+      uiActor.expectMsgType[ActionOnUi]
+
+      controllerActor ! StartVotingClient(players)
+      model.expectMsg(BeginVotingModel)
+      uiActor.expectMsgType[BeginVotingUi]
+
+      controllerActor ! SendTextChatController(ChatMessage("dasds", "Hello"), crewmateAlive)
+      serverActor.expectMsgType[SendTextChatServer]
+
+      controllerActor ! SendTextChatClient(ChatMessage("dasds", "Hello"))
+      uiActor.expectMsgType[ReceiveTextChatUi]
+
+      controllerActor ! NoOneEliminatedController
+      uiActor.expectMsg(NoOneEliminatedUi)
+
+      controllerActor ! PlayerLeftClient("dasds")
+      uiActor.expectMsgType[PlayerLeftUi]
+
+      controllerActor ! PlayerLeftController
+      model.expectMsg(MyPlayerLeftModel)
+
+      uiActor.expectNoMessage()
+      model.expectNoMessage()
+      serverActor.expectNoMessage()
+      client.expectNoMessage()
     }
 
     "Add a User to a Lobby Client" in {
-      val client = TestProbe()
-      val controllerActor = system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+      val controllerActor =
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! UserAddedToLobbyClient(NUM_PLAYERS,NUM_PLAYERS)
       client.expectMsgType[UserAddedToLobbyUi]
     }
 
     "Update the Lobby Client" in {
-      val client = TestProbe()
-      val controllerActor = system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+      val controllerActor =
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! UpdateLobbyClient(NUM_PLAYERS)
       client.expectMsgType[UpdateLobbyClient]
     }
 
     "Create a Private Lobby Client" in {
-      val client = TestProbe()
-      val controllerActor = system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+      val controllerActor =
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! PrivateLobbyCreatedClient("asdasdasd",NUM_PLAYERS)
       client.expectMsgType[PrivateLobbyCreatedUi]
     }
 
     "Match Found" in {
-      val client = TestProbe()
       val controllerActor =
-        system.actorOf(ControllerActor.props(LobbyActorInfo.apply(Option(client.ref))))
+        system.actorOf(ControllerActor.props(ControllerLobbyInfo.apply(Option(client.ref))))
       controllerActor ! MatchFound(client.ref)
-      client.expectMsgType[MatchFoundUi]
+      client.expectMsg(MatchFoundUi)
     }
+  }
+
+  def loadMap(): Iterator[String] = {
+    val bufferedSource = scala.io.Source.fromInputStream(getClass.getResourceAsStream("/images/gameMap.csv"))
+    bufferedSource.getLines
   }
 }

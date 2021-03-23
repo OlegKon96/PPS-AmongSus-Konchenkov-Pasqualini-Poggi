@@ -17,4 +17,6 @@ object ErrorEvent {
    * Error Message that the Lobby Code inserted is not valid
    */
   case object LobbyCodeNotValid extends ErrorEvent
+
+  case class LobbyJoinErrorEvent(error: ErrorEvent)
 }

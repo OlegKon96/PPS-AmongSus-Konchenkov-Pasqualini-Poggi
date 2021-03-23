@@ -1,7 +1,6 @@
 package it.amongsus.view
 
 import cats.effect.IO
-
 import javax.swing.SwingUtilities
 
 /**
