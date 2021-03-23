@@ -4,7 +4,6 @@ import scala.language.implicitConversions
 import alice.tuprolog.{Int, Struct, Term}
 import it.amongsus.core.map.{Boundary, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.util.{Direction, Point2D}
-import it.amongsus.core.prolog.Main.direction
 
 import scala.collection.convert.ImplicitConversions.`iterator asScala`
 
