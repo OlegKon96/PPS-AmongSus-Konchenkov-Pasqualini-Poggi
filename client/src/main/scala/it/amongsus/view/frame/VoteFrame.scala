@@ -85,9 +85,11 @@ object VoteFrame {
     val votePanel: JPanelIO = JPanelIO().unsafeRunSync()
     val boxChat: JTextAreaIO = JTextAreaIO(SPACE_DIMENSION_20, SPACE_DIMENSION_20).unsafeRunSync()
     boxChat.focus()
+    boxChat.setEditable()
     val scrollPane: JScrollPaneIO = JScrollPaneIO(boxChat).unsafeRunSync()
     val boxChatGhost: JTextAreaIO = JTextAreaIO(SPACE_DIMENSION_20, SPACE_DIMENSION_20).unsafeRunSync()
     boxChatGhost.focus()
+    boxChatGhost.setEditable()
     val scrollPaneGhost: JScrollPaneIO = JScrollPaneIO(boxChatGhost).unsafeRunSync()
 
     override def start(): IO[Unit] =

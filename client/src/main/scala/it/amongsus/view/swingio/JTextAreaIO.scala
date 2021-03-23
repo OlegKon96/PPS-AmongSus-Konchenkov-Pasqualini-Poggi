@@ -20,6 +20,11 @@ class JTextAreaIO(override val component: JTextArea) extends ComponentIO(compone
    * Monadic description of Swing's setAutoscrolls(true) method
    */
   def focus(): Unit = component.setAutoscrolls(true)
+
+  /**
+   * Monadic description of Swing's setEditable(false) method
+   */
+  def setEditable(): Unit = component.setEditable(false)
 }
 
 /**
