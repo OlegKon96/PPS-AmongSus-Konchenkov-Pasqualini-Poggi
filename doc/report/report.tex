@@ -1,0 +1,102 @@
+\documentclass{report}
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{paralist}
+\usepackage{enumitem}
+\graphicspath{ {figures/} }
+
+\setlistdepth{9}
+
+\newlist{myEnumerate}{enumerate}{5}
+\setlist[myEnumerate,1]{label=(\arabic*)}
+\setlist[myEnumerate,2]{label=(\arabic*)}
+\setlist[myEnumerate,3]{label=(\arabic*)}
+\setlist[myEnumerate,4]{label=(\arabic*)}
+\setlist[myEnumerate,5]{label=(\arabic*)}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{scalaStyle}{
+  frame=tb,
+  language=scala,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  basicstyle=\ttfamily\footnotesize,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  frame=single,
+  breaklines=true,
+  breakatwhitespace=true
+}
+
+\lstset{style=scalaStyle}
+
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+\newcommand{\emailaddr}[1]{\href{mailto:#1}{\texttt{#1}}}
+
+\title{\LARGE
+    Report finale PPS - Among Sus
+}
+
+\author{
+    Oleg Konchenkov \\ \emailaddr{oleg.konchenkov@studio.unibo.it}
+    \and 
+    Elia Pasqualini \\ \emailaddr{elia.pasqualini@studio.unibo.it} 
+    \and 
+    Giovanni Poggi \\ \emailaddr{giovanni.poggi2@studio.unibo.it }
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\listoffigures
+\newpage
+
+\input{tex/introduction}
+\newpage
+
+\input{tex/development-process}
+\newpage
+
+\input{tex/requirements}
+\newpage
+
+\input{tex/architecture-design}
+\newpage
+
+\input{tex/detailed-design}
+\newpage
+
+\input{tex/implementation}
+\newpage
+
+\input{tex/retrospective}
+\newpage
+
+\input{tex/final-comments}
+\newpage
+
+\input{tex/user-guide}
+\newpage
+
+
+\end{document}

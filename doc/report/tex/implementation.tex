@@ -1,0 +1,65 @@
+\chapter{Implementazione}
+
+Nel seguente capitolo verranno descritte nel dettaglio e motivate tutte le scelte implementative prese dai membri del Team.
+
+\section{Oleg}
+
+Nella fase iniziale del progetto mi sono occupato principalmente dell'architettura Client-Server e dell'organizzazione e suddivisione in moduli separati per cercare di ridurre le dipendenze all'interno del progetto.
+Ho lavorato anche sui file di configurazione di server e client per poter
+fare il \textit{deploy} del nostro server sul cloud di AWS S3. In questo modo abbiamo potuto testare e provare se la nostra architettura si comportava come previsto. 
+
+\subsubsection{Server}
+Per quanto riguarda la parte del server ho collaborato con Giovanni per organizzare la struttura e il comportamento degli attori \textit{LobbyManagerActor} e \textit{GameManagerActor}. In particolare ho gestito la fase di inizializzazione della partica, l'interazione durante essa e la gestione della condizione di vittoria. Ulteriormente, tramite le funzioni di libreria del framework \textit{Akka} ho gestito la disconnessione da parte di un client. 
+
+\subsubsection{Client}
+Ho collaborato con gli altri membri del team nell'organizzazione dell'applicazione secondo il pattern MVC e l'utilizzo degli Attori visto l'elevato scambio di messaggi previsto dall'applicazione.
+Successivamente, mi sono principalmente occupato della gestione della logica degli attori \textit{ControllerActor} e \textit{ModelActor}. Nel \textit{ControllerActor} ho gestito la parte di comunicazione inerente alla fase di lobby e quella di gioco. Ulteriormente ho implementato la classe \textit{ActionTimer} che è stata molto utile per gestire le azioni a durata del gioco. Mentre nel \textit{ModelActor} ho gestito tutta la parte interazione nella fase di gioco. Questa parte è stata più impegnativa rispetto alle altre in quanto prevedeva la gestione dello stato del gioco e della logica generale attraverso le API fornite dal modulo Core. 
+
+Insieme ad Elia abbiamo fatto un'implementazione puramente funzionale attraverso il
+\textit{framework Cats}, di un intero package che permette di utilizzare componenti \textit{Swing}
+in maniera funzionale.
+
+\subsubsection{Core}
+Assieme ad Elia abbiamo definito le varie entità che compongono il gioco e i loro comportamenti. In particolare abbiamo usato il pattern \textbf{self type} per la progettazione della parte strutturale dei vari tipi di giocatori. Inoltre il meccanismo delle \textbf{type class} per il metodo move dei diversi tipi di personaggio rendendo trasparente il differente modo di movimento di questi. Infine per aggiornare la posizione dei personaggi è stato applicato il pattern \textbf{pimp my library} aggiungendo al \textit{Point2D} il metodo \textit{movePoint} che permette data una direzione di aggiornare le coordinate del punto bidimensionale.
+
+Infine ho creato il \textit{trait MapHelper} con il relatovo \textbf{companion object} contenente le funzioni di \textit{utility} per la generazione della mappa e degli oggetti che la compongono facendo utilizzo della \textbf{for comprehention}.
+
+\section{Elia}
+
+Ricoprendo il ruolo di \textit{Product Owner} all’interno del progetto, mi sono occupato della coordinazione del lavoro dei miei colleghi. 
+Inizialmente ho creato un \textit{Product Backlog} dove ho inserito, per ogni task, una stima riferita alla difficoltà di sviluppo. Oltre a questo ho definito le priorità dei vari task, quest’ultime poi rivalutate con il resto del team di sviluppo.
+Grazie al \textit{ProductBacklog} e all’utilizzo di \textit{Trello} si è sempre tenuto sotto controllo lo stato dei lavori riuscendo quindi a rispettare tutte le scadenze degli sprint.
+Dopo aver definito insieme agli altri tutti i requisiti nella fase di analisi, ho iniziato a documentarmi su come implementare la view del gioco stesso. 
+Per quanto riguarda lo sviluppo del progetto mi sono occupato principalmente dei moduli Client e Core.
+
+
+\subsubsection{Client}
+Ho definito con il resto del team tutta l’architettura ad attori, i relativi messaggi e l’applicazione di ciò seguendo il pattern MVC.
+Inizialmente mi sono dedicato allo sviluppo del \textit{MenuFrame} e del \textit{LobbyFrame}, grazie ai quali poi Oleg e Giovanni sono riusciti a testare l’integrazione delle funzionalità di matchmaking della view con il server.
+Per fare ciò ho gestito tutti i messaggi inviati e ricevuti dallo \textit{UiActor}, mantenendone lo stato nella classi \textit{UiGameInfo} e \textit{UiLobbyInfo}.
+Ho partecipato ad una prima implementazione di alcune funzioni del \textit{ModelActor}, ad esempio la generazione iniziale della mappa leggendo un file csv, che successivamente sono state spostate da Oleg nel \textit{trait MapHelper}.
+Infine ho implementato singolarmente il \textit{GameFrame} ed il \textit{GamePanel} cioè la parte di view dedicata allo svolgimento del gioco.
+Successivamente nel \textit{GamePanel} è stato utilizzato il meccanismo delle \textbf{type class} per differenziare il metodo \textit{draw} sia per le \textit{Entity} sia per le \textit{Tile}. Tutto ciò è stato implementato con Oleg nelle classi \textit{DrawableEntity} e \textit{DrawableTile}.
+La realizzazione di tutti i \textit{Frame} descritti in precedenza ha fatto uso del package \textit{view.swingio} che rende possibile l’utilizzo dei componenti Swing seguendo il paradigma funzionale. Quest’ultimo package è stato realizzato insieme ad Oleg.
+
+\subsubsection{Core}
+In questo modulo io ed Oleg abbiamo definito tutte le entità del gioco descrivendone i comportamenti. É stata effettuata una prima distinzione tra \textit{Tile} ed \textit{Entity}. 
+Anche nel Core è stato utilizzato il meccanismo delle \textbf{type class} utile per distinguere il movimento in base al tipo di giocatore. 
+Oltre a questo è stato utilizzato il pattern  \textbf{self type} nella progettazione dei vari comportamenti dei \textit{Player}.
+Infine è stato creata la classe \textit{RichPoint2D} che aggiunge in maniera implicita il metodo \textit{movePoint} alla classe \textit{Point2D}.
+
+\section{Giovanni}
+
+Nella realizzazione delle componenti da me supervisionate del progetto, mi sono attenuto il pi\`u possibile allo stile di programmazione funzionale appreso durante il corso e focalizzando l'attenzione nel mantenere uno stato immutabile degli oggetto ove fosse pi\`u consono. Durante lo sviluppo del progetto, ho avuto l'occasione di lavorare sia al modulo del \textbf{Client} e, soprattutto, al modulo del \textbf{Server} nello sviluppo dell'architettura.
+
+\subsubsection{Client}
+
+Per lo sviluppo della parte relativa al Client, ho collaborato insieme ad Oleg ed Elia nella realizzazione. Mi sono occupato della creazione dei \textit{Frame} e dei \textit{Panel} relativi alla fase di gioco della Votazione, del processo relativo al Testing delle funzionalit\`a principali ed alla realizzazione della \textit{Scaladoc} per rendere pi\`u chiaro l'utilizzo dei metodi principali e per la generazione automatica della documentazione del codice sorgente scritto in linguaggio Scala. Nel \textbf{Model}, mi sono occupato del \textit{Behaviour} della fase di Votazione, andando a creare l'apposito comportamento e gestendo tutti i vari \textit{Case} relativi alle operazioni principali del gioco. Nella \textbf{View} ho provveduto alla creazione dei \textit{Frame Vote} e \textit{Win}. Grazie all'implementazione delle Monadi da parte di Elia e Oleg, ho potuto sfruttare appieno l'accesso alle API pi\`u utilizzate per la creazione delle GUI in \textit{Swing} e la possibilit\`a di effettuare chiamate ai metodi tramite un'insieme di funzioni di tipo \textit{IO Monad}. Sfruttando la possibilit\`a di riutilizzare i package contenenti il \textit{wrapping} monadico, ho provveduto ad una veloce realizzazione del \textit{Frame Win} per dichiarare semplicemente la vincita di un Team all'interno del Gioco e velocizzato il processo di creazione del \textit{Frame Vote} per la creazione della Chat e della scelta sul giocatore da eliminare. Successivamente ho implementato il Comportamento della Votazione all'interno dello \textit{UiActor} per una corretta gestione di tutti i Case relativi alle notifiche ed operazioni di questa fase. Infine, insieme ad Oleg, all'interno del \textit{ControllerActor} mi sono occupato della creazione e dell'implementazione del \textit{Behaviour} della Votazione.
+
+\subsubsection{Core e Commons}
+
+Nei moduli Core e Commons ho aiutato Oleg nell'implementazione dei Test per verificare che tutte le funzionalit\`a da lui implementate svolgessero correttamente il loro lavoro ed abbiamo provveduto alla creazione di classi per la gestione dei messaggi in comune tra Client e Server. Si \`e cercato di attenersi il pi\`u possibile ad una corretta metodologia di sviluppo, per permettere al Client ed al Server di comunicare efficacemente. Inoltre, ho aiutato Oleg ed Elia nella realizzazione del \textbf{Prolog} come Test delle funzionalit\`a di base del modulo Core.
+
+\subsubsection{Server}
+
+Il Modulo del Server \`e la parte in cui mi son dedicato di pi\`u durante tutta la realizzazione del progetto. Insieme ad Oleg, mi sono occupato della realizzazione del \textit{GameActor}. La mia attenzione si \`e focalizzata sul \textit{Behaviour} della fase di Votazione che verr\`a gestita dal metodo \textit{manageVote}. In questo metodo ho deciso di utilizzare le \textbf{For Comprehension} per sfruttare il pi\`u possibile il paradigma funzionale e rendere facilmente comprensibili le operazioni eseguite. Quando l'Attore ricever\`a un messaggio di \textit{SendTextChatServer}, si occuper\`a del controllo relativo alla categoria del giocatore e reindirizzer\`a il messaggio filtrando solamente i giocatori di quella tipologia e notificando i rispettivi \textit{ControllerActor}. Infine, dentro \textit{GameActor}, si \`e fatto uso di una \textbf{Higher Order Function} accettando una Funzione come parametro del metodo. La parte che ha richiesto di pi\`u in termini di implementazione e realizzazione \`e relativa alle Lobby Pubbliche ed al \textit{LobbyManagerActor}. In queste classi ho cercato di impiegare Pattern Avanzati per migliorarne l'implementazione. Nella classe \textit{LobbyManager} ho implementato il Pattern \textbf{Self-Type} permettendo al \textit{Trait LobbyManagerUtils}, tramite \textit{Mixin}, di aggiungere metodi al \textit{Trait LobbyManager} senza estenderlo direttamente. Questa funzionalit\`a permette di rendere disponibili i metodi di \textit{LobbyManagerUtils} al \textit{LobbyManagerActor}. Ho deciso di utilizzare questo pattern perch\`e il comportamento del \textit{Trait LobbyManager} \`e stato ampliato in corso d'opera con i metodi di \textit{LobbymanagerUtils} e, per rendere pi\`u comprensibile questa aggiunta, ho pensato che \textit{Self-Type} in questo caso potesse risultare una buona applicazione. Nel \textit{Trait} Lobby ho deciso di implementare il Pattern Funzionale \textbf{Pimp My Library}. Permettendo al \textit{Trait} Lobby di aggiungere la funzionalit\`a fornita dal Metodo \textit{extractPlayersForMatch} presente in \textit{RichLobby} e che permette l'estrazione dei giocatori per dare inizio ad una partita. Infine mi sono occupato, insieme ad Oleg, della realizzazione di vari Test relativi alle funzionalit\`a principali del Server per verificare che tutte le implementazioni svolgessero il loro compito correttamente.

@@ -1,0 +1,35 @@
+\chapter{Processo di sviluppo}
+
+\`E stato adottato un metodo di sviluppo agile, simile a \textbf{Scrum}, che consente di dividere un progetto per fasi, denominate \textit{Sprint}, con ogni fase focalizzata su nuove funzionalit\`a. I clienti, simulati dai membri del team, possono vedere il proseguimento del lavoro per verificare la soddisfazione, quindi apportare e richiedere modifiche in tempi più brevi. Ci\`o pu\`o aumentare l'efficienza del gruppo di lavoro, aumentando cos\`i la produttivit\`a.\\
+La prima fase del processo di sviluppo \`e stata caratterizzata dalla modellazione dell'architettura generale del progetto. Sono stati definiti i  requisiti ed in base a questi mediante diagrammi UML è stata effettuata una prima fase di progettazione. Come ultima cosa è stato creato  un \textbf{Product Backlog} seguito dalla compilazione di un primo \textbf{Sprint Planning}.
+
+\section{Meeting}
+I meeting tra i membri del team sono avvenuti regolarmente mediante Microsoft Teams e la piattaforma Discord.\\
+I componenti del team hanno partecipato attivamente ai meeting svolgendo tutti il ruolo di Sviluppatori mentre Elia Pasqualini ha ricoperto anche il ruolo di \textbf{Product Owner}.\\
+All'inizio di ogni settimana sono stati effettuati in modo affine sia la \textbf{Sprint Review} che lo \textbf{Sprint Planning}. In questi incontri si \`e controllato il lavoro svolto nella settimana precedente e sono stati determinati obiettivi e compiti da svolgere per ciascun membro. Inoltre, ogni componente \`e stato aggiornato sullo stato di avanzamento dei \textit{task} individuati e si \`e aggiornato di conseguenza il \textit{Product Backlog}. Gli incontri svoltisi durante la settimana, sono serviti per aggiornare i membri del team sui progressi svolti e per far emergere eventuali problematiche riscontrate allo scopo di studiare insieme eventuali soluzioni, similmente a come avverrebbe nel tipico \textbf{Daily Scrum} a cui si \`e fatto riferimento.
+
+\section{Divisione dei task}
+Come prima cosa durante ciascun sprint settimanale si \`e fatto utilizzo del \textit{Product Backlog} per assegnare a ciascun componente del team una serie di \textit{task} da svolgere nei 7/10 giorni successivi, in modo da definire gli obiettivi che ogni componente del team \`e tenuto a portare a termine. Un \textit{task} viene rappresentato da uno o pi\`u requisiti tra quelli individuati nel primo periodo del processo di sviluppo.
+
+\section{Revisione dei task}
+Durante la \textbf{Sprint Review}, dopo la conclusione di ciascuno sprint, i membri del team hanno informato gli altri componenti dei progressi nello svolgimento dei \textit{task} a lui assegnati, notificando le varie difficolt\`a incontrate durante lo svolgimento di questi ultimi. A seguito del risultato della review, \`e stato aggiornato e revisionato il \textit{Product Backlog} valutando eventuali ritardi sulla tabella di marcia e le relative contromisure da adottare. Solitamente, dopo il completamento dell'attivit\`a, prima della conclusione effettiva, viene eseguita un'operazione di revisione del codice, in cui il codice generato dal responsabile del \textit{task} viene mostrato a tutti i membri del team, lo scopo \`e quello di determinare possibili fattori di refactoring per migliorare la qualit\`a del codice prodotto, riducendo cos\`i il potenziale debito tecnico.
+
+\section{Scelta degli strumenti} 
+Per supportare i processi di sviluppo e progettazione sono stati utilizzati diversi strumenti. Lo scopo dell'utilizzo di questi ultimi \`e quello di fornire agli sviluppatori servizi durante tutto il processo di sviluppo automatizzandoli, in modo da migliorarne l'efficienza e rendere il team pi\`u concentrato sulla soluzione delle esigenze del progetto stesso.
+\begin{itemize}
+    \item \textbf{SBT}: Come strumento di \textbf{Build Automation};
+    \item \textbf{Scalatest}: Utilizzato per la scrittura e l'esecuzione dei Test Automatizzati;
+    \item \textbf{GitHub Actions}: Come strumento di \textbf{Continuous Integration}, in modo da testare progetti software ospitati sul repository GitHub;
+    \item \textbf{GitHub}: Come servizio di \textbf{Repository} del codice sorgente e file utilizzati durante il processo di sviluppo come, ad esempio, il \textit{Product Backlog};
+    \item \textbf{FindBugs} e \textbf{Scalastyle} sono stati utilizzati a supporto del controllo di qualit\`a automatizzato del codice;
+    \item \textbf{Trello}: Per avere una panoramica dell'avanzamento complessivo del progetto e delle funzioni specifiche da eseguire o completare. Sono state create etichette personalizzate da associare alle funzioni da implementare per organizzare al meglio il lavoro di ogni membro del team. Inoltre sono state create colonne nelle quali gli \textit{item} da eseguire sono raggruppati in base al loro stato di sviluppo. Alcune di esse sono: 
+    \begin{itemize}
+        \item \textbf{To-Do}: Contiene le schede relative alle funzioni ancora da sviluppare; 
+        \item \textbf{Progress}: Contiene le schede relative alle funzioni che si stanno realizzando in quel preciso istante; 
+        \item \textbf{Done}: Contiene le schede relative alle funzioni già sviluppate in precedenza; 
+        \item \textbf{Bug}: Contiene le schede relative alle funzioni che presentano errori da correggere; 
+        \item \textbf{Sprint}: Contiene il riepilogo di ciascuna funzionalit\`a implementata in ogni Sprint.
+    \end{itemize}
+\end{itemize}
+Qui di seguito si può vedere il Link alla Bacheca \textit{Trello}:\\
+\url{https://trello.com/b/3stYMWBd/pps-among-sus-konchenkov-pasqualini-poggi}

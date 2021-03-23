@@ -1,0 +1,109 @@
+\chapter{Retrospettiva}
+
+\section{Preparazione iniziale}
+
+Il Team ha effettuato un primo processo di sviluppo, suddiviso in uno Sprint iniziale per confrontarsi sul Design Architetturale da adottare e si \`e discusso sulle interazioni dei vari componenti del sistema. In questo Sprint si sono anche definiti i successivi sviluppi del progetto. Si \`e deciso che ogni Sprint, ad eccezione di quello inziale di avvio, avr\`a la durata media di 1,5/2 settimane massimo.\\
+Durante questa fase ci si \`e confrontati pi\`u volte tramite le piattaforma di incontro (Teams e Discord) causa pandemia e si \`e definita l'architettura ed i requisiti base del sistema.\\
+Inoltre si sono individuate le componenti principali del gioco e le loro interazioni. Cos\`i facendo si ha avuto l'opportunit\`a di confrontarsi e discutere sulla migliore organizzazione degli Sprint successivi.\\
+Infine si \`e configurato l'ambiente di sviluppo base assegnando ad ogni componente del team un compito in base agli interessi dimostrati. Buona parte della documentazione \`e stata prodotta in questa fase, cos\`i da poter consolidare tutti i requisiti ed i componenti discussi nelle riunioni effettuate. Ci si \`e inoltre informati sull'utilizzo di \textit{GitHub Actions} e \textit{Trello}.
+
+\section{Sprint 1}
+In questo Sprint ci siamo posti come obiettivo lo sviluppo delle seguenti funzionalit\`a:\\
+
+\textbf{Server}:
+\begin{itemize}
+    \item Gestione connessioni dei Client; 
+    \item Gestione delle Lobby pubbliche e private;
+    \item Gestione inizio partita;
+    \item Generazione \textit{GameActor};
+\end{itemize}
+
+\textbf{Client}:
+\begin{itemize}
+    \item Connessione al Server;
+    \item Implementazione della gestione delle Lobby pubbliche e private;
+    \item \textit{Wrapping} monadico di alcuni componenti di \textit{swing};
+    \item Creazione della GUI del men\`u iniziale;
+    \item Creazione della GUI della \textit{lobby};
+\end{itemize}
+Nonostante il pesante carico di lavoro di questo sprint siamo riusciti a concluderlo nei tempi previsti dedicando più ore lavorative rispetto a quelle normalmente previste per uno sprint.
+
+\section{Sprint 2}
+Tutti gli item dello sprint precedente sono stati sviluppati entro i tempi previsti.\\
+In particolare si \`e iniziata la realizzazione di un'interfaccia GUI per la gestione del gioco, la visualizzazione di una mappa e l'implementazione del movimento tra giocatori. Per fare ciò sar\`a necessario iniziare lo sviluppo del Model.
+In dettaglio sono state svolte le seguenti implementazioni:\\
+
+\textbf{Core}:
+\begin{itemize}
+    \item Creazione mappa 2D e dei suoi componenti;
+    \item Creazione del giocatore;
+    \item Gestione del movimento del giocatore.
+\end{itemize}
+
+\textbf{Client}:
+\begin{itemize}
+    \item Movimento base del proprio giocatore all'interno della mappa di gioco;
+    \item Gestione collisioni tra giocatori e ambiente;
+    \item Comunicazione aggiornamento del movimento dei giocatori tra i vari client;
+    \item Visualizzazione movimento di altri giocatori nella mappa di gioco.
+    \item Gestione logica del gioco lato Client;
+\end{itemize}
+
+\textbf{Server}:
+\begin{itemize}
+    \item Gestione logica del gioco lato Server;
+\end{itemize}
+
+\section{Sprint 3}
+Il team \`e riuscito a sviluppare nei tempi previsti tutti gli item precedenti.
+In questo Sprint si \`e deciso di differenziare le abilit\'a in base al ruolo, la visuale dinamica e l'implementazione di tutte le abilit\`a dei giocatori.
+Inoltre, essendo nei tempi, si \`e deciso di implementare la fase di votazione e la gestione del termine della partita.\\
+
+\textbf{Core}:
+\begin{itemize}
+    \item Differenziazione personaggi in base al loro ruolo;
+    \item Gestione sabotaggi da parte dell'impostore;
+    \item Gestione della \textit{kill} da parte dell'impostore;
+    \item Gestione della chiamata di \textit{emergency} da parte di un giocatore;
+\end{itemize}
+
+\textbf{Client}:
+\begin{itemize}
+    \item Visuale dinamica giocatore;
+    \item Gestione delle azioni tra giocatori e giocatori;
+    \item Gestione delle azioni tra giocatori e ambiente;
+    \item Creazione GUI fase di votazione;
+    \item Gestione della fase di votazione/gioco;
+    \item Creazione GUI vittoria/sconfitta;
+    \item Gestione fine partita;
+    \item Dichiarazione team vincitore o perdente;
+    \item Gestione Chat nella fase di votazione;
+\end{itemize}
+
+\textbf{Server}:
+\begin{itemize}
+    \item Gestione della fase di votazione/gioco;
+    \item Gestione condizione di vittoria;
+    \item Gestione Chat nella fase di votazione;
+\end{itemize}
+
+\section{Sprint 4}
+In questo Sprint, il team ha deciso di dedicarsi al refactor ed al miglioramento del codice del progetto. Sono stati effettuati i seguenti miglioramenti:
+\begin{itemize}
+    \item Miglioramenti alla Scaladoc;
+    \item Implementazione di test mancanti al fine di aumentare il coverage complessivo;
+    \item Pulizia del boilerplate code;
+    \item Aggiunta di pattern funzionali;
+    \item Aggiunta di funzionalità extra non previste nei requisiti iniziali;
+\end{itemize}
+
+\section{Sprint 5}
+Nell'ultimo Sprint, il team si \`e dedicato al completamento finale del progetto, apportando le seguenti modifiche:
+\begin{itemize}
+    \item Completamento della relazione e controllo delle parti gi\`a realizzate;
+    \item Utilizzo di Prolog per l'implementazione di alcune funzionalità del Core.
+    \item Refactor e miglioramento della qualit\`a del codice;
+    \item Risoluzione ultimi problemi e bug;
+    \item Caricamento del Server sul cloud di AWS S3;
+    \item Release finale su GitHub del gioco e consegna;
+\end{itemize}

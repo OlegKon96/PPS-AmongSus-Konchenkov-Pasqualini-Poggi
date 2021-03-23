@@ -1,0 +1,109 @@
+\chapter{Requisiti}
+
+Questo capitolo si propone di descrivere in dettaglio tutti i requisiti del software implementato. Dall'inizio del progetto, quasi tutti i requisiti sono rimasti invariati e alcuni sono stati leggermente modificati o annullati. Va notato che uno qualsiasi dei requisiti elencati di seguito \`e verificabile.
+
+\section{Requisiti di Business}
+
+Dal punto di vista degli obiettivi d’alto livello, il cliente si aspetta di:
+\begin{enumerate}
+\item Giocare ad un'applicazione simile ad Among us, videogioco \textit{multiplayer} che pu\`o supportare da 4 fino a 10 giocatori;
+\item Accedere ad una partita pubblica o privata già esistente oppure crearne una nuova;
+\item  Poter giocare una partita \textit{multiplayer} contro altri giocatori "umani" secondo le regole base del gioco;
+\end{enumerate}
+
+\section{Requisiti Utente}
+Identifichiamo come utenti finali del sistema coloro che vogliano interagire con l’applicazione. Essi si aspettano dal sistema:
+\begin{enumerate}
+\item Creazione di una stanza specificando un codice ed il numero di giocatori;
+\item Accesso ad una stanza di gioco gi\`a creata che pu\`o essere pubblica o privata;
+\item Rappresentazione delle varie entit\`a del gioco:
+\begin{enumerate}
+\item[3.1] \textit{Mappa 2D}
+\item[3.2] \textit{Giocatori}
+\begin{enumerate}
+\item[3.2.1] \textit{Crewmate}
+\item[3.2.2] \textit{Fantasma Crewmate} 
+\item[3.2.2] \textit{Cadavere Crewmate} 
+\item[3.2.2] \textit{Impostor} 
+\end{enumerate}
+\item[3.3] \textit{Oggetti presenti sulla mappa} 
+\begin{enumerate}
+\item[3.3.1] \textit{Collezionabili/task}
+\item[3.3.2] \textit{Botole}
+\item[3.3.3] \textit{Bottone di emergenza}
+\end{enumerate}
+\end{enumerate}
+\item Visualizzazione di bottoni rappresentanti le abilit\`a relative al proprio ruolo;
+\begin{enumerate}
+\item[4.1] \textit{Crewmate} 
+\begin{enumerate}
+\item[4.1.1] \textit{Report} 
+\item[4.1.2] \textit{Emergency} 
+\end{enumerate}
+\item[4.2] \textit{Impostor}
+\begin{enumerate}
+\item[4.2.1] \textit{Kill}
+\item[4.2.2] \textit{Report} 
+\item[4.2.3] \textit{Emergency} 
+\item[4.2.4] \textit{Sabotage}
+\end{enumerate}
+\end{enumerate}
+\item Rappresentazione del movimento all'interno della mappa;
+\item Visualizzazione della fase di votazione ed il risultato di essa;
+\item Possibilit\`a di abbandonare la partita;
+\end{enumerate}
+
+\section{Requisiti Funzionali}
+Dal punto di vista delle funzionalit\`a, ci si aspetta che il sistema:
+\begin{enumerate}
+\item Permetta al Client di connettersi con il Server;
+\item Gestisca pi\`u istanze di gioco contemporaneamente;
+\item Raggiunto il numero di giocatori minimo, abiliti la possibilit\`a di iniziare la partita;
+\item In caso di disconnessione dell’utente, il giocatore verr\`a automaticamente eliminato dalla partita contrassegnandolo come deceduto;
+\item In base al numero dei giocatori, selezioni casualmente da 1 a 3 \textit{Impostor}, gli altri saranno considerati \textit{Crewmate};
+\item Al termine della partita, dichiari il vincitore o i vincitori e renda possibile l'inizio di una nuova;
+\item Visualizzi una mappa 2D con visuale fissa;
+\item Gestisca un campo visivo prestabilito in base al tipo di personaggio tramite cui visualizzare gli altri giocatori nelle vicinanze;
+\item Differenzi le abilit\`a e gli scopi dei giocatori in base al proprio ruolo:
+\begin{enumerate}
+\item[9.1] \textit{Crewmate}:
+\begin{enumerate}
+\item[9.1.1] Raccogliere oggetti collezionabili;
+\item[9.1.2] Segnalare eventuali cadaveri dei \textit{Crewmate};
+\item[9.1.3] Chiamare il bottone di emergenza per iniziare la fase di votazione;
+\item[9.1.4] Segnalare il proprio voto;
+\item[9.1.5] Morire a causa di un \textit{Impostor} o tramite l'esito della fase di votazione;
+\item[9.1.6] Diventare una fantasma dopo essere stato ucciso o eliminato;
+\end{enumerate}
+\item[9.2] \textit{Impostor}:
+\begin{enumerate}
+\item[9.2.1] Uccidere i crewmate senza farsi scoprire;
+\item[9.2.2] Chiamare il bottone di emergenza per iniziare la fase di votazione;
+\item[9.2.3] Segnalare eventuali cadaveri dei \textit{Crewmate};
+\item[9.2.4] Segnalare il proprio voto;
+\item[9.2.5] Effettuare dei sabotaggi;
+\item[9.2.6] Usare le botole;
+\item[9.2.7] Morire a seguito dell'esito della fase di votazione;
+\item[9.2.8] Diventare una fantasma dopo essere stato eliminato;
+\end{enumerate}
+\end{enumerate}
+\end{enumerate}
+
+\section{Requisiti non Funzionali}
+\subsection{Scalabilit\`a}
+Il Server deve essere in grado di supportare un numero potenzialmente illimitato di giocatori suddivisi nelle varie partite.
+\subsection{Modularit\`a}
+Il sistema \`e stato progettato in modo tale che, quando sar\`a necessario modificare il Server, il Client necessiter\`a di meno modifiche possibili e viceversa. In particolare, se il Server dovr\`a essere aggiornato, esso dovr\`a necessariamente essere spento e quindi riacceso. Gli utenti finali non dovranno eseguire alcuna operazione sui propri Client, o almeno si dovr\`a mantenere gli aggiornamenti il più piccoli possibile. Al contrario, in caso di aggiornamento del Client, non è necessario riavviare il Server o aggiornarlo. Tutto il software deve funzionare senza influenzare l'implementazione interna del modulo Core (regole e logica di gioco), questo se le modifiche non impatteranno sull'interfaccia.
+\subsection{Usabilit\`a}
+Il sistema deve fornire agli utenti un'interfaccia chiara, semplice e ben organizzata in modo che essi possano sfruttare tutte le funzionalità realizzate.
+\subsection{Reattivit\`a}
+Data l'esecuzione di algoritmi di verifica, controllo e protocolli di comunicazione, il sistema deve essere in grado di consentire lo svolgimento delle partite senza ritardi e/o vincoli di tempo.
+
+\section{Requisiti di Implementazione}
+Le principali tecnologie utilizzate sono:
+\begin{enumerate}
+\item \textbf{Scala}: Il sistema deve essere prevalentemente sviluppato in Scala;
+\item \textbf{Swing}: Il sistema deve disporre di un’interfaccia grafica che permetta di interagire con il gioco e con il Server;
+\item \textbf{Akka}: Utilizzo di varie componenti  utili per implementare un Server ed un Client che comunichino, secondo il paradigma di programmazione ad attori, per mezzo di messaggi asincroni;
+\item \textbf{TDD}: si è tentato di applicare questa metodologia di sviluppo il più possibile all'interno del progetto. Si è fatto uso di \textit{ScalaTest} ed \textit{Akka TestKit}, utili per minimizzare la presenza di errori e di bug nel codice per facilitare l’espansione dell'applicazione;
+\end{enumerate}
