@@ -19,8 +19,7 @@ jobs:
         java-version: 1.8
     - name: Run tests
       run: sbt clean coverage test
-
-  - name: Upload coverage to Codecov
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
         token: d1b1e374-299b-4560-ba03-97f955503e1d
