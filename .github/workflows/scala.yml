@@ -21,5 +21,5 @@ jobs:
         run: sbt clean coverage test coverageReport
       - uses: codecov/codecov-action@v1
         with:
-          token: d1b1e374-299b-4560-ba03-97f955503e1d
+          token: f8d5ade1-855b-408a-85e0-2697403fabe4
           fail_ci_if_error: true

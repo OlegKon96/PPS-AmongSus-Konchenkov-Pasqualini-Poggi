@@ -1,7 +1,7 @@
 
 name := "PPS-AmongSus-Konchenkov-Pasqualini-Poggi"
 
-version in ThisBuild := "0.1.3"
+version in ThisBuild := "1.0.0"
 
 scalaVersion in ThisBuild := "2.12.8"
 organization in ThisBuild := "it.amongsus"

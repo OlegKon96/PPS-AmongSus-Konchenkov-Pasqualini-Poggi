@@ -10,7 +10,6 @@ PPS Course 19-20 project.
 ![GitHub](https://img.shields.io/github/license/OlegKonchenkov/PPS-AmongSus-Konchenkov-Pasqualini-Poggi)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/OlegKonchenkov/PPS-AmongSus-Konchenkov-Pasqualini-Poggi)
 [![codecov](https://codecov.io/gh/OlegKonchenkov/PPS-AmongSus-Konchenkov-Pasqualini-Poggi/branch/master/graph/badge.svg?token=4PY2JY91Q3)](https://codecov.io/gh/OlegKonchenkov/PPS-AmongSus-Konchenkov-Pasqualini-Poggi)
-
 ### Overview
 
 AmongSus is a game based on the popular game Among Us, written in Scala.<br/>
