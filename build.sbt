@@ -84,7 +84,7 @@ lazy val core = Project(
   .settings(commonSettings)
   .settings(
     name := "core",
-    libraryDependencies ++= (testDependencies)
+    libraryDependencies ++= (testDependencies :+ tuProlog)
   )
 
 lazy val commons = Project(
