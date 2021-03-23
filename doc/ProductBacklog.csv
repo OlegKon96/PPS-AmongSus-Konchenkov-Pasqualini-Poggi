@@ -1,0 +1,26 @@
+productBacklog;;;;;;;;
+Priority;Item;Task;Estimated initial effort (1 febbraio);e. effort at end of Sprint 1(12 febbraio);e. eff. at end of Sprint 2(22 febbraio);e. eff. at end of Sprint 3 (5 marzo);e. eff. at end of Sprint 4(14/15marzo);e. eff. at end of Sprint 5 (deadline)
+1;Connessione Client-Server;Implementazione di un modello ad attori per comunicare tramite scambio di messaggi tra client e server;15;0;0;0;0;0
+2;Creazione di una GUI del menù principale;Crea partita, partecipa ad una già esistente o termina il gioco;3;0;0;0;0;0
+3;Gestione istanze partite (lobby);Creazione partita pubblica;5;0;0;0;0;0
+;;Creazione partita privata;5;0;0;0;0;0
+;;Partecipazione ad una partita pubblica;5;0;0;0;0;0
+;;Partecipazione ad una partita privata tramite codice;5;0;0;0;0;0
+4;Creazione mappa 2d del gioco;Realizzazione grafica della mappa comprendente ostacoli, muri, bottone di emergenza, botole e collezionabili;15;15;0;0;0;0
+5;Visualizzazione del proprio personaggio all’interno della mappa;Realizzazione grafica del giocatore;8;8;0;0;0;0
+6;Gestione del movimento del giocatore all’interno della mappa;Movimento base (destra, sinistra, su, giù);5;5;0;0;0;0
+;;Implementazione della logica delle collisioni con muri;5;5;0;0;0;0
+;;Implementazione della logica delle botole;3;3;0;0;0;0
+7;Comunicazione tra i vari giocatori;Scambio di messaggi tra giocatori (posizione e azioni);15;15;5;0;0;0
+8;Gestione del campo visivo di ciascun giocatore ;Implementazione della visuale dinamica ;10;10;10;0;0;0
+9;Implementazione logica del gioco base;Implementazione di raccolta di oggetti collezionabili ;5;5;0;0;0;0
+;;Implementazione delle uccisioni da parte degli impostori;7;7;7;0;0;0
+;;Implementazione dei sabotaggi ;10;10;10;0;0;0
+;;Implementazione delle chiamate di emergenza con successiva inizio della fase di votazione;5;5;5;0;0;0
+;;Implementazione del tasto di ritrovamento di un cadavere con successiva inizio della fase di votazione;5;5;5;0;0;0
+10;Realizzazione della fase di votazione;Possibilità di votare tra i giocatori ancora in gioco, eliminazione del giocatore con la maggioranza dei voti;15;15;15;0;0;0
+11;Gestione delle operazioni eseguibili da parte di una fantasma;Movimento attraverso i muri e raccolta collezionabili;5;5;0;0;0;0
+12;Gestione delle regole necessarie per decretare un vincitore e terminare la partita;Dichiarazione vincitore ;4;4;4;4;0;0
+;;Possibilità di ricominciare una nuova partita;3;3;3;3;0;0
+13;Realizzazione di task tramite Prolog;Implementazione di task in Prolog;20;20;20;20;20;0
+14;Realizzazione di una IA che simula il comportamento di un giocatore reale;Realizzazione di una IA che simula il comportamento di un giocatore reale;15;15;15;15;15;15
