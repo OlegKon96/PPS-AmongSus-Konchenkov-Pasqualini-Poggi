@@ -18,19 +18,7 @@ class PrologTest extends AnyWordSpecLike with BeforeAndAfterAll {
   private final val map : List[Tile] =
     List(Wall(Point2D(1,1)), Floor(Point2D(0,1)), Floor(Point2D(2,2)), Boundary(Point2D(3,3)),
       Emergency(Point2D(5,5)), Other(Point2D(4,4)))
-  //private final val listOfCoin = List(Point2D(1,1), Point2D(2,1), Point2D(3,7))
   private final val listOfVents = List(Point2D(1,1), Point2D(2,1), Point2D(3,7))
-  private final val listPlayer = List(("user1","id1"),("user2","id2"),("user3","id3"),("user4","id4"))
-
-  "A Player Crewmate" should {
-    "Be" in {
-      val goal = new Struct("playerCrewmate", Term.createTerm("'Red'"), Term.createTerm("'id'"),
-        Term.createTerm("'user'"), Point2D(1,1), 6)
-      val solution = engine(goal)
-      val solveInfo = solution.iterator.next()
-      assert(solveInfo.toString == "yes.")
-    }
-  }
 
   "A Player" should {
     "Move" in {

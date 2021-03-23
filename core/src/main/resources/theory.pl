@@ -1,28 +1,3 @@
-% color(+Color)
-color("Red").
-color("Yellow").
-color("Green").
-color("Cyan").
-color("Blue").
-color("Orange").
-color("Pink").
-
-% checkPoint(+X, +Y)
-checkPoint(X, Y) :- X > 0, Y > 0, X < 72, Y < 50.
-
-% fieldOfViewCrewmate(+N)
-fieldOfViewCrewmate(6).
-fieldOfViewImpostor(10).
-fieldOfViewCrewmateSabotaged(3).
-
-% player(+Color, +ID, +Username, +Point(X,Y), +FieldOfView)
-playerCrewmate(C, ID, U, point(X,Y), FOV) :- color(C), checkPoint(X, Y), fieldOfViewCrewmate(FOV).
-playerImpostor(C, ID, U, point(X,Y), FOV) :- color(C), checkPoint(X, Y), fieldOfViewImpostor(FOV).
-playerCrewmateSabotaged(C, ID, U, point(X,Y), FOV) :- color(C), checkPoint(X, Y), fieldOfViewCrewmateSabotaged(FOV).
-
-createPlayers([player(U, ID)|T], [playerCrewmate("Green", ID, U, point(0,0), 6)|T2]) :- createPlayers(T, T2).
-createPlayers([], []).
-
 % All possible direction that a player can take
 % direction(+Movement)
 direction("Up").
