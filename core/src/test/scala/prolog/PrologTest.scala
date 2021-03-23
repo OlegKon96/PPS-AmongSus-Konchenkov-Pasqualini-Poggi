@@ -1,9 +1,9 @@
 package prolog
 
 import alice.tuprolog.{Struct, Var}
-import it.amongsus.core.map.{Floor, Tile, Wall}
+import it.amongsus.core.map.{Boundary, Emergency, Floor, Other, Tile, Wall}
 import it.amongsus.core.player.CrewmateAlive
-import it.amongsus.core.util.Direction.Right
+import it.amongsus.core.util.Direction.{Down, Left, Right, Up}
 import it.amongsus.core.util.Point2D
 import it.amongsus.core.prolog.PrologEngine.engine
 import it.amongsus.core.prolog.PrologDemonstration._
@@ -15,46 +15,128 @@ import org.scalatest.wordspec.AnyWordSpecLike
  */
 class PrologTest extends AnyWordSpecLike with BeforeAndAfterAll {
 
-  //private final val list = List(1,2,3)
-  private final val direction = Right
-  private final val position = Point2D(1, 1)
-  private final val position2 = Point2D(0, 1)
-  private final val position3 = Point2D(2, 2)
-  private final val length = new Var("L")
-  //private final val number : Int = 2
-  private final val map : List[Tile] = List(Wall(position), Floor(position2), Floor(position3))
-  //private final val listOfPlayer = List(Point2D(1,1), Point2D(1,2))
+  private final val res = new Var("L")
+  private final val map : List[Tile] =
+    List(Wall(Point2D(1,1)), Floor(Point2D(0,1)), Floor(Point2D(2,2)), Boundary(Point2D(3,3)),
+      Emergency(Point2D(5,5)), Other(Point2D(4,4)))
   private final val listOfCoin = List(Point2D(1,1), Point2D(2,1), Point2D(3,7))
+  private final val listOfVents = List(Point2D(1,1), Point2D(2,1), Point2D(3,7))
 
   "A Player" should {
     "Move" in {
-      val goal = new Struct("move",direction, position, length)
+      val goal = new Struct("move", Right, Point2D(1,1), res)
       val solution = engine(goal)
       val solveInfo = solution.iterator.next()
-      val result : Point2D = solveInfo.getVarValue(length.getName)
-      //println("move: " + result)
+      val result : Point2D = solveInfo.getVarValue(res.getName)
       assert(result == Point2D(2,1))
     }
   }
 
   "A Player Alive" should {
-    "Check Collision with Walls" in {
-      val goal3 = new Struct("moveAlive", position2, map, direction, length)
-      val solution3 = engine(goal3)
-      val solveInfo3 = solution3.iterator.next()
-      val result3 : Point2D = solveInfo3.getVarValue(length.getName)
-      //println("move alive: " + result3)
-      assert(result3 == Point2D(0,1))
+    "Collide with Walls" in {
+      val goal = new Struct("moveAlive", Point2D(0,1), map, Right, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(0,1))
+    }
+  }
+
+  "A Player Alive" should {
+    "Move on Floor" in {
+      val goal = new Struct("moveAlive", Point2D(1,1), map, Down, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(1,0))
+    }
+  }
+
+  "A Player Alive" should {
+    "Collide with Emergency" in {
+      val goal = new Struct("moveAlive", Point2D(5,6), map, Down, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(5,6))
+    }
+  }
+
+  "A Dead Player" should {
+    "Move across Walls" in {
+      val goal = new Struct("moveGhost", Point2D(0,1), map, Right, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(1,1))
+    }
+  }
+
+  "A Dead Player" should {
+    "Move on Floor" in {
+      val goal = new Struct("moveGhost", Point2D(1,1), map, Down, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(1,0))
+    }
+  }
+
+  "A Dead Player" should {
+    "Collide with Boundary" in {
+      val goal = new Struct("moveGhost", Point2D(3,4), List(Boundary(Point2D(3,3))), Down, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(3,4))
     }
   }
 
   "An Impostor Alive" should {
     "Can Use Vent" in {
-      val goalCheckDistance = new Struct("canVent", position, listOfCoin)
-      val solution2 = engine(goalCheckDistance)
-      val solveInfo2 = solution2.iterator.next()
-      //println("canVent: " + solveInfo2)
-      assert(solveInfo2.toString == "yes.")
+      val goal = new Struct("canVent", Point2D(1,1), listOfVents)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      assert(solveInfo.toString == "yes.")
+    }
+  }
+
+  "An Impostor Alive" should {
+    "Cannot Use Vent" in {
+      val goal = new Struct("canVent", Point2D(2,2), listOfVents)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      assert(solveInfo.toString == "no.")
+    }
+  }
+
+  "Check distance" should {
+    "Return the distance between two points" in {
+      val goal = new Struct("distance", Point2D(1,1), Point2D(2,2), res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Double = solveInfo.getVarValue(res.getName)
+      assert(result.toInt == 1)
+    }
+  }
+
+  "Check distance" should {
+    "Return all points that have distance below from all points of second list" in {
+      val goal = new Struct("checkDistancePointList", Point2D(1,1), List(Point2D(2,2),Point2D(1,2)), 5, res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : List[Point2D] = solveInfo.getVarValue(res.getName)
+      assert(result == List(Point2D(2,2), Point2D(1,2)))
+    }
+  }
+
+  "The Closest Point" should {
+    "Return the closest point" in {
+      val goal = new Struct("closestPoint", Point2D(1,1), List(Point2D(4,4),Point2D(2,2)), res)
+      val solution = engine(goal)
+      val solveInfo = solution.iterator.next()
+      val result : Point2D = solveInfo.getVarValue(res.getName)
+      assert(result == Point2D(2,2))
     }
   }
 }

@@ -1,7 +1,7 @@
 package it.amongsus.core.prolog
 
 import scala.language.implicitConversions
-import alice.tuprolog.{Int, Struct, Term}
+import alice.tuprolog.{Double, Int, Struct, Term}
 import it.amongsus.core.map.{Boundary, Emergency, Floor, Other, Tile, Vent, Wall}
 import it.amongsus.core.util.{Direction, Point2D}
 
@@ -16,7 +16,6 @@ object PrologDemonstration {
    */
   implicit def toPrologDirection(direction : Direction) : Term = {
     Term.createTerm(s"'${direction.toString}'")
-    //Term.createTerm(s"'${direction.toString.substring(0,direction.toString.length-2)}'")
   }
 
   /**
@@ -26,6 +25,13 @@ object PrologDemonstration {
    * @return the Prolog [[Int]] equivalent at the [[scala.Int]].
    */
   implicit def toPrologInt(value: scala.Int): Int = new Int(value)
+
+  /** Implicit to convert a [[scala.Double]] into a Prolog [[Double]].
+   *
+   * @param value the [[scala.Double]] to convert.
+   * @return the Prolog [[Double]] equivalent at the [[scala.Double]].
+   */
+  implicit def toPrologDouble(value: scala.Double): Double = new Double(value)
 
   /**
    * Implicit to convert a [[Point2D]] to a [[Term]].
@@ -43,16 +49,15 @@ object PrologDemonstration {
    */
   implicit def toStructTile(tile: Tile): Term = {
     val term = tile match {
+      case _ : Emergency => Term.createTerm("'emergency'")
+      case _ : Boundary => Term.createTerm("'boundary'")
       case _ : Wall => Term.createTerm("'wall'")
       case _ : Vent =>Term.createTerm("'vent'")
       case _ : Floor => Term.createTerm("'floor'")
-      case _ : Emergency => Term.createTerm("'emergency'")
-      case _ : Boundary => Term.createTerm("'boundary'")
       case _ : Other => Term.createTerm("'other'")
     }
     new Struct("tile", term, tile.position)
   }
-
 
   /**
    * Implicit to convert a [[List[Int]]] to a [[Term]].
@@ -97,6 +102,14 @@ object PrologDemonstration {
    * @return the equivalent [[scala.Int]] value of the [[Term]].
    */
   implicit def termToInt(t: Term): scala.Int = t.toString.toInt
+
+  /**
+   * Implicit to convert a [[Term]] into a [[scala.Double]].
+   *
+   * @param t the term to convert.
+   * @return the equivalent [[scala.Double]] value of the [[Term]].
+   */
+  implicit def termToDouble(t: Term): scala.Double = t.toString.toDouble
 
   /**
    * Implicit to convert a [[Term]] to a [[Point2D]].

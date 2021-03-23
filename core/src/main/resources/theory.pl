@@ -78,15 +78,15 @@ pow(X, Temp, Esp, Y) :- pow(X, Temp * X, Esp-1, Y).
 distance(point(X,Y), point(X2,Y2), Dist):- DeltaX is X2-X, DeltaY is Y2-Y, pow(DeltaX,2,PowX), pow(DeltaY,2,PowY), Dist is sqrt(PowX+PowY).
 
 % Check the distance from 2 list of points and return all points that have a distance lower than the input max distance.
-% checkDistance([point(1,1),point(2,1)], [point(3,30)], 34, O). --> O/point(3,30)
-checkDistance([X|Xs], Y, D, O) :- checkDistance2(X, Y, D, O), checkDistance(Xs, Y, D, O).
-checkDistance([], Y, D, O).
+% checkDistanceListList([point(1,1),point(2,1)], [point(3,30)], 34, O). --> O/point(3,30)
+checkDistanceListList([X|Xs], Y, D, [X,O|T]) :- checkDistancePointList(X, Y, D, O), checkDistanceListList(Xs, Y, D, T).
+checkDistanceListList([], Y, D, []).
 
 % Check the distance between a point and a list of point and return all points that have a distance lower than the input max distance.
-% checkDistance2([point(1,1)], [point(3,30), point(2,1), point(3,1)], 2, O). --> O/point(2,1), point(3,1)
-checkDistance2(X, [Y|Ys], D, [Y|T]) :- distance(X, Y, R), R =< D, checkDistance2(X, Ys, D, T), !.
-checkDistance2(X, [Y|Ys], D, T) :- distance(X, Y, R), R >= D, checkDistance2(X, Ys, D, T).
-checkDistance2(X, [], D, []).
+% checkDistancePointList(point(1,1), [point(3,30), point(2,1), point(3,1)], 2, O). --> O/point(2,1), point(3,1)
+checkDistancePointList(X, [Y|Ys], D, [Y|T]) :- distance(X, Y, R), R =< D, checkDistancePointList(X, Ys, D, T), !.
+checkDistancePointList(X, [Y|Ys], D, T) :- distance(X, Y, R), R >= D, checkDistancePointList(X, Ys, D, T).
+checkDistancePointList(X, [], D, []).
 
 %canVent
 canVent(X,Y) :- member(X,Y).
